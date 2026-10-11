@@ -93,9 +93,9 @@ function Index() {
       <main className="mx-auto max-w-6xl px-5 pb-24">
         <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <p className="font-label text-xs text-orange">{BILLET.kicker}</p>
-          <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{BILLET.title}</h1>
+          <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{meta.title}</h1>
           <p className="mt-4 text-sm text-muted-foreground">
-            {BILLET.author} · {BILLET.date}
+            {BILLET.author} · {meta.date}
             {source === "notion" && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-xs text-primary">Contenu Notion</span>}
           </p>
 
@@ -131,7 +131,7 @@ function Index() {
                 <div className="mt-6 space-y-6">
                   {s.passages.map((p) => {
                     pIndex++;
-                    const notes = MARGINALIA.filter((n) => n.passageId === p.id);
+                    const notes = source === "mock" ? MARGINALIA.filter((n) => n.passageId === p.id) : [];
                     return (
                       <div key={p.id} className="relative mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                         <PassageBlock
@@ -141,6 +141,7 @@ function Index() {
                           onDialogue={openDialogue}
                           onContribute={(pid) => setContrib({ passageId: pid })}
                           onMargin={setMarginFor}
+                          digressions={digressions}
                         />
                         {notes.length > 0 && (
                           <aside aria-label="Notes marginales" className="absolute top-1 left-full ml-12 hidden w-64 space-y-4 lg:block">
