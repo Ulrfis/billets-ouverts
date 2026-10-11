@@ -49,6 +49,7 @@ export function PassageBlock({
   onDialogue,
   onContribute,
   onMargin,
+  digressions,
 }: {
   id: string;
   index: number;
@@ -56,6 +57,7 @@ export function PassageBlock({
   onDialogue: (passageId: string, seed?: string) => void;
   onContribute: (passageId: string) => void;
   onMargin: (passageId: string) => void;
+  digressions?: Record<string, { title: string; body: string }> | undefined;
 }) {
   const mine = useStore((s) => s.myAvis[id]);
   const [openDig, setOpenDig] = useState<Set<string>>(new Set());
@@ -65,11 +67,12 @@ export function PassageBlock({
   const [tangent, setTangent] = useState(false);
   const [tangentText, setTangentText] = useState("");
 
+  const digs = digressions ?? DIGRESSIONS;
   const seed = SEED_AVIS[id] ?? {};
   const totalSeed = Object.values(seed).reduce((a, b) => a + (b ?? 0), 0);
   const counts = (r: ReactionId) => (seed[r] ?? 0) + (mine === r ? 1 : 0);
   const notes = MARGINALIA.filter((n) => n.passageId === id);
-  const digIds = [...text.matchAll(/\[\[(\w+)\|/g)].map((x) => x[1]!);
+  const digIds = [...text.matchAll(/\[\[(\w+)\|/g)].map((x) => x[1]!).filter((d) => digs[d]);
 
   const toggle = (d: string) =>
     setOpenDig((s) => {

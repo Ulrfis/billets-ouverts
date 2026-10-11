@@ -22,6 +22,7 @@ export function DialoguePanel({
   passage,
   seed,
   features,
+  carnet,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -29,6 +30,7 @@ export function DialoguePanel({
   passage: string;
   seed?: string | undefined;
   features: { dialogue: boolean; stt: boolean; tts: boolean };
+  carnet?: string[] | undefined;
 }) {
   const consent = useStore((s) => s.consent);
   const spent = useStore((s) => s.spent);
