@@ -22,6 +22,7 @@ export function DialoguePanel({
   passage,
   seed,
   features,
+  carnet,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -29,6 +30,7 @@ export function DialoguePanel({
   passage: string;
   seed?: string | undefined;
   features: { dialogue: boolean; stt: boolean; tts: boolean };
+  carnet?: string[] | undefined;
 }) {
   const consent = useStore((s) => s.consent);
   const spent = useStore((s) => s.spent);
@@ -67,7 +69,7 @@ export function DialoguePanel({
     setInput("");
     setBusy(true);
     const resonances = queue.filter((q) => q.status === "approved" && q.kind === "résonance").map((q) => `- ${q.text} ${q.url ?? ""}`);
-    const r = await reply({ data: { passage, context: [...CARNET, ...resonances].join("\n"), messages: next } });
+    const r = await reply({ data: { passage, context: [...(carnet ?? CARNET), ...resonances].join("\n"), messages: next } });
     setBusy(false);
     if (!r.ok) {
       setMsgs([...next, { role: "assistant", content: `⚠ ${r.error}` }]);

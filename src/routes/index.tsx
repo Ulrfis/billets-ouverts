@@ -6,7 +6,7 @@ import { BILLET, SECTIONS, MARGINALIA, VERSIONS, VERSION_META, GENEALOGY, type S
 import { PassageBlock } from "@/components/billet/Passage";
 import { DialoguePanel } from "@/components/billet/Dialogue";
 import { ContributeDialog } from "@/components/billet/Contribute";
-import { getFeatureStatus, getNotionContent } from "@/lib/api.functions";
+import { getFeatureStatus, getNotionContent, type NotionResonance } from "@/lib/api.functions";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,11 @@ function Index() {
   const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
   const [genealogy, setGenealogy] = useState(false);
+  const [meta, setMeta] = useState({ title: BILLET.title, date: BILLET.date });
+  const [digressions, setDigressions] = useState<Record<string, { title: string; body: string }> | undefined>(undefined);
+  const [resonances, setResonances] = useState<NotionResonance[]>([]);
+  const [carnet, setCarnet] = useState<string[] | undefined>(undefined);
+  const [relecture, setRelecture] = useState<{ note: string; paragraphs: string[] } | null>(null);
   const queue = useStore((s) => s.queue);
   const status = useServerFn(getFeatureStatus);
   const notion = useServerFn(getNotionContent);
@@ -46,6 +51,14 @@ function Index() {
         if (!r.ok) return;
         let n = 0;
         setSections(r.sections.map((s, i) => ({ id: `s${i + 1}`, title: s.title, passages: s.paragraphs.map((t) => ({ id: `p${++n}`, text: t })) })));
+        if (r.title) setMeta({ title: r.title, date: r.date || BILLET.date });
+        const digs: Record<string, { title: string; body: string }> = {};
+        for (const d of r.digressions) if (/^d\d+$/.test(d.id)) digs[d.id] = { title: d.title, body: d.body };
+        setDigressions(digs);
+        setResonances(r.resonances);
+        if (r.carnet.length) setCarnet(r.carnet);
+        const rel = r.versions.find((v) => v.paragraphs.length);
+        if (rel) setRelecture({ note: `${rel.title} — version chargée depuis Notion.`, paragraphs: rel.paragraphs });
         setSource("notion");
       })
       .catch(() => {});
@@ -63,6 +76,7 @@ function Index() {
     if (f) setDlg({ sectionId: f.s.id, title: f.s.title, passage: f.p.text.replace(/\[\[\w+\|([^\]]+)\]\]/g, "$1"), seed });
   };
   const publishedTangents = useMemo(() => queue.filter((q) => q.kind === "tangente" && q.status === "approved"), [queue]);
+  const vm = version !== "original" ? (version === "relecture" && relecture ? relecture : VERSION_META[version]) : null;
   let pIndex = 0;
 
   return (
@@ -80,9 +94,9 @@ function Index() {
       <main className="mx-auto max-w-6xl px-5 pb-24">
         <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <p className="font-label text-xs text-orange">{BILLET.kicker}</p>
-          <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{BILLET.title}</h1>
+          <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{meta.title}</h1>
           <p className="mt-4 text-sm text-muted-foreground">
-            {BILLET.author} · {BILLET.date}
+            {BILLET.author} · {meta.date}
             {source === "notion" && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-xs text-primary">Contenu Notion</span>}
           </p>
 
@@ -118,7 +132,7 @@ function Index() {
                 <div className="mt-6 space-y-6">
                   {s.passages.map((p) => {
                     pIndex++;
-                    const notes = MARGINALIA.filter((n) => n.passageId === p.id);
+                    const notes = source === "mock" ? MARGINALIA.filter((n) => n.passageId === p.id) : [];
                     return (
                       <div key={p.id} className="relative mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                         <PassageBlock
@@ -128,6 +142,7 @@ function Index() {
                           onDialogue={openDialogue}
                           onContribute={(pid) => setContrib({ passageId: pid })}
                           onMargin={setMarginFor}
+                          digressions={digressions}
                         />
                         {notes.length > 0 && (
                           <aside aria-label="Notes marginales" className="absolute top-1 left-full ml-12 hidden w-64 space-y-4 lg:block">
@@ -152,17 +167,38 @@ function Index() {
           ) : (
             <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
               <p className="mb-6 flex items-center justify-between gap-4 rounded-md bg-paper px-4 py-3 text-sm text-muted-foreground">
-                <span>{VERSION_META[version].note}</span>
+                <span>{vm!.note}</span>
                 <button onClick={() => setVersion("original")} className="shrink-0 text-primary underline">Revenir à l'original</button>
               </p>
               <div className={cn("space-y-6", version === "remix" && "space-y-4")}>
-                {VERSION_META[version].paragraphs.map((t, i) => (
+                {vm!.paragraphs.map((t, i) => (
                   <p key={i} className={cn("prose-billet", version === "remix" && "font-display text-2xl text-ink")}>{t}</p>
                 ))}
               </div>
             </div>
           )}
         </div>
+
+        {resonances.length > 0 && (
+          <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
+            <h2 className="text-2xl">Résonances</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Textes et voix qui dialoguent avec ce billet — chargés depuis Notion.</p>
+            <div className="mt-6 space-y-5">
+              {resonances.map((r) => (
+                <div key={r.id} className="text-sm leading-snug">
+                  <div className={cn("font-label text-[0.65rem]", noteColor[r.type as keyof typeof noteColor] ?? "text-primary")}>
+                    {r.type} · {r.voice}
+                  </div>
+                  <p className="mt-1 text-muted-foreground">{r.text}</p>
+                  <p className="mt-1 text-xs text-ink">
+                    — {r.author}, <em>{r.source}</em>{r.year ? `, ${r.year}` : ""} <span className="text-muted-foreground">({r.lang})</span>
+                    {r.url && <> · <a href={r.url} target="_blank" rel="noreferrer" className="text-primary underline">lien</a></>}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <h2 className="text-2xl">Ce billet est ouvert</h2>
@@ -184,6 +220,7 @@ function Index() {
         passage={dlg?.passage ?? ""}
         seed={dlg?.seed}
         features={features}
+        carnet={carnet}
       />
       <ContributeDialog open={!!contrib} onOpenChange={(v) => !v && setContrib(null)} passageId={contrib?.passageId} />
 

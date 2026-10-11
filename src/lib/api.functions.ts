@@ -5,45 +5,162 @@ export const getFeatureStatus = createServerFn({ method: "GET" }).handler(async 
   dialogue: !!process.env["OPENROUTER_API_KEY"],
   stt: !!process.env["DEEPGRAM_API_KEY"],
   tts: !!process.env["GRADIUM_API_KEY"],
-  notion: !!process.env["NOTION_API_KEY"] && !!process.env["NOTION_PAGE_ID"],
+  notion: !!process.env["NOTION_API_KEY"],
 }));
 
-type NotionBlock = {
-  type: string;
-  [k: string]: unknown;
+// ----- Notion (clé d'intégration directe, api.notion.com) -----
+
+const NOTION_VERSION = "2025-09-03";
+// Billet « Et si… le cinéma embrassait le web ? » dans la base « Billets ouverts depuis Wordpress »
+const BILLET_PAGE_ID = "3f651168-2fc3-8163-9bc3-f108577ca8b8";
+
+type NotionBlock = { type: string; [k: string]: unknown };
+type NotionProp = { type: string; [k: string]: unknown };
+
+async function notionGet(path: string, key: string) {
+  const res = await fetch(`https://api.notion.com/v1${path}`, {
+    headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION },
+  });
+  if (!res.ok) throw new Error(`Notion ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  return res.json() as Promise<Record<string, unknown>>;
+}
+
+async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
+  const out: NotionBlock[] = [];
+  let cursor: string | undefined;
+  do {
+    const q = cursor ? `?page_size=100&start_cursor=${cursor}` : "?page_size=100";
+    const d = await notionGet(`/blocks/${pageId}/children${q}`, key);
+    out.push(...((d["results"] as NotionBlock[]) ?? []));
+    cursor = d["has_more"] ? (d["next_cursor"] as string) : undefined;
+  } while (cursor);
+  return out;
+}
+
+const blockText = (b: NotionBlock): string => {
+  const body = b[b.type] as { rich_text?: { plain_text: string }[] } | undefined;
+  return (body?.rich_text ?? []).map((t) => t.plain_text).join("").trim();
+};
+
+const propText = (p: NotionProp | undefined): string => {
+  if (!p) return "";
+  const t = p.type;
+  if (t === "title") return ((p["title"] as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
+  if (t === "rich_text") return ((p["rich_text"] as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
+  if (t === "select") return ((p["select"] as { name?: string } | null)?.name) ?? "";
+  if (t === "status") return ((p["status"] as { name?: string } | null)?.name) ?? "";
+  if (t === "url") return (p["url"] as string) ?? "";
+  return "";
+};
+
+const propNum = (p: NotionProp | undefined): number | null =>
+  p?.type === "number" ? ((p["number"] as number | null) ?? null) : null;
+
+const propRel = (p: NotionProp | undefined): string[] =>
+  p?.type === "relation" ? ((p["relation"] as { id: string }[]) ?? []).map((r) => r.id) : [];
+
+const blockParagraphs = (blocks: NotionBlock[]): string[] =>
+  blocks
+    .filter((b) => b.type === "paragraph" || b.type === "quote")
+    .map(blockText)
+    .filter((t) => t && !t.startsWith("🎚️"));
+
+export type NotionDigression = { id: string; title: string; body: string; anchor: string };
+export type NotionResonance = {
+  id: string; author: string; source: string; year: number | null;
+  lang: string; type: string; voice: string; text: string; url: string;
 };
 
 export const getNotionContent = createServerFn({ method: "GET" }).handler(async () => {
   const key = process.env["NOTION_API_KEY"];
-  const lovable = process.env["LOVABLE_API_KEY"];
-  const pageId = process.env["NOTION_PAGE_ID"];
-  if (!key || !lovable || !pageId) return { ok: false as const, reason: "non configuré" };
+  if (!key) return { ok: false as const, reason: "non configuré" };
   try {
-    const res = await fetch(
-      `https://connector-gateway.lovable.dev/notion/v1/blocks/${pageId}/children?page_size=100`,
-      {
-        headers: {
-          Authorization: `Bearer ${lovable}`,
-          "X-Connection-Api-Key": key,
-          "Notion-Version": "2025-09-03",
-        },
-      },
-    );
-    if (!res.ok) return { ok: false as const, reason: `Notion ${res.status}` };
-    const data = (await res.json()) as { results: NotionBlock[] };
+    const page = await notionGet(`/pages/${BILLET_PAGE_ID}`, key);
+    const props = page["properties"] as Record<string, NotionProp>;
+    const title = propText(props["Titre"]);
+    const date = ((props["Date de publication"]?.["date"] as { start?: string } | null)?.start) ?? "";
+
+    // Corps du billet -> sections / passages
+    const blocks = await allBlocks(BILLET_PAGE_ID, key);
     const sections: { title: string; paragraphs: string[] }[] = [];
-    for (const b of data.results) {
-      const body = b[b.type] as { rich_text?: { plain_text: string }[] } | undefined;
-      const text = (body?.rich_text ?? []).map((t) => t.plain_text).join("").trim();
-      if (!text) continue;
+    for (const b of blocks) {
+      const text = blockText(b);
+      if (!text || text.startsWith("🎚️")) continue;
       if (b.type.startsWith("heading")) sections.push({ title: text, paragraphs: [] });
-      else if (b.type === "paragraph") {
+      else if (b.type === "paragraph" || b.type === "quote") {
         if (!sections.length) sections.push({ title: "", paragraphs: [] });
         sections[sections.length - 1]!.paragraphs.push(text);
       }
     }
     if (!sections.length) return { ok: false as const, reason: "page vide" };
-    return { ok: true as const, sections };
+
+    // Digressions liées (titre, ancre, corps)
+    const digressions: NotionDigression[] = [];
+    for (const id of propRel(props["Digressions"])) {
+      const dp = await notionGet(`/pages/${id}`, key);
+      const dprops = dp["properties"] as Record<string, NotionProp>;
+      const dblocks = await allBlocks(id, key);
+      digressions.push({
+        id,
+        title: propText(dprops["Titre"]),
+        anchor: propText(dprops["Ancrage — fragment"]),
+        body: blockParagraphs(dblocks).join("\n\n"),
+      });
+    }
+    // Injecter les ancres [[dN|fragment]] dans les passages
+    digressions.forEach((d, i) => {
+      if (!d.anchor) return;
+      const needle = d.anchor.toLowerCase();
+      for (const s of sections) {
+        const pi = s.paragraphs.findIndex((p) => p.toLowerCase().includes(needle));
+        if (pi === -1) continue;
+        const p = s.paragraphs[pi]!;
+        const at = p.toLowerCase().indexOf(needle);
+        const frag = p.slice(at, at + d.anchor.length);
+        s.paragraphs[pi] = p.slice(0, at) + `[[d${i + 1}|${frag}]]` + p.slice(at + d.anchor.length);
+        d.id = `d${i + 1}`;
+        break;
+      }
+    });
+
+    // Résonances liées
+    const resonances: NotionResonance[] = [];
+    for (const id of propRel(props["Résonances"])) {
+      const rp = await notionGet(`/pages/${id}`, key);
+      const rprops = rp["properties"] as Record<string, NotionProp>;
+      resonances.push({
+        id,
+        author: propText(rprops["Auteur"]),
+        source: propText(rprops["Titre"]),
+        year: propNum(rprops["Année"]),
+        lang: propText(rprops["Langue"]) || "FR",
+        type: (propText(rprops["Type"]) || "prolongement").toLowerCase(),
+        voice: (propText(rprops["Type de voix"]) || "auteur reconnu").toLowerCase(),
+        text: propText(rprops["Citation"]) || propText(rprops["Thèse"]),
+        url: propText(rprops["URL"]),
+      });
+    }
+
+    // Carnet lié
+    const carnet: string[] = [];
+    for (const id of propRel(props["Carnet"])) {
+      const cp = await notionGet(`/pages/${id}`, key);
+      const cprops = cp["properties"] as Record<string, NotionProp>;
+      const t = propText(cprops["Titre"]);
+      const c = propText(cprops["Contenu"]);
+      if (t || c) carnet.push(c ? `${t} — ${c}` : t);
+    }
+
+    // Versions liées
+    const versions: { id: string; title: string; paragraphs: string[] }[] = [];
+    for (const id of propRel(props["Versions"])) {
+      const vp = await notionGet(`/pages/${id}`, key);
+      const vprops = vp["properties"] as Record<string, NotionProp>;
+      const vblocks = await allBlocks(id, key);
+      versions.push({ id, title: propText(vprops["Titre"]), paragraphs: blockParagraphs(vblocks) });
+    }
+
+    return { ok: true as const, title, date, sections, digressions, resonances, carnet, versions };
   } catch (e) {
     return { ok: false as const, reason: String(e) };
   }

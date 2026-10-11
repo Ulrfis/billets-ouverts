@@ -8,4 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
-- Billets ouverts prototype: content is mock data in src/data, reader state in localStorage (src/lib/store.ts), external APIs (Notion, OpenRouter, Deepgram, Gradium) only via server functions in src/lib/api.functions.ts — keys stay server-side and features degrade when a key is missing.
+- Billets ouverts prototype: reader state in localStorage (src/lib/store.ts), external APIs (Notion, OpenRouter, Deepgram, Gradium) only via server functions in src/lib/api.functions.ts — keys stay server-side and features degrade when a key is missing.
+- Notion integration uses a raw integration key (NOTION_API_KEY) calling api.notion.com directly with Notion-Version 2025-09-03 — NOT the connector gateway. getNotionContent loads the billet page (BILLET_PAGE_ID constant) plus its related Digressions/Résonances/Carnet/Versions rows; src/data/billet.ts mock content is the fallback when the key is absent or the fetch fails.
