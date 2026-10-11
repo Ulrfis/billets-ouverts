@@ -111,7 +111,7 @@ export function PassageBlock({
           key={d}
           id={`dig-${d}`}
           role="region"
-          aria-label={`Digression : ${DIGRESSIONS[d]!.title}`}
+          aria-label={`Digression : ${digs[d]!.title}`}
           className={cn(
             "grid transition-all duration-500 ease-organic",
             openDig.has(d) ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
@@ -119,8 +119,8 @@ export function PassageBlock({
         >
           <div className="overflow-hidden">
             <div className="my-4 border-l-2 border-gold bg-paper px-5 py-4 text-base leading-relaxed text-muted-foreground">
-              <div className="font-label mb-1 text-xs text-ink">Digression · {DIGRESSIONS[d]!.title}</div>
-              {DIGRESSIONS[d]!.body}
+              <div className="font-label mb-1 text-xs text-ink">Digression · {digs[d]!.title}</div>
+              {digs[d]!.body}
               <div>
                 <button type="button" onClick={() => toggle(d)} className="mt-2 text-sm text-primary underline">
                   Replier
