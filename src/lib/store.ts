@@ -4,10 +4,10 @@ import type { ReactionId } from "@/data/billet";
 export type QueueItem = {
   id: string;
   kind: "commentaire" | "tangente" | "note" | "résonance";
-  passageId?: string;
+  passageId?: string | undefined;
   text: string;
-  url?: string;
-  name?: string;
+  url?: string | undefined;
+  name?: string | undefined;
   status: "pending" | "approved" | "rejected";
   createdAt: string;
 };

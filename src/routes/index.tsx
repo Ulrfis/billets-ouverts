@@ -31,7 +31,7 @@ function Index() {
   const [source, setSource] = useState<"mock" | "notion">("mock");
   const [features, setFeatures] = useState({ dialogue: false, stt: false, tts: false, notion: false });
   const [version, setVersion] = useState<VersionId>("original");
-  const [dlg, setDlg] = useState<{ sectionId: string; passage: string; title: string; seed?: string } | null>(null);
+  const [dlg, setDlg] = useState<{ sectionId: string; passage: string; title: string; seed?: string | undefined } | null>(null);
   const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
   const [genealogy, setGenealogy] = useState(false);
