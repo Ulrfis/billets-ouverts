@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { coverUrl } from "./notion-properties";
+import { coverUrl, allowsContributorCredit } from "./notion-properties";
 
 export const getFeatureStatus = createServerFn({ method: "GET" }).handler(async () => ({
   dialogue: !!process.env["OPENROUTER_API_KEY"],
@@ -169,7 +169,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     for (const id of contributorIds) {
       const person = await notionGet(`/pages/${id}`, key);
       const fields = person["properties"] as Record<string, NotionProp>;
-      if (fields["Consentement crédits"]?.["checkbox"] !== true) continue;
+      if (!allowsContributorCredit(fields)) continue;
       const name = propText(fields["Nom affiché"]);
       if (name) contributors.push({ id, name, role: propText(fields["Rôle"]), text: "", url: propText(fields["Lien public"]) });
     }

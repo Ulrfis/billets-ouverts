@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { coverUrl } from "./notion-properties";
+import { coverUrl, allowsContributorCredit } from "./notion-properties";
 
 describe("Notion image couverture", () => {
   it("preserves external GIFs", () => {
@@ -13,5 +13,13 @@ describe("Notion image couverture", () => {
   });
   it("does not fabricate a missing image", () => {
     expect(coverUrl(undefined)).toBe("");
+  });
+});
+
+describe("contributor credit consent", () => {
+  it("only displays profiles with explicit consent", () => {
+    expect(allowsContributorCredit({ "Consentement crédits": { type: "checkbox", checkbox: true } })).toBe(true);
+    expect(allowsContributorCredit({ "Consentement crédits": { type: "checkbox", checkbox: false } })).toBe(false);
+    expect(allowsContributorCredit({})).toBe(false);
   });
 });

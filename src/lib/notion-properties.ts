@@ -1,5 +1,9 @@
 export type NotionProperty = { type: string; [key: string]: unknown };
 
+export function allowsContributorCredit(properties: Record<string, NotionProperty>): boolean {
+  return properties["Consentement crédits"]?.["checkbox"] === true;
+}
+
 export function coverUrl(property: NotionProperty | undefined): string {
   if (!property) return "";
   let url = "";
