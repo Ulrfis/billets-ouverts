@@ -157,15 +157,21 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     }
 
     // Seuls les profils explicitement liés sont lus ; aucun email n'est exposé.
-    const contributorIds = [...new Set(Object.entries(props)
+    const contributorIds = new Set(Object.entries(props)
       .filter(([name]) => /^(contributeurs?|contributors?)$/i.test(name.trim()))
-      .flatMap(([, property]) => propRel(property)))];
+      .flatMap(([, property]) => propRel(property)));
+    for (const id of propRel(props["Contributions"])) {
+      const contribution = await notionGet(`/pages/${id}`, key);
+      const fields = contribution["properties"] as Record<string, NotionProp>;
+      for (const personId of propRel(fields["Contributeur"])) contributorIds.add(personId);
+    }
     const contributors: NotionContributor[] = [];
     for (const id of contributorIds) {
       const person = await notionGet(`/pages/${id}`, key);
       const fields = person["properties"] as Record<string, NotionProp>;
-      const name = propText(fields["Nom"]) || propText(fields["Pseudonyme"]) || propText(fields["Titre"]) || propText(Object.values(fields).find((p) => p.type === "title"));
-      if (name) contributors.push({ id, name, role: propText(fields["Rôle"]), text: propText(fields["Bio"]) || propText(fields["Présentation"]), url: propText(fields["Site"]) || propText(fields["URL"]) });
+      if (fields["Consentement crédits"]?.["checkbox"] !== true) continue;
+      const name = propText(fields["Nom affiché"]);
+      if (name) contributors.push({ id, name, role: propText(fields["Rôle"]), text: "", url: propText(fields["Lien public"]) });
     }
 
     // Versions liées

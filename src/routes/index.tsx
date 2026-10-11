@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { BILLET, SECTIONS, MARGINALIA, DIGRESSIONS, CARNET, VERSION_META, GENEALOGY, type Section, type VersionId } from "@/data/billet";
 import { PassageBlock } from "@/components/billet/Passage";
@@ -13,8 +14,11 @@ import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { RelatedPanel } from "@/components/billet/RelatedPanel";
 
+const notionQuery = queryOptions({ queryKey: ["billet-notion"], queryFn: () => getNotionContent(), staleTime: 60_000 });
+
 export const Route = createFileRoute("/")({
-  head: () => ({
+  loader: ({ context }) => context.queryClient.ensureQueryData(notionQuery),
+  head: ({ loaderData }) => ({
     meta: [
       { title: "Billet ouvert - une expérimentation de lecture immersive" },
       { name: "description", content: "Un essai ouvert : réagissez passage par passage, dépliez les digressions, dialoguez avec le texte." },
@@ -22,6 +26,10 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Un billet ouvert sur le cinéma et le web, à lire et à prolonger." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
+      ...(loaderData?.ok && loaderData.cover ? [
+        { property: "og:image", content: loaderData.cover },
+        { name: "twitter:image", content: loaderData.cover },
+      ] : []),
     ],
   }),
   component: Index,
@@ -49,11 +57,11 @@ function Index() {
   const [relecture, setRelecture] = useState<{ note: string; paragraphs: string[] } | null>(null);
   const queue = useStore((s) => s.queue);
   const status = useServerFn(getFeatureStatus);
-  const notion = useServerFn(getNotionContent);
+  const { data: notionContent } = useSuspenseQuery(notionQuery);
 
   useEffect(() => {
     status().then(setFeatures).catch(() => {});
-    notion()
+    Promise.resolve(notionContent)
       .then((r) => {
         if (!r.ok) return;
         let n = 0;
@@ -72,7 +80,7 @@ function Index() {
         setSource("notion");
       })
       .catch(() => {});
-  }, [status, notion]);
+  }, [status, notionContent]);
 
   const findPassage = (pid: string) => {
     for (const s of sections) {
