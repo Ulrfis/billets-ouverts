@@ -5,7 +5,7 @@ import { CONFIRM } from "./Passage";
 
 const KINDS: QueueItem["kind"][] = ["note", "commentaire", "résonance", "tangente"];
 
-export function ContributeDialog({ open, onOpenChange, passageId }: { open: boolean; onOpenChange: (v: boolean) => void; passageId?: string }) {
+export function ContributeDialog({ open, onOpenChange, passageId }: { open: boolean; onOpenChange: (v: boolean) => void; passageId?: string | undefined }) {
   const [kind, setKind] = useState<QueueItem["kind"]>("note");
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");

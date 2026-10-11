@@ -39,7 +39,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       if (b.type.startsWith("heading")) sections.push({ title: text, paragraphs: [] });
       else if (b.type === "paragraph") {
         if (!sections.length) sections.push({ title: "", paragraphs: [] });
-        sections[sections.length - 1].paragraphs.push(text);
+        sections[sections.length - 1]!.paragraphs.push(text);
       }
     }
     if (!sections.length) return { ok: false as const, reason: "page vide" };

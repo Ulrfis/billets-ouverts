@@ -27,7 +27,7 @@ export function DialoguePanel({
   onOpenChange: (v: boolean) => void;
   title: string;
   passage: string;
-  seed?: string;
+  seed?: string | undefined;
   features: { dialogue: boolean; stt: boolean; tts: boolean };
 }) {
   const consent = useStore((s) => s.consent);

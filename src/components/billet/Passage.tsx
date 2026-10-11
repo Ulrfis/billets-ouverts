@@ -19,7 +19,7 @@ function renderText(text: string, open: Set<string>, toggle: (id: string) => voi
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     parts.push(text.slice(last, m.index));
-    const id = m[1];
+    const id = m[1]!;
     parts.push(
       <button
         key={id}
@@ -69,7 +69,7 @@ export function PassageBlock({
   const totalSeed = Object.values(seed).reduce((a, b) => a + (b ?? 0), 0);
   const counts = (r: ReactionId) => (seed[r] ?? 0) + (mine === r ? 1 : 0);
   const notes = MARGINALIA.filter((n) => n.passageId === id);
-  const digIds = [...text.matchAll(/\[\[(\w+)\|/g)].map((x) => x[1]);
+  const digIds = [...text.matchAll(/\[\[(\w+)\|/g)].map((x) => x[1]!);
 
   const toggle = (d: string) =>
     setOpenDig((s) => {

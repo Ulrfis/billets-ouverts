@@ -32,7 +32,7 @@ function Index() {
   const [features, setFeatures] = useState({ dialogue: false, stt: false, tts: false, notion: false });
   const [version, setVersion] = useState<VersionId>("original");
   const [dlg, setDlg] = useState<{ sectionId: string; passage: string; title: string; seed?: string } | null>(null);
-  const [contrib, setContrib] = useState<{ passageId?: string } | null>(null);
+  const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
   const [genealogy, setGenealogy] = useState(false);
   const queue = useStore((s) => s.queue);
@@ -56,6 +56,7 @@ function Index() {
       const p = s.passages.find((x) => x.id === pid);
       if (p) return { s, p };
     }
+    return undefined;
   };
   const openDialogue = (pid: string, seed?: string) => {
     const f = findPassage(pid);
@@ -139,7 +140,7 @@ function Index() {
                 </div>
                 <div className="mx-auto mt-6 max-w-[42rem] lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
                   <button
-                    onClick={() => openDialogue(s.passages[0].id)}
+                    onClick={() => openDialogue(s.passages[0]!.id)}
                     className="group inline-flex items-center gap-2 text-sm text-primary"
                   >
                     <span aria-hidden className="inline-block h-px w-6 bg-primary transition-all group-hover:w-10" />
