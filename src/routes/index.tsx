@@ -6,7 +6,7 @@ import { BILLET, SECTIONS, MARGINALIA, VERSIONS, VERSION_META, GENEALOGY, type S
 import { PassageBlock } from "@/components/billet/Passage";
 import { DialoguePanel } from "@/components/billet/Dialogue";
 import { ContributeDialog } from "@/components/billet/Contribute";
-import { getFeatureStatus, getNotionContent } from "@/lib/api.functions";
+import { getFeatureStatus, getNotionContent, type NotionResonance } from "@/lib/api.functions";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
