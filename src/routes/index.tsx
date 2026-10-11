@@ -78,7 +78,7 @@ function Index() {
       </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-24">
-        <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+        <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <p className="font-label text-xs text-orange">{BILLET.kicker}</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{BILLET.title}</h1>
           <p className="mt-4 text-sm text-muted-foreground">
@@ -112,7 +112,7 @@ function Index() {
           {version === "original" ? (
             sections.map((s) => (
               <section key={s.id} aria-labelledby={`h-${s.id}`} className="mt-14">
-                <div className="mx-auto max-w-[42rem] lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+                <div className="mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                   <h2 id={`h-${s.id}`} className="text-2xl font-semibold md:text-3xl">{s.title}</h2>
                 </div>
                 <div className="mt-6 space-y-6">
@@ -120,7 +120,7 @@ function Index() {
                     pIndex++;
                     const notes = MARGINALIA.filter((n) => n.passageId === p.id);
                     return (
-                      <div key={p.id} className="relative mx-auto max-w-[42rem] lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+                      <div key={p.id} className="relative mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                         <PassageBlock
                           id={p.id}
                           index={pIndex}
@@ -138,7 +138,7 @@ function Index() {
                     );
                   })}
                 </div>
-                <div className="mx-auto mt-6 max-w-[42rem] lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+                <div className="mx-auto mt-6 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                   <button
                     onClick={() => openDialogue(s.passages[0]!.id)}
                     className="group inline-flex items-center gap-2 text-sm text-primary"
@@ -150,7 +150,7 @@ function Index() {
               </section>
             ))
           ) : (
-            <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+            <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
               <p className="mb-6 flex items-center justify-between gap-4 rounded-md bg-paper px-4 py-3 text-sm text-muted-foreground">
                 <span>{VERSION_META[version].note}</span>
                 <button onClick={() => setVersion("original")} className="shrink-0 text-primary underline">Revenir à l'original</button>
@@ -164,7 +164,7 @@ function Index() {
           )}
         </div>
 
-        <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+3rem)] lg:ml-auto xl:mx-auto">
+        <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <h2 className="text-2xl">Ce billet est ouvert</h2>
           <p className="mt-2 text-muted-foreground">Une note, un commentaire, une résonance, une tangente ?</p>
           <button onClick={() => setContrib({})} className="mt-5 rounded-md bg-primary px-5 py-2.5 text-primary-foreground">Contribuer</button>
