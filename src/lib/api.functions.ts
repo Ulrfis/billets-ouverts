@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { coverUrl, allowsContributorCredit } from "./notion-properties";
 
 export const getFeatureStatus = createServerFn({ method: "GET" }).handler(async () => ({
   dialogue: !!process.env["OPENROUTER_API_KEY"],
@@ -66,6 +67,7 @@ const blockParagraphs = (blocks: NotionBlock[]): string[] =>
     .filter((t) => t && !t.startsWith("🎚️"));
 
 export type NotionDigression = { id: string; title: string; body: string; anchor: string };
+export type NotionContributor = { id: string; name: string; role: string; text: string; url: string };
 export type NotionResonance = {
   id: string; author: string; source: string; year: number | null;
   lang: string; type: string; voice: string; text: string; url: string;
@@ -79,6 +81,8 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const props = page["properties"] as Record<string, NotionProp>;
     const title = propText(props["Titre"]);
     const date = ((props["Date de publication"]?.["date"] as { start?: string } | null)?.start) ?? "";
+    const imageProperty = Object.entries(props).find(([name]) => name.toLowerCase().trim() === "image couverture")?.[1];
+    const cover = coverUrl(imageProperty);
 
     // Corps du billet -> sections / passages
     const blocks = await allBlocks(BILLET_PAGE_ID, key);
@@ -89,7 +93,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       if (b.type.startsWith("heading")) sections.push({ title: text, paragraphs: [] });
       else if (b.type === "paragraph" || b.type === "quote") {
         if (!sections.length) sections.push({ title: "", paragraphs: [] });
-        sections[sections.length - 1]!.paragraphs.push(text);
+        sections.at(-1)?.paragraphs.push(text);
       }
     }
     if (!sections.length) return { ok: false as const, reason: "page vide" };
@@ -114,7 +118,8 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       for (const s of sections) {
         const pi = s.paragraphs.findIndex((p) => p.toLowerCase().includes(needle));
         if (pi === -1) continue;
-        const p = s.paragraphs[pi]!;
+        const p = s.paragraphs[pi];
+        if (!p) continue;
         const at = p.toLowerCase().indexOf(needle);
         const frag = p.slice(at, at + d.anchor.length);
         s.paragraphs[pi] = p.slice(0, at) + `[[d${i + 1}|${frag}]]` + p.slice(at + d.anchor.length);
@@ -147,8 +152,26 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       const cp = await notionGet(`/pages/${id}`, key);
       const cprops = cp["properties"] as Record<string, NotionProp>;
       const t = propText(cprops["Titre"]);
-      const c = propText(cprops["Contenu"]);
+      const c = propText(cprops["Contenu"]) || blockParagraphs(await allBlocks(id, key)).join("\n\n");
       if (t || c) carnet.push(c ? `${t} — ${c}` : t);
+    }
+
+    // Seuls les profils explicitement liés sont lus ; aucun email n'est exposé.
+    const contributorIds = new Set(Object.entries(props)
+      .filter(([name]) => /^(contributeurs?|contributors?)$/i.test(name.trim()))
+      .flatMap(([, property]) => propRel(property)));
+    for (const id of propRel(props["Contributions"])) {
+      const contribution = await notionGet(`/pages/${id}`, key);
+      const fields = contribution["properties"] as Record<string, NotionProp>;
+      for (const personId of propRel(fields["Contributeur"])) contributorIds.add(personId);
+    }
+    const contributors: NotionContributor[] = [];
+    for (const id of contributorIds) {
+      const person = await notionGet(`/pages/${id}`, key);
+      const fields = person["properties"] as Record<string, NotionProp>;
+      if (!allowsContributorCredit(fields)) continue;
+      const name = propText(fields["Nom affiché"]);
+      if (name) contributors.push({ id, name, role: propText(fields["Rôle"]), text: "", url: propText(fields["Lien public"]) });
     }
 
     // Versions liées
@@ -160,7 +183,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       versions.push({ id, title: propText(vprops["Titre"]), paragraphs: blockParagraphs(vblocks) });
     }
 
-    return { ok: true as const, title, date, sections, digressions, resonances, carnet, versions };
+    return { ok: true as const, title, date, cover, sections, digressions, resonances, carnet, contributors, versions };
   } catch (e) {
     return { ok: false as const, reason: String(e) };
   }

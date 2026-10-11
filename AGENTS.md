@@ -9,4 +9,6 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Billets ouverts prototype: reader state in localStorage (src/lib/store.ts), external APIs (Notion, OpenRouter, Deepgram, Gradium) only via server functions in src/lib/api.functions.ts — keys stay server-side and features degrade when a key is missing.
-- Notion integration uses a raw integration key (NOTION_API_KEY) calling api.notion.com directly with Notion-Version 2025-09-03 — NOT the connector gateway. getNotionContent loads the billet page (BILLET_PAGE_ID constant) plus its related Digressions/Résonances/Carnet/Versions rows; src/data/billet.ts mock content is the fallback when the key is absent or the fetch fails.
+- Notion integration uses a raw integration key (NOTION_API_KEY) calling api.notion.com directly with Notion-Version 2025-09-03 — NOT the connector gateway. getNotionContent loads the billet page plus its cover and explicitly related category rows; src/data/billet.ts is the fallback when the key is absent or the fetch fails. Only public contributor display fields are returned, keeping contact details private.
+- RelatedPanel presents linked reading materials and version access separately from the article header, keeping the reading view uncluttered.
+- Notion property parsing lives in a browser-safe utility with focused tests so uploaded and external GIF covers retain their original URLs and animation.
