@@ -2,18 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { BILLET, SECTIONS, MARGINALIA, VERSIONS, VERSION_META, GENEALOGY, type Section, type VersionId } from "@/data/billet";
+import { BILLET, SECTIONS, MARGINALIA, DIGRESSIONS, CARNET, VERSION_META, GENEALOGY, type Section, type VersionId } from "@/data/billet";
 import { PassageBlock } from "@/components/billet/Passage";
 import { DialoguePanel } from "@/components/billet/Dialogue";
 import { ContributeDialog } from "@/components/billet/Contribute";
-import { getFeatureStatus, getNotionContent, type NotionResonance } from "@/lib/api.functions";
+import { getFeatureStatus, getNotionContent, type NotionResonance, type NotionDigression, type NotionContributor } from "@/lib/api.functions";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
+import { RelatedPanel } from "@/components/billet/RelatedPanel";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Et si… le cinéma embrassait le web ? — Billets ouverts" },
+      { title: "Billet ouvert - une expérimentation de lecture immersive" },
       { name: "description", content: "Un essai ouvert : réagissez passage par passage, dépliez les digressions, dialoguez avec le texte." },
       { property: "og:title", content: "Et si… le cinéma embrassait le web ?" },
       { property: "og:description", content: "Un billet ouvert sur le cinéma et le web, à lire et à prolonger." },
@@ -35,6 +38,10 @@ function Index() {
   const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
   const [genealogy, setGenealogy] = useState(false);
+  const [related, setRelated] = useState(false);
+  const [cover, setCover] = useState("");
+  const [linkedDigressions, setLinkedDigressions] = useState<NotionDigression[]>([]);
+  const [contributors, setContributors] = useState<NotionContributor[]>([]);
   const [meta, setMeta] = useState({ title: BILLET.title, date: BILLET.date });
   const [digressions, setDigressions] = useState<Record<string, { title: string; body: string }> | undefined>(undefined);
   const [resonances, setResonances] = useState<NotionResonance[]>([]);
@@ -55,8 +62,11 @@ function Index() {
         const digs: Record<string, { title: string; body: string }> = {};
         for (const d of r.digressions) if (/^d\d+$/.test(d.id)) digs[d.id] = { title: d.title, body: d.body };
         setDigressions(digs);
+        setLinkedDigressions(r.digressions);
+        setContributors(r.contributors);
+        setCover(r.cover);
         setResonances(r.resonances);
-        if (r.carnet.length) setCarnet(r.carnet);
+        setCarnet(r.carnet);
         const rel = r.versions.find((v) => v.paragraphs.length);
         if (rel) setRelecture({ note: `${rel.title} — version chargée depuis Notion.`, paragraphs: rel.paragraphs });
         setSource("notion");
@@ -83,43 +93,19 @@ function Index() {
     <div className="min-h-screen">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <span className="font-display text-xl font-bold text-ink">Billets <span className="italic text-primary">ouverts</span></span>
-          <nav className="flex items-center gap-4 text-sm">
-            <button onClick={() => setGenealogy(true)} className="text-muted-foreground hover:text-primary">Généalogie</button>
-            <Link to="/moderation" className="text-muted-foreground hover:text-primary">Modération</Link>
-          </nav>
+          <p className="font-display text-lg text-ink md:text-xl">Billet ouvert - une expérimentation de lecture immersive</p>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-24">
         <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
-          <p className="font-label text-xs text-orange">{BILLET.kicker}</p>
-          <h1 className="mt-3 text-4xl font-bold leading-tight md:text-5xl">{meta.title}</h1>
+          <h1 className="text-4xl font-bold leading-tight md:text-5xl">{meta.title}</h1>
+          {cover && <img src={cover} alt={`Couverture du billet « ${meta.title} »`} className="mt-6 h-auto w-full object-contain" />}
           <p className="mt-4 text-sm text-muted-foreground">
             {BILLET.author} · {meta.date}
-            {source === "notion" && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-xs text-primary">Contenu Notion</span>}
           </p>
 
-          {/* Version switcher */}
-          <div className="sticky top-0 z-20 -mx-5 mt-8 border-b border-border bg-background/90 px-5 py-3 backdrop-blur">
-            <div role="tablist" aria-label="Versions du billet" className="flex flex-wrap items-center gap-1">
-              {VERSIONS.map((v) => (
-                <button
-                  key={v.id}
-                  role="tab"
-                  aria-selected={version === v.id}
-                  onClick={() => setVersion(v.id)}
-                  className={cn(
-                    "font-label rounded-full px-3 py-1 text-xs transition-colors",
-                    version === v.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-primary",
-                    v.id === "original" && version !== "original" && "border border-primary text-primary",
-                  )}
-                >
-                  {v.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Button variant="link" className="mt-5 h-auto px-0" onClick={() => setRelated(true)}><BookOpen aria-hidden="true" />Autour du billet</Button>
         </div>
 
         <div key={version} className="animate-fade-rise">
@@ -155,7 +141,7 @@ function Index() {
                 </div>
                 <div className="mx-auto mt-6 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
                   <button
-                    onClick={() => openDialogue(s.passages[0]!.id)}
+                    onClick={() => { const first = s.passages[0]; if (first) openDialogue(first.id); }}
                     className="group inline-flex items-center gap-2 text-sm text-primary"
                   >
                     <span aria-hidden className="inline-block h-px w-6 bg-primary transition-all group-hover:w-10" />
@@ -167,38 +153,17 @@ function Index() {
           ) : (
             <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
               <p className="mb-6 flex items-center justify-between gap-4 rounded-md bg-paper px-4 py-3 text-sm text-muted-foreground">
-                <span>{vm!.note}</span>
+                <span>{vm?.note}</span>
                 <button onClick={() => setVersion("original")} className="shrink-0 text-primary underline">Revenir à l'original</button>
               </p>
               <div className={cn("space-y-6", version === "remix" && "space-y-4")}>
-                {vm!.paragraphs.map((t, i) => (
+                {vm?.paragraphs.map((t, i) => (
                   <p key={i} className={cn("prose-billet", version === "remix" && "font-display text-2xl text-ink")}>{t}</p>
                 ))}
               </div>
             </div>
           )}
         </div>
-
-        {resonances.length > 0 && (
-          <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
-            <h2 className="text-2xl">Résonances</h2>
-            <p className="mt-2 text-sm text-muted-foreground">Textes et voix qui dialoguent avec ce billet — chargés depuis Notion.</p>
-            <div className="mt-6 space-y-5">
-              {resonances.map((r) => (
-                <div key={r.id} className="text-sm leading-snug">
-                  <div className={cn("font-label text-[0.65rem]", noteColor[r.type as keyof typeof noteColor] ?? "text-primary")}>
-                    {r.type} · {r.voice}
-                  </div>
-                  <p className="mt-1 text-muted-foreground">{r.text}</p>
-                  <p className="mt-1 text-xs text-ink">
-                    — {r.author}, <em>{r.source}</em>{r.year ? `, ${r.year}` : ""} <span className="text-muted-foreground">({r.lang})</span>
-                    {r.url && <> · <a href={r.url} target="_blank" rel="noreferrer" className="text-primary underline">lien</a></>}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <h2 className="text-2xl">Ce billet est ouvert</h2>
@@ -211,8 +176,17 @@ function Index() {
         Texte et contributions sous licence{" "}
         <a className="text-primary underline" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="noreferrer">CC BY-NC-SA 4.0</a>
         {" "}· Prototype UX
+        <div className="mt-3 flex flex-wrap justify-center gap-4">
+          <Button variant="link" size="sm" onClick={() => setRelated(true)}>Autour du billet</Button>
+          <Button variant="link" size="sm" onClick={() => setGenealogy(true)}>Généalogie</Button>
+          <Button asChild variant="link" size="sm"><Link to="/moderation">Modération</Link></Button>
+        </div>
       </footer>
 
+      <RelatedPanel open={related} onOpenChange={setRelated} carnet={carnet ?? CARNET}
+        digressions={source === "notion" ? linkedDigressions : Object.entries(DIGRESSIONS).map(([id, d]) => ({ id, ...d, anchor: "" }))}
+        resonances={source === "notion" ? resonances : MARGINALIA.map((n) => ({ ...n, url: "" }))}
+        contributors={contributors} version={version} onVersion={setVersion} />
       <DialoguePanel
         open={!!dlg}
         onOpenChange={(v) => !v && setDlg(null)}
