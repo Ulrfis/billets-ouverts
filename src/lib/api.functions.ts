@@ -31,8 +31,8 @@ async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
   do {
     const q = cursor ? `?page_size=100&start_cursor=${cursor}` : "?page_size=100";
     const d = await notionGet(`/blocks/${pageId}/children${q}`, key);
-    out.push(...((d.results as NotionBlock[]) ?? []));
-    cursor = d.has_more ? (d.next_cursor as string) : undefined;
+    out.push(...((d["results"] as NotionBlock[]) ?? []));
+    cursor = d["has_more"] ? (d["next_cursor"] as string) : undefined;
   } while (cursor);
   return out;
 }
@@ -45,19 +45,19 @@ const blockText = (b: NotionBlock): string => {
 const propText = (p: NotionProp | undefined): string => {
   if (!p) return "";
   const t = p.type;
-  if (t === "title") return ((p.title as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
-  if (t === "rich_text") return ((p.rich_text as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
-  if (t === "select") return ((p.select as { name?: string } | null)?.name) ?? "";
-  if (t === "status") return ((p.status as { name?: string } | null)?.name) ?? "";
-  if (t === "url") return (p.url as string) ?? "";
+  if (t === "title") return ((p["title"] as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
+  if (t === "rich_text") return ((p["rich_text"] as { plain_text: string }[]) ?? []).map((x) => x.plain_text).join("").trim();
+  if (t === "select") return ((p["select"] as { name?: string } | null)?.name) ?? "";
+  if (t === "status") return ((p["status"] as { name?: string } | null)?.name) ?? "";
+  if (t === "url") return (p["url"] as string) ?? "";
   return "";
 };
 
 const propNum = (p: NotionProp | undefined): number | null =>
-  p?.type === "number" ? ((p.number as number | null) ?? null) : null;
+  p?.type === "number" ? ((p["number"] as number | null) ?? null) : null;
 
 const propRel = (p: NotionProp | undefined): string[] =>
-  p?.type === "relation" ? ((p.relation as { id: string }[]) ?? []).map((r) => r.id) : [];
+  p?.type === "relation" ? ((p["relation"] as { id: string }[]) ?? []).map((r) => r.id) : [];
 
 const blockParagraphs = (blocks: NotionBlock[]): string[] =>
   blocks
@@ -76,9 +76,9 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
   if (!key) return { ok: false as const, reason: "non configuré" };
   try {
     const page = await notionGet(`/pages/${BILLET_PAGE_ID}`, key);
-    const props = page.properties as Record<string, NotionProp>;
+    const props = page["properties"] as Record<string, NotionProp>;
     const title = propText(props["Titre"]);
-    const date = ((props["Date de publication"]?.date as { start?: string } | null)?.start) ?? "";
+    const date = ((props["Date de publication"]?.["date"] as { start?: string } | null)?.start) ?? "";
 
     // Corps du billet -> sections / passages
     const blocks = await allBlocks(BILLET_PAGE_ID, key);
@@ -98,7 +98,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const digressions: NotionDigression[] = [];
     for (const id of propRel(props["Digressions"])) {
       const dp = await notionGet(`/pages/${id}`, key);
-      const dprops = dp.properties as Record<string, NotionProp>;
+      const dprops = dp["properties"] as Record<string, NotionProp>;
       const dblocks = await allBlocks(id, key);
       digressions.push({
         id,
@@ -127,7 +127,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const resonances: NotionResonance[] = [];
     for (const id of propRel(props["Résonances"])) {
       const rp = await notionGet(`/pages/${id}`, key);
-      const rprops = rp.properties as Record<string, NotionProp>;
+      const rprops = rp["properties"] as Record<string, NotionProp>;
       resonances.push({
         id,
         author: propText(rprops["Auteur"]),
@@ -145,7 +145,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const carnet: string[] = [];
     for (const id of propRel(props["Carnet"])) {
       const cp = await notionGet(`/pages/${id}`, key);
-      const cprops = cp.properties as Record<string, NotionProp>;
+      const cprops = cp["properties"] as Record<string, NotionProp>;
       const t = propText(cprops["Titre"]);
       const c = propText(cprops["Contenu"]);
       if (t || c) carnet.push(c ? `${t} — ${c}` : t);
@@ -155,7 +155,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const versions: { id: string; title: string; paragraphs: string[] }[] = [];
     for (const id of propRel(props["Versions"])) {
       const vp = await notionGet(`/pages/${id}`, key);
-      const vprops = vp.properties as Record<string, NotionProp>;
+      const vprops = vp["properties"] as Record<string, NotionProp>;
       const vblocks = await allBlocks(id, key);
       versions.push({ id, title: propText(vprops["Titre"]), paragraphs: blockParagraphs(vblocks) });
     }
