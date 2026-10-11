@@ -51,8 +51,10 @@ function subscribe(l: () => void) {
   load();
   listeners.add(l);
   // notify once after load so hydrated clients pick up stored state
-  queueMicrotask(l);
-  return () => listeners.delete(l);
+  queueMicrotask(() => l());
+  return () => {
+    listeners.delete(l);
+  };
 }
 
 export function useStore<T>(sel: (s: State) => T): T {

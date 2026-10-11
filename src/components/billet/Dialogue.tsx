@@ -58,7 +58,9 @@ export function DialoguePanel({
       setMode("texte");
     }
   }, [open, seed]);
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), [msgs, live]);
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs, live]);
 
   const voiceAvailable = features.stt && features.tts;
 
