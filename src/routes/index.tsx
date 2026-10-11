@@ -76,6 +76,7 @@ function Index() {
     if (f) setDlg({ sectionId: f.s.id, title: f.s.title, passage: f.p.text.replace(/\[\[\w+\|([^\]]+)\]\]/g, "$1"), seed });
   };
   const publishedTangents = useMemo(() => queue.filter((q) => q.kind === "tangente" && q.status === "approved"), [queue]);
+  const vm = version !== "original" ? (version === "relecture" && relecture ? relecture : VERSION_META[version]) : null;
   let pIndex = 0;
 
   return (
@@ -166,17 +167,38 @@ function Index() {
           ) : (
             <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
               <p className="mb-6 flex items-center justify-between gap-4 rounded-md bg-paper px-4 py-3 text-sm text-muted-foreground">
-                <span>{VERSION_META[version].note}</span>
+                <span>{vm!.note}</span>
                 <button onClick={() => setVersion("original")} className="shrink-0 text-primary underline">Revenir à l'original</button>
               </p>
               <div className={cn("space-y-6", version === "remix" && "space-y-4")}>
-                {VERSION_META[version].paragraphs.map((t, i) => (
+                {vm!.paragraphs.map((t, i) => (
                   <p key={i} className={cn("prose-billet", version === "remix" && "font-display text-2xl text-ink")}>{t}</p>
                 ))}
               </div>
             </div>
           )}
         </div>
+
+        {resonances.length > 0 && (
+          <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
+            <h2 className="text-2xl">Résonances</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Textes et voix qui dialoguent avec ce billet — chargés depuis Notion.</p>
+            <div className="mt-6 space-y-5">
+              {resonances.map((r) => (
+                <div key={r.id} className="text-sm leading-snug">
+                  <div className={cn("font-label text-[0.65rem]", noteColor[r.type as keyof typeof noteColor] ?? "text-primary")}>
+                    {r.type} · {r.voice}
+                  </div>
+                  <p className="mt-1 text-muted-foreground">{r.text}</p>
+                  <p className="mt-1 text-xs text-ink">
+                    — {r.author}, <em>{r.source}</em>{r.year ? `, ${r.year}` : ""} <span className="text-muted-foreground">({r.lang})</span>
+                    {r.url && <> · <a href={r.url} target="_blank" rel="noreferrer" className="text-primary underline">lien</a></>}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
           <h2 className="text-2xl">Ce billet est ouvert</h2>
@@ -198,6 +220,7 @@ function Index() {
         passage={dlg?.passage ?? ""}
         seed={dlg?.seed}
         features={features}
+        carnet={carnet}
       />
       <ContributeDialog open={!!contrib} onOpenChange={(v) => !v && setContrib(null)} passageId={contrib?.passageId} />
 
