@@ -35,6 +35,11 @@ function Index() {
   const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
   const [genealogy, setGenealogy] = useState(false);
+  const [meta, setMeta] = useState({ title: BILLET.title, date: BILLET.date });
+  const [digressions, setDigressions] = useState<Record<string, { title: string; body: string }> | undefined>(undefined);
+  const [resonances, setResonances] = useState<NotionResonance[]>([]);
+  const [carnet, setCarnet] = useState<string[] | undefined>(undefined);
+  const [relecture, setRelecture] = useState<{ note: string; paragraphs: string[] } | null>(null);
   const queue = useStore((s) => s.queue);
   const status = useServerFn(getFeatureStatus);
   const notion = useServerFn(getNotionContent);
@@ -46,6 +51,14 @@ function Index() {
         if (!r.ok) return;
         let n = 0;
         setSections(r.sections.map((s, i) => ({ id: `s${i + 1}`, title: s.title, passages: s.paragraphs.map((t) => ({ id: `p${++n}`, text: t })) })));
+        if (r.title) setMeta({ title: r.title, date: r.date || BILLET.date });
+        const digs: Record<string, { title: string; body: string }> = {};
+        for (const d of r.digressions) if (/^d\d+$/.test(d.id)) digs[d.id] = { title: d.title, body: d.body };
+        setDigressions(digs);
+        setResonances(r.resonances);
+        if (r.carnet.length) setCarnet(r.carnet);
+        const rel = r.versions.find((v) => v.paragraphs.length);
+        if (rel) setRelecture({ note: `${rel.title} — version chargée depuis Notion.`, paragraphs: rel.paragraphs });
         setSource("notion");
       })
       .catch(() => {});
