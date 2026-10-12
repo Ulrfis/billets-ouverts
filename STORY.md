@@ -162,6 +162,7 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 - README structuré en seize rubriques avec preuves, limites, prompt autonome et brouillon Notion.
 - STORY reconstitué sans inventer de ressenti ni de durée ; CHANGELOG au format Keep a Changelog.
 - Six tests réussis ; lint existant en échec (189 erreurs, 6 avertissements).
+- Build automatique Lovable réussi après rédaction (18:48:28 UTC) ; structure et liens des trois documents contrôlés.
 - Aucun changement fonctionnel, publication ou écriture Notion.
 
 **Time**: non mesuré.
@@ -302,6 +303,7 @@ Ces sujets sont documentés, **pas ajoutés implicitement au périmètre de la p
 - [x] README, STORY et CHANGELOG adaptés ; historique non réécrit.
 - [x] Open Windows et résultats de qualité documentés.
 - [x] Tests : 6 réussis, 2 fichiers.
+- [x] Build automatique réussi après rédaction ; contrôle des liens et formats des trois documents réussi.
 - [ ] Lint vert — échec existant, détail dans README.
 - [ ] Build/typecheck exécutés manuellement — non, contrôles gérés par Lovable.
 - [ ] Commit/push manuel — non effectué ; état Git géré par Lovable.

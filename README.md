@@ -314,9 +314,9 @@ Tests ciblés : couvertures URL/fichiers/GIF, consentement des crédits, route d
 | Tests | `bunx vitest run` | Réussi : 2 fichiers, 6 tests | 2026-10-12 |
 | Lint | `bun run lint` | Échec : 189 erreurs, 6 avertissements ; 188 erreurs de formatage corrigeables automatiquement, une erreur d’expression inutilisée | 2026-10-12 |
 | Typecheck | Non exécuté | Interdit manuellement dans le sandbox ; aucun succès actuel revendiqué | 2026-10-12 |
-| Build | Non exécuté manuellement | Contrôles automatiques Lovable ; journal d’observabilité absent lors de la lecture | 2026-10-12 |
+| Build | Contrôle automatique Lovable | Réussi après rédaction : journal `build OK` à 18:48:28 UTC ; non exécuté manuellement | 2026-10-12 |
 | Parcours / revue visuelle | Non rejoués | Documentation seule ; couverture, panneau et changement de version vérifiés dans la session précédente, pas une preuve actuelle IA | 2026-10-12 |
-| Documentation | Relecture des chemins, rubriques et marqueurs | Voir vérification de fin de session | 2026-10-12 |
+| Documentation | Contrôle des liens locaux, blocs Markdown, rubriques et marqueurs | Réussi : trois documents, seize rubriques README, marqueurs Notion présents, aucun champ de modèle non remplacé | 2026-10-12 |
 
 ### 9.3 Critères d’acceptation globaux
 
@@ -482,7 +482,7 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 - **Sections :** première rédaction des sections 1–16 ; STORY et CHANGELOG ajoutés.
 - **Prompt de régénération :** oui, première version autonome incluant les limites.
 - **Synchronisation Notion :** à faire après résolution des propriétés/relations ; pas exécutée.
-- **Vérifications :** six tests réussis, lint en échec existant, build/typecheck non exécutés manuellement.
+- **Vérifications :** six tests réussis, lint en échec existant, build automatique réussi ; build/typecheck non exécutés manuellement. Liens locaux, rubriques et blocs des trois documents vérifiés.
 - **Auteur / agent :** Lovable, à la demande d’Ulrich Fischer.
 
 ## 16. Maintenance de ce README

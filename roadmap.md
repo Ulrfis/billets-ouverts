@@ -5,6 +5,6 @@
 - [x] Vérifier le billet et les interactions avec les contenus réels.
 
 # Documentation du projet
-- [ ] Adapter README.md au modèle MemoWays et à l’état réel.
-- [ ] Ajouter STORY.md avec la chronologie et les limites connues.
-- [ ] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.
+- [x] Adapter README.md au modèle MemoWays et à l’état réel.
+- [x] Ajouter STORY.md avec la chronologie et les limites connues.
+- [x] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.

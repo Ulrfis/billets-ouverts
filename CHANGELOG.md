@@ -65,7 +65,8 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 - Tests : **6 réussis dans 2 fichiers** (`bunx vitest run`).
 - Lint : **189 erreurs, 6 avertissements**, dont 188 erreurs de formatage corrigeables automatiquement (`bun run lint`). Dette existante non corrigée par cette demande documentaire.
-- Build et typecheck : **non exécutés manuellement**, contrôles gérés par Lovable ; aucune preuve actuelle de succès revendiquée ici.
+- Build : **contrôle automatique Lovable réussi** après rédaction, journal `build OK` à 18:48:28 UTC ; non exécuté manuellement. Typecheck séparé non exécuté manuellement.
+- Documents : liens locaux, blocs Markdown, seize rubriques README et marqueurs Notion vérifiés ; aucun champ de modèle non remplacé.
 - Aucun changement de fonctionnalité, publication ou synchronisation Notion pendant cette mise à jour.
 
 ## Limites documentées, non présentées comme livrées
