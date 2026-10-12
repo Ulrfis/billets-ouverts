@@ -2,7 +2,7 @@
 
 > Un prototype de lecture immersive en français : lire un essai, réagir à ses passages, explorer ses prolongements et dialoguer avec le texte.
 >
-> **Type :** Prototype expérimental · **État :** En cours de construction, non publié · **Version :** lot 1 lire/garder/rêver (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Commit analysé :** `c0c31ea`
+> **Type :** Prototype expérimental · **État :** En cours de construction · **Version :** lot 2, grammaire Notion (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Référence historique :** `c0c31ea`, précédant les lots 1 et 2
 
 ## 1. Fiche d’identité
 
@@ -31,10 +31,11 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 - **Pour le lecteur :** rester dans le texte tout en pouvant le prolonger.
 - **Pour le projet :** tester l’intérêt d’un billet ouvert alimenté par Notion.
 - **Critère prioritaire :** des parcours utilisables avec un retour clair, sans inventer de persistance partagée.
+- **Lot 2 :** interpréter les blocs éditoriaux Notion sans syntaxe propre à ce billet et sans réécriture du texte.
 
 ### 2.3 Périmètre actuel
 
-**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF avec pause, deux dosages de lecture. Traces, callout et deux portes sont des maquettes séparées du texte. Les formats journalistiques ne sont plus accessibles.
+**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF avec pause et dosages. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil et les mondes restent des exemples ; callout lié et fragments réels du pilote attendent les ajouts Notion approuvés. Les formats journalistiques ne sont plus accessibles.
 
 **Hors périmètre :** comptes, Lovable Cloud, base partagée, publication automatique des contributions dans Notion, véritable administration sécurisée, paiement et suivi budgétaire comptable.
 
@@ -74,7 +75,7 @@ Le brief demandait une page française avec dix interactions, sans comptes, avec
 |---|---|---|---|
 | Lecture | Ouvrir `/` → contenu Notion ou secours → lire / ouvrir une digression | Implémenté | `src/routes/index.tsx`, `src/components/billet/Passage.tsx` |
 | Avis et commentaire | Ouvrir le marqueur → choisir un avis → « Pourquoi ? » → confirmation | Implémenté, local | `src/components/billet/Passage.tsx`, `src/lib/store.ts` |
-| Matériaux et versions | « Autour du billet » → onglet → version → retour à l’original | Implémenté, versions partiellement fictives | `src/components/billet/RelatedPanel.tsx`, `src/routes/index.tsx` |
+| Matériaux | « Autour du billet » → onglet → contenu lié | Implémenté, sans onglet Versions | `src/components/billet/RelatedPanel.tsx`, `src/routes/index.tsx` |
 | Dialogue | Passage → consentement → question → réponse ; voix facultative | Partiel, services non retestés de bout en bout cette session | `src/components/billet/Dialogue.tsx`, `src/lib/api.functions.ts` |
 | Contribution / modération | Formulaire → file locale → `/moderation` → approuver/rejeter | Implémenté, non partagé | `src/components/billet/Contribute.tsx`, `src/routes/moderation.tsx` |
 
@@ -82,7 +83,7 @@ Le brief demandait une page française avec dix interactions, sans comptes, avec
 
 | Route | Rôle | États | Accès | Fichier |
 |---|---|---|---|---|
-| `/` | Billet et panneaux | Notion / secours, version originale / alternative, panneaux fermés / ouverts | Public | `src/routes/index.tsx` |
+| `/` | Billet et panneaux | Notion / secours, original, portes et panneaux fermés / ouverts | Public | `src/routes/index.tsx` |
 | `/moderation` | Avis et file | Vide, attente, approuvé, rejeté | Public, sans contrôle de rôle | `src/routes/moderation.tsx` |
 
 Chaque route possède ses propres métadonnées françaises. La couverture HTTPS est reprise dans les métadonnées sociales du billet lorsqu’elle est disponible.
@@ -100,9 +101,9 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 ### 4.5 Contrat UX et visuel
 
 - Lieu de lecture : sidebar gauche (25 % puis largeur bornée), colonne originale à droite ; tiroir superposé sur mobile et tablette.
-- Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Pause et images fixes ; médias cachés démontés.
+- Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Sidebar blanc pur (#FFFFFF) / noir pur (#000000), sans teinte. Pause et images fixes ; médias cachés démontés.
 - Deux dosages persistés : sans distraction et interactif. Fil de quatre traces d’exemple, pas encore de récolte personnelle.
-- Un callout et deux portes insérés pour la maquette sans écriture Notion ; retour à la position et au focus de lecture.
+- Le billet réel rend son callout existant et son séparateur ; aucune insertion fictive dans le billet Notion. Les dividers ouvrent le monde de démonstration avec retour exact. Le secours conserve les inserts préparés du lot 1.
 - Playfair Display pour les titres, Roboto pour le corps, Oswald pour les petits labels ; couleurs et états dans `src/styles.css`.
 - En-tête : « Billet ouvert - une expérimentation de lecture immersive ».
 - GIF sous le titre ; pas de surtitre orange ni de badge « Contenu Notion ».
@@ -119,7 +120,10 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 | Avis | Implémenté | Quatre réactions ; une réaction par passage remplace l’ancienne ; compteurs fictifs + avis local (`Passage.tsx`, `store.ts`) |
 | Commentaire | Implémenté | « Pourquoi ? » facultatif, confirmation et file locale (`Passage.tsx`) |
 | Tangente | Implémenté localement | Dialogue amorcé ou proposition ; approbation visible dans la généalogie locale, pas de publication distante |
-| Digressions | Implémenté | Ancres `[[dN|fragment]]`, dépliage fermé par défaut ; données Notion liées ou secours |
+| Digressions | Implémenté | Notion : annotations séparées, extrait exact non ambigu dans un seul bloc ; secours : marqueurs historiques `[[dN|fragment]]` |
+| Grammaire Notion | Implémentée | Identifiants stables, récursion bornée, listes, citations, liens et médias ; 106 blocs textuels non vides comparés à Notion |
+| Callouts liés | Implémenté, pilote non validé | Lecture à l’ouverture ; destination explicitement liée au callout du pilote, contrôlée côté serveur ; imbriqués non interactifs |
+| Fragments éditoriaux | Repli implémenté, données en attente | Commentaires refusés (403) ; seules instructions explicites ou lignes liées « Repères éditoriaux » sont éligibles, extrait ambigu rejeté |
 | Marginalia | Partiel | Notes fictives ; pas de chargement de la base Marginalia Notion |
 | Formats journalistiques | Retirés de l’expérience | Données historiques conservées ; aucun sélecteur de brève, grand format, relecture, variation ou remix |
 | Dialogue | Partiel | Texte/STT/TTS présents ; rétention annoncée mais non réalisée ; jauge simulée |
@@ -147,7 +151,7 @@ Il n’existe ni compte ni rôle applicatif. Tout visiteur peut lire et modifier
 
 | Entité | Champs / finalité | Source | Sensibilité |
 |---|---|---|---|
-| Billet | Titre, date, couverture, sections et paragraphes | Notion, page `3f651168-2fc3-8163-9bc3-f108577ca8b8` ; secours `src/data/billet.ts` | Contenu éditorial |
+| Billet | Titre, date, couverture, blocs structurés avec spans, enfants et IDs | Notion, page `3f651168-2fc3-8163-9bc3-f108577ca8b8` ; secours `src/data/billet.ts` | Contenu éditorial |
 | Matériaux liés | Carnet, digressions, résonances, contributeurs, versions | Relations explicites du billet Notion | Crédits publics filtrés |
 | `myAvis` | Dictionnaire passage → réaction | localStorage | Préférences de lecture |
 | `queue` | `id`, `kind`, `passageId?`, `text`, `url?`, `name?`, `status`, `createdAt` | localStorage | Texte et pseudonyme saisis |
@@ -327,6 +331,10 @@ Dix tests réussis (trois fichiers). Playwright : contenu Notion réel (99 parag
 
 ### 9.3 Critères d’acceptation globaux
 
+### Vérification lot 2 — 2026-10-12
+
+Notion lu sans écriture : 14 quotes, 88 paragraphes, 6 titres, 2 images, 3 éléments de liste, 1 callout (3 enfants) et 1 divider. Comparaison navigateur/API : 106 blocs textuels non vides identiques, mise en forme et liens conservés, 2 images et liste rendues. Fonds sidebar `rgb(255,255,255)` et `rgb(0,0,0)` vérifiés ; texte identique jour/nuit, nuit persistée, porte avec retour exact, mobile sans débordement, aucun pageerror. Les commentaires répondent 403 `restricted_resource`. Cinq tests unitaires ajoutés couvrent fidélité, extrait ambigu, confidentialité, destinations/cycles et URL sûres ; parcours callout lié testé avec fixture, pas une page réelle ajoutée. Aucun appel IA ou écriture Notion. Le test éditorial réel après ajout reste à faire.
+
 - [x] Les comportements partiels sont distingués des fonctionnalités présentes.
 - [x] Les commandes documentées correspondent aux scripts disponibles.
 - [x] Aucun secret n’est documenté.
@@ -349,7 +357,7 @@ Publication via Lovable uniquement après décision explicite. Aucune migration 
 
 ### 11.1 Stable dans le code actuel
 
-Article Notion avec secours, extraction de couverture GIF, panneaux liés, avis et file locale, sélecteur de versions déplacé. Tests d’extraction et routage réussis.
+Article Notion structuré avec secours, couverture GIF, panneaux liés, avis et file locale, cadre jour/nuit. Formats journalistiques retirés de l’expérience ; original conservé.
 
 ### 11.2 Partiel
 
@@ -361,14 +369,14 @@ Conservation des dialogues, variantes éditoriales, marginalia Notion, contexte 
 |---|---|---|
 | `n is not a function`, signalé auparavant | Écran vide possible | Non reproduit ; modifications défensives, résolution définitive non prouvée |
 | Lint en échec | Qualité / automatisation | Session de correction distincte, pas de changement de code ici |
-| IDs de passages positionnels | Avis attachés à un autre passage après réorganisation | Stabiliser les identifiants avant usage durable |
-| Notes mobiles fictives sur texte Notion | Associations potentiellement incorrectes | Audit des deux présentations, pas seulement de la marge desktop |
+| Anciens avis positionnels | Les avis antérieurs en pN ne sont pas remappés arbitrairement | Les nouveaux avis Notion utilisent les IDs stables des blocs ; secours et modération restent positionnels |
+| Notes Notion et fragments | Commentaires refusés ; repli sans lignes actuelles | Faire approuver les repères ; notes de secours non affichées sur le billet Notion |
 | Appels réseau du dialogue | Certains rejets peuvent laisser un état occupé | Tester les exceptions et les limites Zod |
 | Consentement annoncé / non réalisé | Attente trompeuse sur la conservation | Clarifier le texte ou implémenter le choix dans une future demande |
 
 ### 11.4 Prochaines étapes décidées
 
-Lot 1 du PRD lire/garder/rêver construit ; validation du lecteur requise avant le lot 2. Lots suivants : grammaire Notion, récolte, glaçons 3D, rêves réels et voix, qualité/portabilité. Aucune écriture Notion ou publication effectuée.
+Lot 2 autorisé et réalisé côté application ; [proposition éditoriale du pilote](NOTION-LOT2-PROPOSAL.md) prête, écritures Notion et test éditorial réel en attente d’accord distinct. Lots 3–6 attendent la validation du lot 2. Aucune écriture Notion ou publication effectuée pendant ce lot.
 
 ### 11.5 Questions ouvertes
 
@@ -418,11 +426,14 @@ En-tête exact « Billet ouvert - une expérimentation de lecture immersive ». 
 LOT 1 LIRE/GARDER/RÊVER
 Cadre partagé autour des routes : sidebar gauche 25 % avec largeur bornée, tiroir mobile ; GIF cloud-vagues le jour, comet-arbre la nuit. Pause remplace le GIF par une image fixe extraite, reduced-motion fixe par défaut, médias cachés démontés. Jour par défaut, bascule volontaire, jamais selon heure ou thème système. Dosages quiet/interactive, connexion explicitement simulée ; préférences en localStorage billets-ouverts-reader-v1 après hydration. Quatre traces d’exemple identifiées, un callout préparé et deux portes en mâchoire verticales, pas encore de 3D/collecte/IA/voix. Retour position exacte et focus au déclencheur. Ne pas modifier Notion ou les paragraphes ; valider lot 1 avant lot 2.
 
+LOT 2, ÉTAT ACTUEL
+Sidebar fond blanc pur #FFFFFF le jour et noir pur #000000 la nuit, aucune teinte. Rendre Notion dès le HTML initial avec modèle browser-safe : blocs stables, spans, liens sûrs, annotations typographiques, citations, listes, images, enfants. Pagination, récursion bornée (8 niveaux, 800 blocs), original jamais modifié par insertion de marqueurs. Dividers deviennent portes ; mondes restent maquettes. Charger le corps d'une page liée au callout après geste : revalider côté serveur le bloc dans le pilote et sa cible explicite, refuser cible arbitraire ou billet lui-même ; callouts imbriqués inertes. Fragments : seul préfixe billet-fragment: suivi de JSON extrait/motCle/lien est public, aucune identité ; extrait exact unique requis. Commentaires 403 sur le pilote actuel ; repli relation Repères éditoriaux avec Bloc, Extrait exact, Mot-clé, Lien. Données et deuxième séparateur non créés ; proposition séparée à approuver avant toute écriture Notion. Avis Notion utilisent IDs des blocs ; ne remapper aucun ancien avis positionnel au hasard. Lots suivants soumis à validation.
+
 INTERACTIONS CONSERVÉES
 1. Quatre avis par passage : parle, nuancer, conteste, question. Un avis remplace le précédent ; compteurs après réaction, base de démonstration explicite et trait marginal.
 2. Champ facultatif « Pourquoi ? », envoi dans une file locale, confirmation « Merci, contribution en attente de modération ».
 3. Tangente : dialogue amorcé ou proposition locale soumise à modération.
-4. Digressions fermées par défaut, ancres [[id|fragment]], bouton accessible et dépliage inline.
+4. Digressions fermées par défaut : annotations séparées sur extrait exact unique pour Notion ; marqueurs [[id|fragment]] seulement dans le secours historique.
 5. Marginalia de démonstration : écho, contrepoint, prolongement, source/auteur/année/langue, marge desktop et panneau mobile. Ne pas prétendre importer des marginalia Notion non intégrées.
 6. Texte original uniquement ; aucun format journalistique ou sélecteur de variantes.
 7. Dialogue depuis les passages/sections, choix de consentement, texte ou voix, repli textuel. Dans cet instantané, seul le choix est persisté, aucun transcript : documenter l’écart et ne pas présenter la conservation comme réalisée. Jauge illustrative 4,20 $ initial / 30 $, pas de plafond réel ni reset mensuel.
@@ -462,7 +473,7 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 
 ```yaml
 "Titre de l'app": "Billets ouverts"
-"Description": "Lieu de lecture jour/nuit avec sidebar et GIF fournis, dosages de lecture, article Notion intact, avis et contributions locaux. Traces et deux portes de démonstration ; pas encore de récolte, 3D ou rêves IA. Connexion simulée, sans compte ni stockage partagé. Aucun sync Notion effectué."
+"Description": "Lieu de lecture jour/nuit, sidebar blanc pur/noir pur et GIF fournis. Article Notion structuré intact, enfants, listes, liens et images, dividers-portes. Callouts liés et fragments : lecteur implémenté, ajouts du pilote à approuver. Traces et mondes de démonstration, sans récolte/3D/rêves IA. Connexion simulée. Aucun sync effectué."
 "Type": "Prototype expérimental"
 "État": "En cours de construction"
 "Metrics clés": |-
@@ -485,6 +496,13 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 **Corps recommandé de la fiche :** sections 1–2 pour le produit, 3 pour les liens, 4–6 pour les parcours/données, 7–10 pour la réalisation, 11–12 pour les limites/learnings, 13 pour la régénération ; ajouter les liens STORY et CHANGELOG.
 
 ## 15. Journal des évolutions de la mémoire
+
+### 2026-10-12 — Lot 2, grammaire Notion
+
+- Sidebar blanc pur / noir pur ; lecture structurée et IDs stables, callout existant et divider réel.
+- Fidélité des 106 blocs textuels non vides vérifiée face à Notion ; commentaires 403, repli préparé.
+- Callout lié et fragments testables sans changement de code mais données réelles à approuver ; aucun envoi Notion ou publication.
+- Prompt et brouillon de fiche alignés ; détails dans NOTION-LOT2-PROPOSAL.md.
 
 ### 2026-10-12 — Lot 1 lire/garder/rêver
 

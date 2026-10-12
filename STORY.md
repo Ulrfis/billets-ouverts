@@ -185,6 +185,18 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+## Lot 2 — 2026-10-12, grammaire Notion 🔷
+
+**Intent** : passer au lot 2 à la demande d’Ulrich et rendre la sidebar totalement blanche le jour, noire la nuit, sans teinte.
+
+**Outcome** : lecture des blocs et enfants Notion, IDs stables, liens et typographie conservés, listes et images rendues. Le callout existant contient trois citations sans page liée ; le divider existant ouvre la porte. Les inserts fictifs restent seulement dans le secours. Lecteur de page liée contrôlé côté serveur, imbriqués inertes ; fragments par commentaire explicitement éditorial ou repli relationnel, extraits ambigus rejetés.
+
+**Verification** : 106 blocs textuels non vides identiques à l’API Notion, fonds blanc/noir exacts, texte identique entre univers, reload, porte/retour et mobile sans débordement ; aucun pageerror. Tests ciblés de fidélité/confidentialité/autorisations réussis ; callout lié vérifiable avec fixture seulement.
+
+**Friction / resolution** : commentaires refusés par Notion (`403 restricted_resource`) ; aucune note privée exposée, repli Repères éditoriaux proposé. Les ajouts réels du pilote, la page cible, Citations et Prompts sont proposés dans NOTION-LOT2-PROPOSAL.md, non créés.
+
+**Time** : non mesuré. **Next** : accord distinct avant écritures Notion et test éditorial réel ; validation du lot 2 avant lot 3. Pas d’IA de rêve, 3D ou publication.
+
 ### 2026-10-11 — Connecteur Notion remplacé par l’intégration directe
 
 **What broke / What changed**: le plan visait le connecteur ; l’application appelle finalement Notion avec une clé d’intégration serveur.
@@ -293,7 +305,8 @@ Utiliser seulement les citations attestées. Ne pas inventer temps, coûts, émo
 | 2026-10-12 | Modération locale publique, tableau d’avis fictif | Haut avant publication | Choisir la portée du service ; ne pas assimiler à une administration |
 | 2026-10-12 | Budget simulé sans contrôle serveur ni reset | Haut avant publication IA | Décision spécifique sur quotas et coûts |
 | 2026-10-12 | E-mail saisi non enregistré ; acceptation non tracée par contribution | Moyen | Clarifier l’usage ou adapter la collecte sur demande |
-| 2026-10-12 | Passage IDs positionnels | Moyen | Prévoir des IDs éditoriaux durables |
+| 2026-10-12 | Anciens avis positionnels | Moyen | Lot 2 : nouveaux avis Notion sur IDs stables ; aucun remappage arbitraire des anciens avis, modération toujours basée sur le secours |
+| 2026-10-12 | Commentaires Notion refusés et aucun callout lié du pilote | Bloque le test éditorial réel du lot 2 | Repli et ajouts proposés, attendent accord distinct avant écriture |
 | 2026-10-12 | Lint : 189 erreurs, 6 avertissements | Moyen | Correction dédiée ; pas de reformatage global dans cette demande |
 | 2026-10-12 | Exceptions réseau / limites IA non testées de bout en bout | Moyen | Tests dédiés avec services réels et erreurs |
 | 2026-10-12 | Fiche/relations de synchronisation Notion inconnues | Bas | Résoudre les pages cibles avant toute écriture |
