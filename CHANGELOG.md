@@ -82,3 +82,21 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](STORY.md).
 
 <!-- Maintenance : ajouter les évolutions sans réécrire les faits antérieurs. Employer Ajouté, Modifié, Déprécié, Supprimé, Corrigé, Sécurité selon le changement. Ne créer une section x.y.z datée qu’après attribution réelle d’une version ; 0.x pour prototype, 1.0 pour première release stable décidée. Ne jamais consigner secrets, coûts estimés comme réels ou succès non vérifiés. -->
+
+## 2026-10-12 — Lot 1 lire/garder/rêver (non publié)
+
+### Ajouté
+- Cadre partagé, sidebar gauche et tiroir mobile, GIF nuage/vagues et comète/arbre fournis, pause et images fixes, reduced-motion et médias cachés démontés.
+- Bascule volontaire jour/nuit, dosages sans distraction/interactif et connexion clairement simulée, préférences locales après hydration.
+- Fil de quatre traces d’exemple, callout préparé et deux portes verticales avec retour à la position et au focus. Aucun changement Notion.
+- Quatre tests de préférences ; dix tests au total réussis. Parcours Playwright avec le vrai billet et mobile vérifiés, aucun pageerror ; build automatique OK.
+
+### Modifié
+- Expérience recentrée sur le texte original ; formats journalistiques et onglet Versions retirés, avis et contributions conservés.
+- README, prompt de régénération, brouillon Notion et STORY alignés sur le lot 1.
+
+### Corrigé
+- Débordement horizontal mobile et retour du focus du tiroir.
+
+### Limites
+- Traces, callout et rêve préparés : pas encore de récolte, grammaire Notion, glaçons 3D ou rêves/voix réels. Lots 2–6 en attente de validation du lot 1. Aucun sync ou publication effectué.

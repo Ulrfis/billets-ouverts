@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { BILLET, SECTIONS, MARGINALIA, DIGRESSIONS, CARNET, VERSION_META, GENEALOGY, type Section, type VersionId } from "@/data/billet";
+import { BILLET, SECTIONS, MARGINALIA, DIGRESSIONS, CARNET, GENEALOGY, type Section } from "@/data/billet";
 import { PassageBlock } from "@/components/billet/Passage";
 import { DialoguePanel } from "@/components/billet/Dialogue";
 import { ContributeDialog } from "@/components/billet/Contribute";
@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BookOpen } from "lucide-react";
 import { RelatedPanel } from "@/components/billet/RelatedPanel";
+import { useReader } from "@/components/billet/ReaderContext";
+import { PrototypeCallout, PrototypeDoor } from "@/components/billet/PrototypePassages";
 
 const notionQuery = queryOptions({ queryKey: ["billet-notion"], queryFn: () => getNotionContent(), staleTime: 60_000 });
 
@@ -41,7 +43,7 @@ function Index() {
   const [sections, setSections] = useState<Section[]>(SECTIONS);
   const [source, setSource] = useState<"mock" | "notion">("mock");
   const [features, setFeatures] = useState({ dialogue: false, stt: false, tts: false, notion: false });
-  const [version, setVersion] = useState<VersionId>("original");
+  const { dose, setDose } = useReader();
   const [dlg, setDlg] = useState<{ sectionId: string; passage: string; title: string; seed?: string | undefined } | null>(null);
   const [contrib, setContrib] = useState<{ passageId?: string | undefined } | null>(null);
   const [marginFor, setMarginFor] = useState<string | null>(null);
@@ -54,7 +56,7 @@ function Index() {
   const [digressions, setDigressions] = useState<Record<string, { title: string; body: string }> | undefined>(undefined);
   const [resonances, setResonances] = useState<NotionResonance[]>([]);
   const [carnet, setCarnet] = useState<string[] | undefined>(undefined);
-  const [relecture, setRelecture] = useState<{ note: string; paragraphs: string[] } | null>(null);
+
   const queue = useStore((s) => s.queue);
   const status = useServerFn(getFeatureStatus);
   const { data: notionContent } = useSuspenseQuery(notionQuery);
@@ -75,8 +77,7 @@ function Index() {
         setCover(r.cover);
         setResonances(r.resonances);
         setCarnet(r.carnet);
-        const rel = r.versions.find((v) => v.paragraphs.length);
-        if (rel) setRelecture({ note: `${rel.title} — version chargée depuis Notion.`, paragraphs: rel.paragraphs });
+
         setSource("notion");
       })
       .catch(() => {});
@@ -93,34 +94,32 @@ function Index() {
     const f = findPassage(pid);
     if (f) setDlg({ sectionId: f.s.id, title: f.s.title, passage: f.p.text.replace(/\[\[\w+\|([^\]]+)\]\]/g, "$1"), seed });
   };
-  const publishedTangents = useMemo(() => queue.filter((q) => q.kind === "tangente" && q.status === "approved"), [queue]);
-  const vm = version !== "original" ? (version === "relecture" && relecture ? relecture : VERSION_META[version]) : null;
+  const publishedTangents = queue.filter((q) => q.kind === "tangente" && q.status === "approved");
   let pIndex = 0;
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <p className="font-display text-lg text-ink md:text-xl">Billet ouvert - une expérimentation de lecture immersive</p>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-5 pb-24">
-        <div className="mx-auto max-w-[42rem] pt-16 lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
-          <h1 className="text-4xl font-bold leading-tight md:text-5xl">{meta.title}</h1>
+    <div className={`min-h-screen reading-${dose}`}>
+      <main className="mx-auto px-6 pb-24 md:px-10">
+        <div className="reading-column pt-10 md:pt-14">
+          <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{meta.title}</h1>
           {cover && <img src={cover} alt={`Couverture du billet « ${meta.title} »`} className="mt-6 h-auto w-full object-contain" />}
           <p className="mt-4 text-sm text-muted-foreground">
             {BILLET.author} · {meta.date}
           </p>
 
-          <Button variant="link" className="mt-5 h-auto px-0" onClick={() => setRelated(true)}><BookOpen aria-hidden="true" />Autour du billet</Button>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
+            <Button variant="link" size="sm" className="h-auto px-0" onClick={() => setRelated(true)}><BookOpen aria-hidden="true" />Autour du billet</Button>
+            <div role="group" aria-label="Dosage de lecture" className="flex gap-1">
+              <Button variant={dose === "quiet" ? "secondary" : "ghost"} size="sm" aria-pressed={dose === "quiet"} onClick={() => setDose("quiet")}>Sans distraction</Button>
+              <Button variant={dose === "interactive" ? "secondary" : "ghost"} size="sm" aria-pressed={dose === "interactive"} onClick={() => setDose("interactive")}>Interactif</Button>
+            </div>
+          </div>
         </div>
 
-        <div key={version} className="animate-fade-rise">
-          {version === "original" ? (
-            sections.map((s) => (
+        <div>
+          {sections.map((s, sectionIndex) => (
               <section key={s.id} aria-labelledby={`h-${s.id}`} className="mt-14">
-                <div className="mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
+                <div className="reading-column">
                   <h2 id={`h-${s.id}`} className="text-2xl font-semibold md:text-3xl">{s.title}</h2>
                 </div>
                 <div className="mt-6 space-y-6">
@@ -128,7 +127,7 @@ function Index() {
                     pIndex++;
                     const notes = source === "mock" ? MARGINALIA.filter((n) => n.passageId === p.id) : [];
                     return (
-                      <div key={p.id} className="relative mx-auto max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
+                      <div key={p.id} className="relative reading-column">
                         <PassageBlock
                           id={p.id}
                           index={pIndex}
@@ -137,9 +136,10 @@ function Index() {
                           onContribute={(pid) => setContrib({ passageId: pid })}
                           onMargin={setMarginFor}
                           digressions={digressions}
+                          showNotes={source === "mock"}
                         />
                         {notes.length > 0 && (
-                          <aside aria-label="Notes marginales" className="absolute top-1 left-full ml-12 hidden w-64 space-y-4 lg:block">
+                          <aside aria-label="Notes marginales" className="mt-4 space-y-4 border-l border-border pl-4">
                             {notes.map((n) => <NoteCard key={n.id} n={n} />)}
                           </aside>
                         )}
@@ -147,36 +147,25 @@ function Index() {
                     );
                   })}
                 </div>
-                <div className="mx-auto mt-6 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
-                  <button
+                <div className="reading-column mt-6">
+                  <Button variant="link"
                     onClick={() => { const first = s.passages[0]; if (first) openDialogue(first.id); }}
-                    className="group inline-flex items-center gap-2 text-sm text-primary"
+                    className="group h-auto px-0 text-sm text-primary"
                   >
                     <span aria-hidden className="inline-block h-px w-6 bg-primary transition-all group-hover:w-10" />
                     Dialoguer avec ce passage
-                  </button>
+                  </Button>
                 </div>
+                {sectionIndex === 0 && <div className="reading-column"><PrototypeCallout /></div>}
+                {(sectionIndex === 0 || sectionIndex === 1) && <div className="reading-column"><PrototypeDoor number={sectionIndex + 1} /></div>}
               </section>
-            ))
-          ) : (
-            <div className="mx-auto mt-12 max-w-[42rem] lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
-              <p className="mb-6 flex items-center justify-between gap-4 rounded-md bg-paper px-4 py-3 text-sm text-muted-foreground">
-                <span>{vm?.note}</span>
-                <button onClick={() => setVersion("original")} className="shrink-0 text-primary underline">Revenir à l'original</button>
-              </p>
-              <div className={cn("space-y-6", version === "remix" && "space-y-4")}>
-                {vm?.paragraphs.map((t, i) => (
-                  <p key={i} className={cn("prose-billet", version === "remix" && "font-display text-2xl text-ink")}>{t}</p>
-                ))}
-              </div>
-            </div>
-          )}
+          ))}
         </div>
 
-        <div className="mx-auto mt-20 max-w-[42rem] border-t border-border pt-10 text-center lg:mr-[calc(16rem+4rem)] lg:ml-auto xl:mr-auto xl:translate-x-[-8rem]">
+        <div className="reading-column mt-20 border-t border-border pt-10 text-center">
           <h2 className="text-2xl">Ce billet est ouvert</h2>
           <p className="mt-2 text-muted-foreground">Une note, un commentaire, une résonance, une tangente ?</p>
-          <button onClick={() => setContrib({})} className="mt-5 rounded-md bg-primary px-5 py-2.5 text-primary-foreground">Contribuer</button>
+          <Button onClick={() => setContrib({})} className="mt-5">Contribuer</Button>
         </div>
       </main>
 
@@ -194,7 +183,7 @@ function Index() {
       <RelatedPanel open={related} onOpenChange={setRelated} carnet={carnet ?? CARNET}
         digressions={source === "notion" ? linkedDigressions : Object.entries(DIGRESSIONS).map(([id, d]) => ({ id, ...d, anchor: "" }))}
         resonances={source === "notion" ? resonances : MARGINALIA.map((n) => ({ ...n, url: "" }))}
-        contributors={contributors} version={version} onVersion={setVersion} />
+        contributors={contributors} />
       <DialoguePanel
         open={!!dlg}
         onOpenChange={(v) => !v && setDlg(null)}
@@ -222,10 +211,10 @@ function Index() {
         <SheetContent className="overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="font-display">Généalogie du billet</SheetTitle>
-            <SheetDescription>Original, versions, remix et tangentes publiées</SheetDescription>
+            <SheetDescription>Texte original et tangentes locales approuvées</SheetDescription>
           </SheetHeader>
           <ol className="space-y-1 p-4">
-            {[...GENEALOGY, ...publishedTangents.map((t) => ({ id: t.id, kind: "Tangente", title: t.text.slice(0, 60), by: t.name || "Anonyme", date: t.createdAt.slice(0, 10), depth: 2 }))].map((g) => (
+            {[...GENEALOGY.filter((entry) => entry.kind === "Original"), ...publishedTangents.map((t) => ({ id: t.id, kind: "Tangente", title: t.text.slice(0, 60), by: t.name || "Anonyme", date: t.createdAt.slice(0, 10), depth: 2 }))].map((g) => (
               <li key={g.id} style={{ paddingLeft: `${g.depth * 1.25}rem` }} className="relative">
                 <div className={cn("border-l-2 py-2 pl-3", g.kind === "Original" ? "border-primary" : g.kind === "Tangente" ? "border-orange" : g.kind === "Remix" ? "border-rose" : "border-gold")}>
                   <div className="font-label text-[0.65rem] text-muted-foreground">{g.kind}</div>
