@@ -3,3 +3,8 @@
 - [x] Charger et afficher l’image couverture Notion.
 - [x] Présenter les catégories liées dans un panneau avec les contributeurs.
 - [x] Vérifier le billet et les interactions avec les contenus réels.
+
+# Documentation du projet
+- [ ] Adapter README.md au modèle MemoWays et à l’état réel.
+- [ ] Ajouter STORY.md avec la chronologie et les limites connues.
+- [ ] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.
