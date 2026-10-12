@@ -2,7 +2,7 @@
 
 > Un prototype de lecture immersive en français : lire un essai, réagir à ses passages, explorer ses prolongements et dialoguer avec le texte.
 >
-> **Type :** Prototype expérimental · **État :** En cours de construction, non publié · **Version :** instantané `c0c31ea` (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Commit analysé :** `c0c31ea`
+> **Type :** Prototype expérimental · **État :** En cours de construction, non publié · **Version :** lot 1 lire/garder/rêver (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Commit analysé :** `c0c31ea`
 
 ## 1. Fiche d’identité
 
@@ -34,7 +34,7 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 
 ### 2.3 Périmètre actuel
 
-**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, marginalia de démonstration, versions, dialogue, généalogie, contribution, modération locale et panneau « Autour du billet ».
+**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF avec pause, deux dosages de lecture. Traces, callout et deux portes sont des maquettes séparées du texte. Les formats journalistiques ne sont plus accessibles.
 
 **Hors périmètre :** comptes, Lovable Cloud, base partagée, publication automatique des contributions dans Notion, véritable administration sécurisée, paiement et suivi budgétaire comptable.
 
@@ -99,11 +99,14 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 
 ### 4.5 Contrat UX et visuel
 
-- Lecture de type magazine, colonne centrale et marge pour les notes sur grand écran.
+- Lieu de lecture : sidebar gauche (25 % puis largeur bornée), colonne originale à droite ; tiroir superposé sur mobile et tablette.
+- Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Pause et images fixes ; médias cachés démontés.
+- Deux dosages persistés : sans distraction et interactif. Fil de quatre traces d’exemple, pas encore de récolte personnelle.
+- Un callout et deux portes insérés pour la maquette sans écriture Notion ; retour à la position et au focus de lecture.
 - Playfair Display pour les titres, Roboto pour le corps, Oswald pour les petits labels ; couleurs et états dans `src/styles.css`.
 - En-tête : « Billet ouvert - une expérimentation de lecture immersive ».
 - GIF sous le titre ; pas de surtitre orange ni de badge « Contenu Notion ».
-- Carnet, contributeurs, digressions, résonances et versions dans un panneau ; généalogie et modération en pied de page.
+- Carnet, contributeurs, digressions et résonances dans un panneau ; texte original seul. Généalogie originale et tangentes locales, modération en pied de page.
 - Notes de démonstration dans la marge à partir du breakpoint `lg`, panneau inférieur sur petit écran ; voir la limite Notion en section 11.
 - Boutons de digression avec `aria-expanded`, formulaires étiquetés, primitives Radix, animations réduites selon la préférence système. Conformité AA complète non auditée.
 
@@ -118,7 +121,7 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 | Tangente | Implémenté localement | Dialogue amorcé ou proposition ; approbation visible dans la généalogie locale, pas de publication distante |
 | Digressions | Implémenté | Ancres `[[dN|fragment]]`, dépliage fermé par défaut ; données Notion liées ou secours |
 | Marginalia | Partiel | Notes fictives ; pas de chargement de la base Marginalia Notion |
-| Versions | Partiel | Six choix ; seule la première version Notion avec paragraphes alimente « Relecture », autres variantes fictives |
+| Formats journalistiques | Retirés de l’expérience | Données historiques conservées ; aucun sélecteur de brève, grand format, relecture, variation ou remix |
 | Dialogue | Partiel | Texte/STT/TTS présents ; rétention annoncée mais non réalisée ; jauge simulée |
 | Généalogie | Partiel | Arbre fictif + tangentes locales approuvées ; pas de reconstruction depuis les relations Notion |
 | Contribution | Implémenté localement | Quatre types, nom requis, licence/modération acceptées ; e-mail saisi mais non enregistré |
@@ -152,7 +155,7 @@ Il n’existe ni compte ni rôle applicatif. Tout visiteur peut lire et modifier
 | `spent` | Nombre, initialisé à `4.2` | localStorage | Estimation illustrative |
 | Messages / audio | Historique en mémoire React, enregistrement envoyé pour transcription | Navigateur et prestataires | Contenu de conversation / voix |
 
-Pas de schéma SQL, migration ou base partagée. Clé locale : `billets-ouverts-v1`.
+Pas de schéma SQL, migration ou base partagée. Clé locale : `billets-ouverts-v1`. Les choix universe/day/night, dose/quiet/interactive, paused et connected (simulation uniquement) sont enregistrés séparément dans `billets-ouverts-reader-v1`. Le fil d’exemple n’est pas une collection personnelle.
 
 ### 6.2 Champs ou questions collectés
 
@@ -318,6 +321,10 @@ Tests ciblés : couvertures URL/fichiers/GIF, consentement des crédits, route d
 | Parcours / revue visuelle | Non rejoués | Documentation seule ; couverture, panneau et changement de version vérifiés dans la session précédente, pas une preuve actuelle IA | 2026-10-12 |
 | Documentation | Contrôle des liens locaux, blocs Markdown, rubriques et marqueurs | Réussi : trois documents, seize rubriques README, marqueurs Notion présents, aucun champ de modèle non remplacé | 2026-10-12 |
 
+### Vérification lot 1 — 2026-10-12
+
+Dix tests réussis (trois fichiers). Playwright : contenu Notion réel (99 paragraphes affichés), texte identique jour/nuit et après rechargement, pause GIF, dosage et univers persistés, panneau sans Versions, routes partagées, deux portes et retour exact (écart 0 px), mobile 390×844 sans débordement, tiroir/focus et réduction des animations. Aucun pageerror. Aucun appel rêve/voix ou écriture Notion testé ou lancé. Contrôle automatique : build OK.
+
 ### 9.3 Critères d’acceptation globaux
 
 - [x] Les comportements partiels sont distingués des fonctionnalités présentes.
@@ -361,7 +368,7 @@ Conservation des dialogues, variantes éditoriales, marginalia Notion, contexte 
 
 ### 11.4 Prochaines étapes décidées
 
-La demande actuelle porte uniquement sur ces trois documents. Aucune nouvelle évolution fonctionnelle ou publication n’est décidée ; les points ci-dessus sont des sujets d’arbitrage, pas une promesse de livraison.
+Lot 1 du PRD lire/garder/rêver construit ; validation du lecteur requise avant le lot 2. Lots suivants : grammaire Notion, récolte, glaçons 3D, rêves réels et voix, qualité/portabilité. Aucune écriture Notion ou publication effectuée.
 
 ### 11.5 Questions ouvertes
 
@@ -406,15 +413,18 @@ STACK
 React 19, TanStack Start v1 et TanStack Router, Query pour le chargement, TypeScript, Vite, Tailwind v4 avec tokens sémantiques, primitives Radix/shadcn. Routes / (billet) et /moderation (file locale publique), métadonnées françaises propres à chacune. Runtime serveur compatible Worker. Pas de comptes, pas de Cloud, pas de base SQL.
 
 INTERFACE
-En-tête exact « Billet ouvert - une expérimentation de lecture immersive ». Titre « Et si… le cinéma embrassait le web ? », couverture Notion sous le titre sans convertir le GIF. Playfair Display / Roboto / Oswald. Bleu #1e73be, accents #e06f0d / #dd9933 / #d3347b définis en tokens, fonds clairs et gris. Colonne de lecture et marge desktop, panneau inférieur pour les notes mobiles. Ne pas remettre le surtitre orange, la capsule Notion, la généalogie/modération ni les versions dans le menu du haut. Bouton « Autour du billet » ouvrant Carnet, Contributeurs, Digressions, Résonances, Versions ; généalogie et modération en pied de page. Respecter navigation clavier, libellés accessibles, aria-expanded et réduction des animations.
+En-tête exact « Billet ouvert - une expérimentation de lecture immersive ». Titre « Et si… le cinéma embrassait le web ? », couverture Notion sous le titre sans convertir le GIF. Playfair Display / Roboto / Oswald. Bleu #1e73be, accents #e06f0d / #dd9933 / #d3347b définis en tokens, fonds clairs et gris. Colonne de lecture et marge desktop, panneau inférieur pour les notes mobiles. Ne pas remettre le surtitre orange, la capsule Notion, la généalogie/modération ni les versions dans le menu du haut. Bouton « Autour du billet » ouvrant Carnet, Contributeurs, Digressions, Résonances ; généalogie et modération en pied de page. Respecter navigation clavier, libellés accessibles, aria-expanded et réduction des animations.
 
-DIX INTERACTIONS
+LOT 1 LIRE/GARDER/RÊVER
+Cadre partagé autour des routes : sidebar gauche 25 % avec largeur bornée, tiroir mobile ; GIF cloud-vagues le jour, comet-arbre la nuit. Pause remplace le GIF par une image fixe extraite, reduced-motion fixe par défaut, médias cachés démontés. Jour par défaut, bascule volontaire, jamais selon heure ou thème système. Dosages quiet/interactive, connexion explicitement simulée ; préférences en localStorage billets-ouverts-reader-v1 après hydration. Quatre traces d’exemple identifiées, un callout préparé et deux portes en mâchoire verticales, pas encore de 3D/collecte/IA/voix. Retour position exacte et focus au déclencheur. Ne pas modifier Notion ou les paragraphes ; valider lot 1 avant lot 2.
+
+INTERACTIONS CONSERVÉES
 1. Quatre avis par passage : parle, nuancer, conteste, question. Un avis remplace le précédent ; compteurs après réaction, base de démonstration explicite et trait marginal.
 2. Champ facultatif « Pourquoi ? », envoi dans une file locale, confirmation « Merci, contribution en attente de modération ».
 3. Tangente : dialogue amorcé ou proposition locale soumise à modération.
 4. Digressions fermées par défaut, ancres [[id|fragment]], bouton accessible et dépliage inline.
 5. Marginalia de démonstration : écho, contrepoint, prolongement, source/auteur/année/langue, marge desktop et panneau mobile. Ne pas prétendre importer des marginalia Notion non intégrées.
-6. Original, Brève, Grand format, Relecture, Variation étudiant en cinéma, Remix ; retour en un clic à l’original. Alternatives de démonstration, sauf première version Notion non vide utilisée pour Relecture.
+6. Texte original uniquement ; aucun format journalistique ou sélecteur de variantes.
 7. Dialogue depuis les passages/sections, choix de consentement, texte ou voix, repli textuel. Dans cet instantané, seul le choix est persisté, aucun transcript : documenter l’écart et ne pas présenter la conservation comme réalisée. Jauge illustrative 4,20 $ initial / 30 $, pas de plafond réel ni reset mensuel.
 8. Généalogie de démonstration + tangentes locales approuvées.
 9. Formulaire note/commentaire/résonance/tangente ; texte, nom/pseudonyme, URL requise pour résonance, e-mail facultatif non persisté dans cet instantané, acceptation licence et modération. Licence CC BY-NC-SA 4.0.
@@ -452,11 +462,12 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 
 ```yaml
 "Titre de l'app": "Billets ouverts"
-"Description": "Prototype français de lecture immersive : article Notion avec couverture GIF, avis et contributions locaux, matériaux liés et versions dans un panneau. Dialogue textuel/vocal via OpenRouter, Deepgram et Gradium ; plusieurs fonctions restent de démonstration ou partielles. Sans comptes ni stockage partagé."
+"Description": "Lieu de lecture jour/nuit avec sidebar et GIF fournis, dosages de lecture, article Notion intact, avis et contributions locaux. Traces et deux portes de démonstration ; pas encore de récolte, 3D ou rêves IA. Connexion simulée, sans compte ni stockage partagé. Aucun sync Notion effectué."
 "Type": "Prototype expérimental"
 "État": "En cours de construction"
 "Metrics clés": |-
-  2026-10-12 : 2 routes de contenu dans le code ; 6 tests réussis dans 2 fichiers.
+  2026-10-12 : 2 routes de contenu ; 10 tests réussis dans 3 fichiers pour le lot 1.
+  Parcours navigateur jour/nuit, retour exact, reload, mobile, focus et réduction des animations vérifiés sans erreur.
   Lint : 189 erreurs, 6 avertissements. Usage, coûts et temps non mesurés.
 "Learnings": |-
   Préserver l’URL GIF originale ; suivre les relations explicites Notion.
@@ -474,6 +485,13 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 **Corps recommandé de la fiche :** sections 1–2 pour le produit, 3 pour les liens, 4–6 pour les parcours/données, 7–10 pour la réalisation, 11–12 pour les limites/learnings, 13 pour la régénération ; ajouter les liens STORY et CHANGELOG.
 
 ## 15. Journal des évolutions de la mémoire
+
+### 2026-10-12 — Lot 1 lire/garder/rêver
+
+- Cadre partagé, deux GIF, pause et images fixes, jour/nuit volontaire, dosages et connexion simulée.
+- Traces et portes explicitement préparées ; Notion et paragraphes inchangés.
+- Dix tests et parcours navigateur vérifiés ; lots suivants en attente de validation.
+- Prompt et brouillon Notion actualisés ; aucun envoi externe.
 
 ### 2026-10-12 — Référence `c0c31ea`
 

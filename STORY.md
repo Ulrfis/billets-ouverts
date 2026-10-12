@@ -169,6 +169,20 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ---
 
+## Lot 1 — 2026-10-12, lire/garder/rêver 🔷
+
+**Intent** : valider un lieu sensible, pas un média, avant les scènes et les dépenses IA.
+
+**Outcome** : cadre partagé, sidebar/tiroir, GIF fournis jour et nuit, pause fixe, choix volontaires persistés et deux dosages. Formats journalistiques retirés ; callout et deux portes séparés du texte Notion. Le fil et le rêve sont préparés, explicitement non personnels/non générés.
+
+**Verification** : 10 tests réussis ; Playwright avec billet réel, texte identique entre univers, reload, routes, portes avec retour exact, mobile sans débordement, focus et reduced-motion. Aucun pageerror. Build automatique OK.
+
+**Friction / resolution** : débordement horizontal résolu par confinement de la colonne ; retour du focus du tiroir explicite. Cache serveur de développement interrompu rétabli, puis parcours rejoué entièrement.
+
+**Time** : non mesuré. **Next** : validation du lot 1 avant le lot 2 ; aucune écriture Notion, IA de rêve, 3D ou publication.
+
+---
+
 ## Pivots & Breakages
 
 ### 2026-10-11 — Connecteur Notion remplacé par l’intégration directe

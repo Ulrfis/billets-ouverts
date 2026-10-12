@@ -10,10 +10,10 @@
 - [x] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.
 
 # Lire, garder, rêver — lot 1 autorisé
-- [ ] Cadre partagé, sidebar et tiroir mobile avec les GIF et leur pause.
-- [ ] Bascule volontaire jour/nuit et dosage de lecture ; retirer les formats journalistiques.
-- [ ] Fil de traces d’exemple et maquettes callout / deux portes avec retour exact au texte.
-- [ ] Tester ordinateur, mobile, clavier, réduction des animations ; actualiser la documentation.
+- [x] Cadre partagé, sidebar et tiroir mobile avec les GIF et leur pause.
+- [x] Bascule volontaire jour/nuit et dosage de lecture ; retirer les formats journalistiques.
+- [x] Fil de traces d’exemple et maquettes callout / deux portes avec retour exact au texte.
+- [x] Tester ordinateur, mobile, clavier, réduction des animations ; actualiser la documentation.
 
 # Lots suivants
 - [ ] Lots 2 à 6 — bloqués par la validation du lot 1 ; écritures Notion soumises à une validation distincte.
