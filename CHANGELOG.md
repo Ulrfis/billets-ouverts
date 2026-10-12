@@ -100,3 +100,24 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 
 ### Limites
 - Traces, callout et rêve préparés : pas encore de récolte, grammaire Notion, glaçons 3D ou rêves/voix réels. Lots 2–6 en attente de validation du lot 1. Aucun sync ou publication effectué.
+
+## 2026-10-12 — Lot 2, grammaire éditoriale Notion (sans publication)
+
+### Ajouté
+- Modèle de blocs browser-safe, enfants paginés avec récursion bornée, IDs stables, spans/annotations/liens sûrs, listes, citations et médias.
+- Lecteur de callouts liés à la demande, contrôle serveur de la cible explicite du billet pilote, refus des liens arbitraires/cycles, callouts imbriqués inertes.
+- Fragments éditoriaux explicitement désignés et repli relationnel Repères éditoriaux ; extrait exact ambigu ignoré, aucune identité de commentaire exposée.
+- Proposition NOTION-LOT2-PROPOSAL.md : callout lié, second séparateur, repères, Citations et Prompts ; aucune création Notion.
+- Tests de fidélité, confidentialité, autorisation et extraits ; test d’ouverture de callout lié avec fixture.
+
+### Modifié
+- Sidebar blanc pur (#FFFFFF) le jour, noir pur (#000000) la nuit, sans teinte.
+- Rendu Notion initial structuré ; callout et divider réels remplacent les inserts de démonstration dans le billet réel. Original non modifié par marqueurs de digressions.
+- Nouveaux avis Notion associés aux IDs des blocs, pas aux positions ; anciens avis non remappés arbitrairement.
+- README, prompt de régénération, brouillon Notion et STORY alignés sur l’état réel.
+
+### Vérifié / limites
+- 106 blocs textuels non vides comparés au contenu API sans différence ; images/listes rendues, fonds exacts, nuit persistée, texte invariant et retour porte exact, mobile sans débordement et aucun pageerror.
+- Commentaires Notion refusés (403 restricted_resource). Aucun callout lié ni repère réel créé ; test éditorial du pilote après ajout soumis à accord distinct.
+- Suite complète : 16 tests réussis dans 5 fichiers ; contrôle automatique build OK. GIF comète et fond noir du tiroir vérifiés après chargement.
+- Mondes et traces toujours préparés ; pas de collecte, 3D, rêve IA, voix nouvelle, écriture Notion ou publication dans ce lot.

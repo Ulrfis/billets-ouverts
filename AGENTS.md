@@ -14,5 +14,7 @@
 - Notion property parsing lives in a browser-safe utility with focused tests so uploaded and external GIF covers retain their original URLs and animation.
 - Maintain README.md as the factual product/reference document, STORY.md as the development narrative, and CHANGELOG.md as the append-only change history; keep regeneration instructions and the Notion sync draft aligned with verified behavior without claiming an external sync occurred.
 - ReaderProvider and ReaderFrame wrap the shared Outlet; browser preferences load only after hydration, so sidebar continuity spans routes without SSR storage mismatches.
-- PrototypePassages adds clearly separate demonstration inserts without editing Notion or original paragraphs; replace these with structured editorial blocks only in the approved editorial lot.
+- Notion editorial rendering uses browser-safe structured blocks with stable Notion IDs, bounded recursive reads, and separate annotations; never inject markers into original paragraphs. Demo inserts remain only in the fallback article.
+- Linked callout reads must re-authorize their block and explicit destination against the pilot on the server; nested linked callouts are inert to prevent cycles and private arbitrary-page reads.
+- Only explicit editorial fragment comments or explicitly related fallback rows may become public annotations; ordinary comments and author data stay private, and missing comment permissions must not interrupt reading.
 - Uploaded sidebar media uses asset pointers plus fixed-frame derivatives; render only visible media and honor reduced-motion before animation begins.

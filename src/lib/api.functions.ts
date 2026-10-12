@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { coverUrl, allowsContributorCredit } from "./notion-properties";
+import { allowedCalloutTarget, editorialText, exactFragment, flattenEditorialBlocks, fragmentFromComment, parseEditorialBlock, type EditorialBlock, type EditorialFragment } from "./notion-editorial";
 
 export const getFeatureStatus = createServerFn({ method: "GET" }).handler(async () => ({
   dialogue: !!process.env["OPENROUTER_API_KEY"],
@@ -36,6 +37,55 @@ async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
     cursor = d["has_more"] ? (d["next_cursor"] as string) : undefined;
   } while (cursor);
   return out;
+}
+
+async function editorialTree(pageId: string, key: string, depth = 0, budget = { remaining: 800 }): Promise<EditorialBlock[]> {
+  if (depth > 8 || budget.remaining <= 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
+  const blocks = await allBlocks(pageId, key);
+  budget.remaining -= blocks.length;
+  if (budget.remaining < 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
+  const output: EditorialBlock[] = [];
+  for (const block of blocks) {
+    const children = block['has_children'] === true && typeof block['id'] === "string"
+      ? await editorialTree(block['id'], key, depth + 1, budget) : [];
+    output.push(parseEditorialBlock(block, children));
+  }
+  return output;
+}
+
+async function editorialFragments(blocks: EditorialBlock[], props: Record<string, NotionProp>, key: string) {
+  const fragments: EditorialFragment[] = [];
+  const flat = flattenEditorialBlocks(blocks);
+  let comments: "available" | "unavailable" = "available";
+  try {
+    // Probe once; a missing comments capability must not make the article fail.
+    await notionGet(`/comments?block_id=${BILLET_PAGE_ID}&page_size=100`, key);
+    for (const block of flat.filter((item) => item.spans.length > 0)) {
+      let cursor: string | undefined;
+      do {
+        const data = await notionGet(`/comments?block_id=${block.id}&page_size=100${cursor ? `&start_cursor=${encodeURIComponent(cursor)}` : ""}`, key);
+        for (const raw of (data['results'] as Record<string, unknown>[] ?? [])) {
+          const text = ((raw['rich_text'] as { plain_text: string }[] ?? [])).map((item) => item.plain_text).join("");
+          const fragment = fragmentFromComment(block, text);
+          if (fragment) fragments.push(fragment);
+        }
+        cursor = data['has_more'] ? data['next_cursor'] as string : undefined;
+      } while (cursor);
+    }
+  } catch { comments = "unavailable"; }
+  // Explicitly related fallback rows only; no general database search or private comments returned.
+  for (const id of propRel(props['Repères éditoriaux'])) {
+    try {
+      const page = await notionGet(`/pages/${id}`, key);
+      const fields = page['properties'] as Record<string, NotionProp>;
+      const blockId = propText(fields['Bloc']);
+      const block = flat.find((item) => item.id.replace(/-/g, "") === blockId.replace(/-/g, ""));
+      if (!block) continue;
+      const fragment = exactFragment(block, propText(fields['Extrait exact']), propText(fields['Mot-clé']), propText(fields['Lien']));
+      if (fragment) fragments.push(fragment);
+    } catch { /* unavailable editorial row does not interrupt reading */ }
+  }
+  return { fragments, comments };
 }
 
 const blockText = (b: NotionBlock): string => {
@@ -85,6 +135,8 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const cover = coverUrl(imageProperty);
 
     // Corps du billet -> sections / passages
+    const editorialBlocks = await editorialTree(BILLET_PAGE_ID, key);
+    const editorial = await editorialFragments(editorialBlocks, props, key);
     const blocks = await allBlocks(BILLET_PAGE_ID, key);
     const sections: { title: string; paragraphs: string[] }[] = [];
     for (const b of blocks) {
@@ -111,22 +163,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
         body: blockParagraphs(dblocks).join("\n\n"),
       });
     }
-    // Injecter les ancres [[dN|fragment]] dans les passages
-    digressions.forEach((d, i) => {
-      if (!d.anchor) return;
-      const needle = d.anchor.toLowerCase();
-      for (const s of sections) {
-        const pi = s.paragraphs.findIndex((p) => p.toLowerCase().includes(needle));
-        if (pi === -1) continue;
-        const p = s.paragraphs[pi];
-        if (!p) continue;
-        const at = p.toLowerCase().indexOf(needle);
-        const frag = p.slice(at, at + d.anchor.length);
-        s.paragraphs[pi] = p.slice(0, at) + `[[d${i + 1}|${frag}]]` + p.slice(at + d.anchor.length);
-        d.id = `d${i + 1}`;
-        break;
-      }
-    });
+    // Digression anchors remain separate from the original sentences.
 
     // Résonances liées
     const resonances: NotionResonance[] = [];
@@ -183,11 +220,32 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
       versions.push({ id, title: propText(vprops["Titre"]), paragraphs: blockParagraphs(vblocks) });
     }
 
-    return { ok: true as const, title, date, cover, sections, digressions, resonances, carnet, contributors, versions };
+    return { ok: true as const, title, date, cover, sections, editorialBlocks, ...editorial, digressions, resonances, carnet, contributors, versions };
   } catch (e) {
     return { ok: false as const, reason: String(e) };
   }
 });
+
+export const getNotionCallout = createServerFn({ method: "GET" })
+  .inputValidator((input) => z.object({ blockId: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const key = process.env['NOTION_API_KEY'];
+    if (!key) return { ok: false as const, error: "Cette page n’est pas disponible pour le moment." };
+    try {
+      // Re-read the pilot to authorize the block and its explicit destination on the server.
+      const blocks = await editorialTree(BILLET_PAGE_ID, key);
+      const target = allowedCalloutTarget(blocks, data.blockId, BILLET_PAGE_ID);
+      if (!target) return { ok: false as const, error: "Cette page ne peut pas être ouverte depuis ce billet." };
+      const page = await notionGet(`/pages/${target}`, key);
+      const props = page['properties'] as Record<string, NotionProp>;
+      const title = Object.values(props).filter((property) => property.type === "title").map(propText).join("") || "Page liée";
+      const content = await editorialTree(target, key);
+      return { ok: true as const, title, blocks: content };
+    } catch (error) {
+      console.error("Notion linked page unavailable", error instanceof Error ? error.message : "unknown");
+      return { ok: false as const, error: "La page liée est indisponible. Vous pouvez poursuivre la lecture." };
+    }
+  });
 
 const DialogueInput = z.object({
   passage: z.string().max(8000),
