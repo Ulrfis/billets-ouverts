@@ -23,5 +23,8 @@
 - [x] Tester le rendu, les permissions, le texte intact ; actualiser les trois documents.
 - [ ] Ajouts Notion et test éditorial réel callout/fragments — attendent l’accord distinct sur NOTION-LOT2-PROPOSAL.md et la page cible.
 
+# Lire, garder, rêver — lot 3 autorisé (avant les ajouts Notion)
+- [x] Garder passages et mots-clés, recherche, suppression, sans doublon, retour au passage ; conservation locale.
+
 # Lots suivants
-- [ ] Lots 3 à 6 — attendent la validation du lot 2.
+- [ ] Lots 4 à 6 — attendent la validation du lot 3.

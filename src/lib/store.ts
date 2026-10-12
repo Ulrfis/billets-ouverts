@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import type { ReactionId } from "@/data/billet";
+import { addTrace, normalizeTraces, removeTrace, TRACES_VERSION, type Trace } from "@/lib/traces";
 
 export type QueueItem = {
   id: string;
@@ -17,10 +18,13 @@ type State = {
   queue: QueueItem[];
   consent: boolean | null;
   spent: number; // mock $ spent this month
+  traces: Trace[];
+  tracesVersion: number;
+  storageError: boolean;
 };
 
 const KEY = "billets-ouverts-v1";
-const initial: State = { myAvis: {}, queue: [], consent: null, spent: 4.2 };
+const initial: State = { myAvis: {}, queue: [], consent: null, spent: 4.2, traces: [], tracesVersion: TRACES_VERSION, storageError: false };
 let state: State = initial;
 let loaded = false;
 const listeners = new Set<() => void>();
@@ -30,7 +34,10 @@ function load() {
   loaded = true;
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) state = { ...initial, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = { ...initial, ...parsed, traces: normalizeTraces(parsed?.traces), tracesVersion: TRACES_VERSION, storageError: false };
+    }
   } catch {
     /* ignore */
   }
@@ -40,9 +47,12 @@ export function setState(fn: (s: State) => State) {
   load();
   state = fn(state);
   try {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    const { storageError: _ignored, ...persisted } = state;
+    localStorage.setItem(KEY, JSON.stringify(persisted));
+    if (state.storageError) state = { ...state, storageError: false };
   } catch {
-    /* ignore */
+    // keep traces in memory: reading continues even if the device refuses to save
+    state = { ...state, storageError: true };
   }
   listeners.forEach((l) => l());
 }
@@ -77,4 +87,12 @@ export function addToQueue(item: Omit<QueueItem, "id" | "status" | "createdAt">)
 
 export function setAvis(passageId: string, r: ReactionId) {
   setState((s) => ({ ...s, myAvis: { ...s.myAvis, [passageId]: r } }));
+}
+
+export function keepTrace(input: Omit<Trace, "id" | "createdAt">) {
+  setState((s) => ({ ...s, traces: addTrace(s.traces, input, crypto.randomUUID(), new Date().toISOString()) }));
+}
+
+export function forgetTrace(id: string) {
+  setState((s) => ({ ...s, traces: removeTrace(s.traces, id) }));
 }

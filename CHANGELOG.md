@@ -121,3 +121,6 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 - Commentaires Notion refusés (403 restricted_resource). Aucun callout lié ni repère réel créé ; test éditorial du pilote après ajout soumis à accord distinct.
 - Suite complète : 16 tests réussis dans 5 fichiers ; contrôle automatique build OK. GIF comète et fond noir du tiroir vérifiés après chargement.
 - Mondes et traces toujours préparés ; pas de collecte, 3D, rêve IA, voix nouvelle, écriture Notion ou publication dans ce lot.
+
+## [Non publié] Lot 3
+- Ajouté : garder un passage ou un mot-clé, chercher, supprimer et revenir au passage depuis le fil des traces (stockage local, doublons refusés).
