@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { DIGRESSIONS, REACTIONS, SEED_AVIS, MARGINALIA, type ReactionId } from "@/data/billet";
-import { addToQueue, setAvis, useStore } from "@/lib/store";
+import { addToQueue, keepTrace, setAvis, useStore } from "@/lib/store";
+import { cleanPassageText, hasTrace } from "@/lib/traces";
 import { cn } from "@/lib/utils";
 
 const toneClass: Record<string, string> = {
@@ -65,6 +66,10 @@ export function PassageBlock({
   content?: ReactNode;
 }) {
   const mine = useStore((s) => s.myAvis[id]);
+  const plain = cleanPassageText(text);
+  const kept = useStore((s) => hasTrace(s.traces, "passage", id, plain));
+  const [kwOpen, setKwOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
   const [openDig, setOpenDig] = useState<Set<string>>(new Set());
   const [panel, setPanel] = useState(false);
   const [comment, setComment] = useState("");
@@ -137,7 +142,7 @@ export function PassageBlock({
       ))}
 
       {/* avis marker */}
-      <div className="passage-actions mt-1 flex min-h-7 items-center gap-2 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 data-[active=true]:md:opacity-100" data-active={panel || !!mine}>
+      <div className="passage-actions mt-1 flex min-h-7 flex-wrap items-center gap-2 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 data-[active=true]:md:opacity-100" data-active={panel || !!mine || kept || kwOpen}>
         <button
           type="button"
           aria-expanded={panel}
@@ -147,7 +152,40 @@ export function PassageBlock({
         >
           {mine ? `Votre avis : ${REACTIONS.find((r) => r.id === mine)?.label}` : `¶ ${index} · Réagir`}
         </button>
+        <button
+          type="button"
+          aria-pressed={kept}
+          disabled={kept || !plain}
+          onClick={() => keepTrace({ kind: "passage", passageId: id, text: plain, excerpt: plain })}
+          className="font-label rounded-full border border-border px-2.5 py-0.5 text-[0.7rem] text-muted-foreground hover:border-primary hover:text-primary disabled:border-primary disabled:text-primary"
+        >
+          {kept ? "Gardé" : "Garder"}
+        </button>
+        <button
+          type="button"
+          aria-expanded={kwOpen}
+          onClick={() => setKwOpen((v) => !v)}
+          className="font-label rounded-full border border-border px-2.5 py-0.5 text-[0.7rem] text-muted-foreground hover:border-primary hover:text-primary"
+        >
+          + Mot-clé
+        </button>
       </div>
+      {kwOpen && (
+        <form
+          className="mt-2 flex gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!keyword.trim()) return;
+            keepTrace({ kind: "mot-clé", passageId: id, text: keyword.trim(), excerpt: plain.slice(0, 160) });
+            setKeyword("");
+            setKwOpen(false);
+          }}
+        >
+          <label htmlFor={`kw-${id}`} className="sr-only">Mot-clé pour ce passage</label>
+          <input id={`kw-${id}`} value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Un mot qui vous reste…" maxLength={60} className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm" autoFocus />
+          <button type="submit" disabled={!keyword.trim()} className="rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50">Garder</button>
+        </form>
+      )}
 
       {panel && (
         <div id={`avis-${id}`} className="animate-fade-rise mt-2 rounded-md border border-border bg-card p-4 shadow-sm">
