@@ -185,6 +185,14 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### 2026-10-12 — Menu persistant et lecture calme
+
+**Intent** : garder le menu en haut et réserver les ajouts entre paragraphes au mode interactif.
+
+**Outcome** : commandes, formulaires ouverts, marqueurs d’avis et digressions applicatives retirés en mode sans distraction ; blocs et annotations éditoriales Notion et portes conservés. Aucune écriture Notion.
+
+**Verification** : essai sur le billet réel : menu à 0 px après défilement, texte identique entre modes, passage enregistré conservé, formulaire mot-clé absent en lecture calme, callout et porte présents ; aucun pageerror et 22 tests réussis.
+
 ## Lot 2 — 2026-10-12, grammaire Notion 🔷
 
 **Intent** : passer au lot 2 à la demande d’Ulrich et rendre la sidebar totalement blanche le jour, noire la nuit, sans teinte.
