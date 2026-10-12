@@ -123,7 +123,7 @@ function Index() {
         </div>
 
         <div>
-          {notionContent.ok ? <div className="reading-column mt-10"><EditorialArticle blocks={notionContent.editorialBlocks} fragments={notionContent.fragments} digressions={notionContent.digressions} onDialogue={openDialogue} onContribute={(id) => setContrib({ passageId: id })} /></div> : sections.map((s, sectionIndex) => (
+          {notionContent.ok ? <div className="reading-column mt-10"><EditorialArticle interactive={dose === "interactive"} blocks={notionContent.editorialBlocks} fragments={notionContent.fragments} digressions={notionContent.digressions} onDialogue={openDialogue} onContribute={(id) => setContrib({ passageId: id })} /></div> : sections.map((s, sectionIndex) => (
               <section key={s.id} aria-labelledby={`h-${s.id}`} className="mt-14">
                 <div className="reading-column">
                   <h2 id={`h-${s.id}`} className="text-2xl font-semibold md:text-3xl">{s.title}</h2>
@@ -135,6 +135,7 @@ function Index() {
                     return (
                       <div key={p.id} className="relative reading-column">
                         <PassageBlock
+                          interactive={dose === "interactive"}
                           id={p.id}
                           index={pIndex}
                           text={p.text}
@@ -144,7 +145,7 @@ function Index() {
                           digressions={digressions}
                           showNotes={source === "mock"}
                         />
-                        {notes.length > 0 && (
+                        {dose === "interactive" && notes.length > 0 && (
                           <aside aria-label="Notes marginales" className="mt-4 space-y-4 border-l border-border pl-4">
                             {notes.map((n) => <NoteCard key={n.id} n={n} />)}
                           </aside>
@@ -153,7 +154,7 @@ function Index() {
                     );
                   })}
                 </div>
-                <div className="reading-column mt-6">
+                {dose === "interactive" && <div className="reading-column mt-6">
                   <Button variant="link"
                     onClick={() => { const first = s.passages[0]; if (first) openDialogue(first.id); }}
                     className="group h-auto px-0 text-sm text-primary"
@@ -161,8 +162,8 @@ function Index() {
                     <span aria-hidden className="inline-block h-px w-6 bg-primary transition-all group-hover:w-10" />
                     Dialoguer avec ce passage
                   </Button>
-                </div>
-                {sectionIndex === 0 && <div className="reading-column"><PrototypeCallout /></div>}
+                </div>}
+                {dose === "interactive" && sectionIndex === 0 && <div className="reading-column"><PrototypeCallout /></div>}
                 {(sectionIndex === 0 || sectionIndex === 1) && <div className="reading-column"><PrototypeDoor number={sectionIndex + 1} /></div>}
               </section>
           ))}

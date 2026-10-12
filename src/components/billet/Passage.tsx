@@ -54,6 +54,7 @@ export function PassageBlock({
   digressions,
   showNotes = true,
   content,
+  interactive = false,
 }: {
   id: string;
   index: number;
@@ -64,6 +65,7 @@ export function PassageBlock({
   digressions?: Record<string, { title: string; body: string }> | undefined;
   showNotes?: boolean;
   content?: ReactNode;
+  interactive?: boolean;
 }) {
   const mine = useStore((s) => s.myAvis[id]);
   const plain = cleanPassageText(text);
@@ -81,8 +83,8 @@ export function PassageBlock({
   const seed = SEED_AVIS[id] ?? {};
   const totalSeed = Object.values(seed).reduce((a, b) => a + (b ?? 0), 0);
   const counts = (r: ReactionId) => (seed[r] ?? 0) + (mine === r ? 1 : 0);
-  const notes = showNotes ? MARGINALIA.filter((n) => n.passageId === id) : [];
-  const digIds = [...text.matchAll(/\[\[(\w+)\|/g)].flatMap((x) => x[1] && digs[x[1]] ? [x[1]] : []);
+  const notes = interactive && showNotes ? MARGINALIA.filter((n) => n.passageId === id) : [];
+  const digIds = interactive ? [...text.matchAll(/\[\[(\w+)\|/g)].flatMap((x) => x[1] && digs[x[1]] ? [x[1]] : []) : [];
 
   const toggle = (d: string) =>
     setOpenDig((s) => {
@@ -94,7 +96,7 @@ export function PassageBlock({
   return (
     <div className="group relative" id={`passage-${id}`}>
       {/* margin trace */}
-      {totalSeed + (mine ? 1 : 0) > 0 && (
+      {interactive && totalSeed + (mine ? 1 : 0) > 0 && (
         <span
           aria-hidden
           className="absolute -left-4 top-2 bottom-2 w-0.5 rounded-full bg-primary transition-opacity"
@@ -102,7 +104,7 @@ export function PassageBlock({
         />
       )}
       <p className="prose-billet">
-        {content ?? renderText(text, openDig, toggle)}
+        {content ?? (interactive ? renderText(text, openDig, toggle) : plain)}
         {notes.map((n, i) => (
           <button
             key={n.id}
@@ -141,6 +143,7 @@ export function PassageBlock({
         </div>
       ))}
 
+      {interactive && <>
       {/* avis marker */}
       <div className="passage-actions mt-1 flex min-h-7 flex-wrap items-center gap-2 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 data-[active=true]:md:opacity-100" data-active={panel || !!mine || kept || kwOpen}>
         <button
@@ -289,6 +292,7 @@ export function PassageBlock({
           )}
         </div>
       )}
+      </>}
     </div>
   );
 }

@@ -54,22 +54,23 @@ type Props = {
   fragments?: EditorialFragment[];
   digressions?: NotionDigression[];
   nested?: boolean;
+  interactive?: boolean;
   onDialogue?: (id: string) => void;
   onContribute?: (id: string) => void;
 };
 
-export function EditorialArticle({ blocks, fragments = [], digressions = [], nested = false, onDialogue, onContribute }: Props) {
+export function EditorialArticle({ blocks, fragments = [], digressions = [], nested = false, interactive = false, onDialogue, onContribute }: Props) {
   const flat = flattenEditorialBlocks(blocks);
   const renderBlock = (block: EditorialBlock): ReactNode => {
     const text = editorialText(block);
     const children = block.children.length > 0 ? renderBlocks(block.children) : null;
     const annotation = fragments.filter((fragment) => fragment.blockId === block.id);
-    const linked = digressions.filter((digression) => {
+    const linked = (interactive ? digressions : []).filter((digression) => {
       if (!exactFragment(block, digression.anchor, "")) return false;
       return flat.filter((item) => exactFragment(item, digression.anchor, "") !== null).length === 1;
     });
     const paragraph = nested || !onDialogue || !onContribute ? <p className="prose-billet whitespace-pre-wrap"><Spans spans={block.spans} /></p> :
-      <PassageBlock id={block.id} index={flat.indexOf(block) + 1} text={text} content={<Spans spans={block.spans} />} onDialogue={onDialogue} onContribute={onContribute} onMargin={() => {}} showNotes={false} digressions={{}} />;
+      <PassageBlock interactive={interactive} id={block.id} index={flat.indexOf(block) + 1} text={text} content={<Spans spans={block.spans} />} onDialogue={onDialogue} onContribute={onContribute} onMargin={() => {}} showNotes={false} digressions={{}} />;
     let content: ReactNode;
     switch (block.type) {
       case "heading_1": content = <h2 className="mt-12 mb-6 text-3xl"><Spans spans={block.spans} /></h2>; break;

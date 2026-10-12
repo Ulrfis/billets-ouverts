@@ -48,6 +48,11 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Corrigé
 
+#### 2026-10-12 — Lecture sans distraction
+- Menu supérieur persistant pendant le défilement, avec fond opaque dans les deux univers.
+- Avis, enregistrement, mots-clés, notes et digressions applicatives entre paragraphes réservés au mode interactif, sans espace de commandes vide en lecture calme.
+- Blocs et annotations éditoriales Notion conservés, ainsi que les séparateurs-portes ; aucune écriture Notion.
+
 #### 2026-10-11 — Défenses et propriétés Notion
 - Gestion défensive des effets / abonnements lors de l’investigation de `n is not a function`. L’incident n’a pas été reproduit : ces modifications ne prouvent pas une résolution définitive.
 - Extraction dédiée des propriétés de couverture pour conserver les GIF externes et fichiers uploadés.

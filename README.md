@@ -102,10 +102,10 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 
 - Lieu de lecture : sidebar gauche (25 % puis largeur bornée), colonne originale à droite ; tiroir superposé sur mobile et tablette.
 - Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Sidebar blanc pur (#FFFFFF) / noir pur (#000000), sans teinte. Pause et images fixes ; médias cachés démontés.
-- Deux dosages persistés : sans distraction et interactif. Fil de quatre traces d’exemple, pas encore de récolte personnelle.
+- Deux dosages persistés : sans distraction et interactif. Sans distraction retire les commandes et ajouts applicatifs entre paragraphes, tout en conservant les blocs et annotations éditoriales Notion et les séparateurs-portes. Le mode interactif conserve avis, Garder et mots-clés. Fil personnel local avec recherche, suppression et retour au passage.
 - Le billet réel rend son callout existant et son séparateur ; aucune insertion fictive dans le billet Notion. Les dividers ouvrent le monde de démonstration avec retour exact. Le secours conserve les inserts préparés du lot 1.
 - Playfair Display pour les titres, Roboto pour le corps, Oswald pour les petits labels ; couleurs et états dans `src/styles.css`.
-- En-tête : « Billet ouvert - une expérimentation de lecture immersive ».
+- En-tête : « Billet ouvert - une expérimentation de lecture immersive », persistant en haut pendant le défilement.
 - GIF sous le titre ; pas de surtitre orange ni de badge « Contenu Notion ».
 - Carnet, contributeurs, digressions et résonances dans un panneau ; texte original seul. Généalogie originale et tangentes locales, modération en pied de page.
 - Notes de démonstration dans la marge à partir du breakpoint `lg`, panneau inférieur sur petit écran ; voir la limite Notion en section 11.
