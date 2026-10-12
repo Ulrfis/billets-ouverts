@@ -52,6 +52,7 @@ export function PassageBlock({
   onMargin,
   digressions,
   showNotes = true,
+  content,
 }: {
   id: string;
   index: number;
@@ -61,6 +62,7 @@ export function PassageBlock({
   onMargin: (passageId: string) => void;
   digressions?: Record<string, { title: string; body: string }> | undefined;
   showNotes?: boolean;
+  content?: ReactNode;
 }) {
   const mine = useStore((s) => s.myAvis[id]);
   const [openDig, setOpenDig] = useState<Set<string>>(new Set());
@@ -95,7 +97,7 @@ export function PassageBlock({
         />
       )}
       <p className="prose-billet">
-        {renderText(text, openDig, toggle)}
+        {content ?? renderText(text, openDig, toggle)}
         {notes.map((n, i) => (
           <button
             key={n.id}

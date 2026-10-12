@@ -19,7 +19,7 @@ export function PrototypeCallout() {
   </aside>;
 }
 
-export function PrototypeDoor({ number }: { number: number }) {
+export function PrototypeDoor({ number }: { number: number | string }) {
   const { universe, dose } = useReader();
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
