@@ -15,6 +15,8 @@ import { BookOpen } from "lucide-react";
 import { RelatedPanel } from "@/components/billet/RelatedPanel";
 import { useReader } from "@/components/billet/ReaderContext";
 import { PrototypeCallout, PrototypeDoor } from "@/components/billet/PrototypePassages";
+import { EditorialArticle } from "@/components/billet/EditorialArticle";
+import { editorialText, flattenEditorialBlocks } from "@/lib/notion-editorial";
 
 const notionQuery = queryOptions({ queryKey: ["billet-notion"], queryFn: () => getNotionContent(), staleTime: 60_000 });
 
@@ -91,6 +93,10 @@ function Index() {
     return undefined;
   };
   const openDialogue = (pid: string, seed?: string) => {
+    if (notionContent.ok) {
+      const block = flattenEditorialBlocks(notionContent.editorialBlocks).find((item) => item.id === pid);
+      if (block) { setDlg({ sectionId: block.id, title: notionContent.title, passage: editorialText(block), seed }); return; }
+    }
     const f = findPassage(pid);
     if (f) setDlg({ sectionId: f.s.id, title: f.s.title, passage: f.p.text.replace(/\[\[\w+\|([^\]]+)\]\]/g, "$1"), seed });
   };
@@ -101,10 +107,10 @@ function Index() {
     <div className={`min-h-screen reading-${dose}`}>
       <main className="mx-auto px-6 pb-24 md:px-10">
         <div className="reading-column pt-10 md:pt-14">
-          <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{meta.title}</h1>
-          {cover && <img src={cover} alt={`Couverture du billet « ${meta.title} »`} className="mt-6 h-auto w-full object-contain" />}
+          <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{notionContent.ok ? notionContent.title : meta.title}</h1>
+          {(notionContent.ok ? notionContent.cover : cover) && <img src={notionContent.ok ? notionContent.cover : cover} alt={`Couverture du billet « ${notionContent.ok ? notionContent.title : meta.title} »`} className="mt-6 h-auto w-full object-contain" />}
           <p className="mt-4 text-sm text-muted-foreground">
-            {BILLET.author} · {meta.date}
+            {BILLET.author} · {notionContent.ok ? notionContent.date : meta.date}
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
@@ -117,7 +123,7 @@ function Index() {
         </div>
 
         <div>
-          {sections.map((s, sectionIndex) => (
+          {notionContent.ok ? <div className="reading-column mt-10"><EditorialArticle blocks={notionContent.editorialBlocks} fragments={notionContent.fragments} digressions={notionContent.digressions} onDialogue={openDialogue} onContribute={(id) => setContrib({ passageId: id })} /></div> : sections.map((s, sectionIndex) => (
               <section key={s.id} aria-labelledby={`h-${s.id}`} className="mt-14">
                 <div className="reading-column">
                   <h2 id={`h-${s.id}`} className="text-2xl font-semibold md:text-3xl">{s.title}</h2>
