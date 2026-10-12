@@ -119,4 +119,5 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 ### Vérifié / limites
 - 106 blocs textuels non vides comparés au contenu API sans différence ; images/listes rendues, fonds exacts, nuit persistée, texte invariant et retour porte exact, mobile sans débordement et aucun pageerror.
 - Commentaires Notion refusés (403 restricted_resource). Aucun callout lié ni repère réel créé ; test éditorial du pilote après ajout soumis à accord distinct.
+- Suite complète : 16 tests réussis dans 5 fichiers ; contrôle automatique build OK. GIF comète et fond noir du tiroir vérifiés après chargement.
 - Mondes et traces toujours préparés ; pas de collecte, 3D, rêve IA, voix nouvelle, écriture Notion ou publication dans ce lot.

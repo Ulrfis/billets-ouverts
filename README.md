@@ -302,7 +302,7 @@ Le sandbox Lovable sert actuellement l’application sur `http://localhost:8080`
 |---|---|---|
 | Développement | `bun run dev` | Serveur déjà géré par Lovable ; non redémarré |
 | Lint | `bun run lint` | Exécuté, échec existant |
-| Tests | `bunx vitest run` ou `bun run test` | Six tests réussis |
+| Tests | `bunx vitest run` ou `bun run test` | Lot 2 : 16 tests réussis dans 5 fichiers |
 | Typecheck | Pas de script dédié | Non exécuté ; contrôles gérés par Lovable |
 | Build | `bun run build` | Script présent, non exécuté manuellement |
 | Preview de build | `bun run preview` | Non exécuté |
@@ -400,7 +400,7 @@ Connexion Notion initiale remplacée par l’accès direct ; erreur React minifi
 | Métrique | Valeur / définition | Source / date |
 |---|---|---|
 | Routes de contenu | 2 | Code relu le 2026-10-12 |
-| Tests | 6 réussis dans 2 fichiers | Vitest, 2026-10-12 |
+| Tests | 16 réussis dans 5 fichiers | Vitest, lot 2, 2026-10-12 |
 | Lint | 189 erreurs, 6 avertissements | ESLint, 2026-10-12 |
 | Passages Notion | 105 observés lors de la précédente session ; non recomptés aujourd’hui | Vérification rapportée du 2026-10-11 |
 | Budget | Initial 4,20 $, jauge 30 $ ; aucune dépense réelle déduite | `store.ts`, `Dialogue.tsx` |
@@ -477,8 +477,8 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 "Type": "Prototype expérimental"
 "État": "En cours de construction"
 "Metrics clés": |-
-  2026-10-12 : 2 routes de contenu ; 10 tests réussis dans 3 fichiers pour le lot 1.
-  Parcours navigateur jour/nuit, retour exact, reload, mobile, focus et réduction des animations vérifiés sans erreur.
+  2026-10-12 : 2 routes de contenu ; 16 tests réussis dans 5 fichiers pour le lot 2.
+  106 blocs textuels non vides identiques à Notion ; sidebar blanc/noir, porte, reload et mobile vérifiés sans erreur.
   Lint : 189 erreurs, 6 avertissements. Usage, coûts et temps non mesurés.
 "Learnings": |-
   Préserver l’URL GIF originale ; suivre les relations explicites Notion.
@@ -503,6 +503,7 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 - Fidélité des 106 blocs textuels non vides vérifiée face à Notion ; commentaires 403, repli préparé.
 - Callout lié et fragments testables sans changement de code mais données réelles à approuver ; aucun envoi Notion ou publication.
 - Prompt et brouillon de fiche alignés ; détails dans NOTION-LOT2-PROPOSAL.md.
+- 16 tests dans 5 fichiers réussis ; build automatique OK. Commentaires refusés, données liées réelles encore à approuver.
 
 ### 2026-10-12 — Lot 1 lire/garder/rêver
 
