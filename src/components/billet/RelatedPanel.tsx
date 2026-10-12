@@ -1,7 +1,5 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { VERSIONS, type VersionId } from "@/data/billet";
 import type { NotionDigression, NotionResonance, NotionContributor } from "@/lib/api.functions";
 
 type Props = {
@@ -11,11 +9,9 @@ type Props = {
   digressions: NotionDigression[];
   resonances: NotionResonance[];
   contributors: NotionContributor[];
-  version: VersionId;
-  onVersion: (version: VersionId) => void;
 };
 
-export function RelatedPanel({ open, onOpenChange, carnet, digressions, resonances, contributors, version, onVersion }: Props) {
+export function RelatedPanel({ open, onOpenChange, carnet, digressions, resonances, contributors }: Props) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
@@ -29,7 +25,6 @@ export function RelatedPanel({ open, onOpenChange, carnet, digressions, resonanc
             <TabsTrigger value="contributors">Contributeurs</TabsTrigger>
             <TabsTrigger value="digressions">Digressions</TabsTrigger>
             <TabsTrigger value="resonances">Résonances</TabsTrigger>
-            <TabsTrigger value="versions">Versions</TabsTrigger>
           </TabsList>
           <TabsContent value="carnet" className="mt-6 space-y-6">
             {carnet.length ? carnet.map((text, i) => <p key={i} className="whitespace-pre-line text-sm leading-relaxed text-ink">{text}</p>) : <Empty />}
@@ -61,9 +56,6 @@ export function RelatedPanel({ open, onOpenChange, carnet, digressions, resonanc
                 {r.url && <a href={r.url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm text-primary underline">Source</a>}
               </article>
             )) : <Empty />}
-          </TabsContent>
-          <TabsContent value="versions" className="mt-6 space-y-2">
-            {VERSIONS.map((v) => <Button key={v.id} variant={version === v.id ? "secondary" : "ghost"} className="w-full justify-start" onClick={() => { onVersion(v.id); onOpenChange(false); }}>{v.label}</Button>)}
           </TabsContent>
         </Tabs>
       </SheetContent>

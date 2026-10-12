@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ReaderProvider } from "@/components/billet/ReaderContext";
+import { ReaderFrame } from "@/components/billet/ReaderSidebar";
 
 function NotFoundComponent() {
   return (
@@ -120,7 +122,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ReaderProvider><ReaderFrame><Outlet /></ReaderFrame></ReaderProvider>
     </QueryClientProvider>
   );
 }
