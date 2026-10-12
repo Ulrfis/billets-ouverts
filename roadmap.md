@@ -1,4 +1,5 @@
 # Corrections du billet
+- [ ] Menu persistant et suppression des ajouts entre paragraphes en mode sans distraction ; vérifier les deux modes.
 - [x] Simplifier l’en-tête et déplacer l’accès aux versions.
 - [x] Charger et afficher l’image couverture Notion.
 - [x] Présenter les catégories liées dans un panneau avec les contributeurs.
