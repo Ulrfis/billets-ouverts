@@ -213,3 +213,6 @@
     scroll-behavior: auto !important;
   }
 }
+
+.trace-return { outline: 2px solid var(--color-gold, currentColor); outline-offset: 6px; border-radius: 4px; transition: outline-color 1s; }
+@media (prefers-reduced-motion: reduce) { .trace-return { transition: none; } }
