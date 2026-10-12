@@ -15,5 +15,12 @@
 - [x] Fil de traces d’exemple et maquettes callout / deux portes avec retour exact au texte.
 - [x] Tester ordinateur, mobile, clavier, réduction des animations ; actualiser la documentation.
 
+# Lire, garder, rêver — lot 2 autorisé
+- [ ] Sidebar blanc pur le jour, noir pur la nuit.
+- [ ] Lecture structurée Notion, callouts liés autorisés et dividers-portes.
+- [ ] Vérifier les commentaires et interpréter les fragments éditoriaux sans ambiguïté.
+- [ ] Préparer les ajouts du pilote et les propositions Citations / Prompts, sans écrire dans Notion.
+- [ ] Tester le rendu, les permissions, le texte intact ; actualiser les trois documents.
+
 # Lots suivants
-- [ ] Lots 2 à 6 — bloqués par la validation du lot 1 ; écritures Notion soumises à une validation distincte.
+- [ ] Lots 3 à 6 — attendent la validation du lot 2.
