@@ -37,7 +37,9 @@ export function parseAiSettings(rows: Row[], key: AiKey): AiSettings {
     if (typeof n === "number" && Number.isFinite(n) && n >= min && n <= max && (!integer || Number.isInteger(n))) result[field] = n;
   }
   if (result.minWords !== undefined && result.maxWords !== undefined && result.minWords > result.maxWords) {
-    result.minWords = fallback.minWords; result.maxWords = fallback.maxWords;
+    delete result.minWords; delete result.maxWords;
+    if (fallback.minWords !== undefined) result.minWords = fallback.minWords;
+    if (fallback.maxWords !== undefined) result.maxWords = fallback.maxWords;
   }
   const voice = text(p["Voix"]);
   if (/^[\w-]{1,150}$/.test(voice)) result.voice = voice;
