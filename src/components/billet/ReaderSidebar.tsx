@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { forgetTrace, useStore } from "@/lib/store";
 import { searchTraces } from "@/lib/traces";
-import { Cloud, TreePine, Pause, Play, PanelLeft, UserRound, Bookmark, Hash, Search, Trash2, CornerDownLeft } from "lucide-react";
+import { Cloud, TreePine, Info, PanelLeft, UserRound, Bookmark, Hash, Search, Trash2, CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -38,7 +38,7 @@ function TraceThread({ onReturn }: { onReturn?: (() => void) | undefined }) {
       <input id="trace-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Chercher un mot…" className="w-full rounded-md border border-sidebar-border bg-transparent py-1.5 pl-7 pr-2 text-sm text-sidebar-foreground" />
     </div>}
     {storageError && <p role="status" className="mt-3 text-xs text-rose">Cet appareil refuse l’enregistrement : vos traces restent visibles jusqu’à la fermeture de la page.</p>}
-    {traces.length === 0 ? <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Sous chaque passage, « Garder » le dépose ici ; « + Mot-clé » y ajoute un mot qui vous reste.</p>
+    {traces.length === 0 ? <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Aucune trace pour l’instant.</p>
     : shown.length === 0 ? <p role="status" className="mt-4 text-sm text-muted-foreground">Aucune trace pour « {query} ».</p>
     : <ol className="trace-thread mt-4" aria-live="polite">
       {shown.map((trace) => {
@@ -65,19 +65,15 @@ function TraceThread({ onReturn }: { onReturn?: (() => void) | undefined }) {
 }
 
 function SidebarBody({ onReturn }: { onReturn?: (() => void) | undefined } = {}) {
-  const { universe, paused, reducedMotion, togglePaused } = useReader();
-  const moving = !paused && !reducedMotion;
+  const { universe, reducedMotion } = useReader();
+  const moving = !reducedMotion;
   const isDay = universe === "day";
   return <div className="reader-sidebar-body">
-    <figure className="reader-figure">
+    <figure className="reader-figure" tabIndex={0} aria-label="Gardez ce qui vous traverse.">
       <img src={moving ? (isDay ? cloud.url : tree.url) : (isDay ? cloudStill.url : treeStill.url)} alt={isDay ? "Nuages et vagues en mouvement" : "Une comète fait naître un arbre"} className="reader-gif" />
-      <Button variant="ghost" size="icon" className="reader-media-toggle" onClick={togglePaused} disabled={reducedMotion} aria-label={moving ? "Mettre le GIF en pause" : "Animer le GIF"} title={reducedMotion ? "Image fixe : animations réduites" : moving ? "Mettre le GIF en pause" : "Animer le GIF"}>
-        {moving ? <Pause aria-hidden /> : <Play aria-hidden />}
-      </Button>
+      <figcaption className="reader-poetry"><span>Gardez ce qui vous traverse.</span><span>Les idées ne nous appartiennent pas,<br />elles nous traversent.</span></figcaption>
     </figure>
     <div className="px-6 pb-6">
-      <p className="font-display text-2xl leading-snug text-sidebar-foreground">Gardez ce qui<br />vous traverse.</p>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Les idées ne nous appartiennent pas,<br />elles nous traversent.</p>
       <TraceThread onReturn={onReturn} />
     </div>
   </div>;
@@ -86,6 +82,7 @@ function SidebarBody({ onReturn }: { onReturn?: (() => void) | undefined } = {})
 export function ReaderFrame({ children }: { children: React.ReactNode }) {
   const [drawer, setDrawer] = useState(false);
   const [account, setAccount] = useState(false);
+  const [information, setInformation] = useState(false);
   const [desktop, setDesktop] = useState(false);
   const drawerTrigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -107,6 +104,7 @@ export function ReaderFrame({ children }: { children: React.ReactNode }) {
             {universe === "day" ? <TreePine aria-hidden /> : <Cloud aria-hidden />}
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setAccount(true)} aria-label="Connexion simulée" aria-pressed={connected} title="Connexion simulée" className={connected ? "text-primary" : "text-muted-foreground"}><UserRound aria-hidden /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setInformation(true)} aria-label="Information" title="Information"><Info aria-hidden /></Button>
         </div>
       </header>
       {children}
@@ -117,6 +115,16 @@ export function ReaderFrame({ children }: { children: React.ReactNode }) {
         {drawer && <SidebarBody onReturn={() => setDrawer(false)} />}
       </SheetContent>
     </Sheet>
+    <Dialog open={information} onOpenChange={setInformation}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Billet ouvert</DialogTitle><DialogDescription>Une expérimentation de lecture immersive.</DialogDescription></DialogHeader>
+        <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
+          <p>Un texte original, des chemins de traverse et ce qui reste après la lecture. Billet ouvert explore une lecture personnelle, sensible et ouverte aux résonances.</p>
+          <p>Les idées ne nous appartiennent pas, elles nous traversent.</p>
+          <p>Ce prototype propose deux univers, jour et nuit, et deux rythmes de lecture : sans distraction ou interactif. Vos passages et mots-clés restent sur cet appareil. La connexion est simulée.</p>
+        </div>
+      </DialogContent>
+    </Dialog>
     <Dialog open={account} onOpenChange={setAccount}>
       <DialogContent className="max-w-md">
         <DialogHeader><DialogTitle>Connexion simulée</DialogTitle><DialogDescription>Aucun compte n’est créé. Vos choix de lecture restent sur cet appareil, sans synchronisation.</DialogDescription></DialogHeader>

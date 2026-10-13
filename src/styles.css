@@ -165,9 +165,12 @@
 .reader-sidebar { position: fixed; inset: 0 auto 0 0; width: 25%; overflow-y: auto; background: var(--sidebar); border-right: 1px solid var(--sidebar-border); z-index: 30; }
 .reader-content { margin-left: 25%; min-width: 0; overflow-x: clip; overflow-wrap: anywhere; }
 .reader-sidebar-body { min-height: 100%; }
-.reader-figure { position: relative; height: 260px; display: flex; align-items: center; justify-content: center; padding: 36px 16px 20px; }
-.reader-gif { width: 100%; max-height: 220px; height: auto; object-fit: contain; }
-.reader-media-toggle { position: absolute; right: 16px; bottom: 12px; background: var(--sidebar); color: var(--muted-foreground); }
+.reader-figure { position: relative; margin: 0; width: 100%; }
+.reader-gif { display: block; width: 100%; height: auto; }
+.reader-poetry { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 12px; padding: 24px; background: var(--sidebar); color: var(--sidebar-foreground); text-align: center; opacity: 0; pointer-events: none; transition: opacity 250ms var(--ease-organic); }
+.reader-poetry > span:first-child { font-family: var(--font-display); font-size: 20px; }
+.reader-poetry > span:last-child { font-size: 13px; line-height: 1.6; }
+.reader-figure:hover .reader-poetry, .reader-figure:focus-visible .reader-poetry { opacity: 0.94; }
 .reader-header { position: sticky; top: 0; z-index: 40; background: var(--background); min-height: 88px; display: flex; align-items: center; gap: 12px; padding: 18px 32px; border-bottom: 1px solid var(--border); }
 .reader-wordmark { display: flex; flex-direction: column; min-width: 0; gap: 3px; }
 .reader-wordmark > span:first-child { font-size: 24px; line-height: 1.25; }
@@ -177,7 +180,9 @@
 .trace-item { padding-left: 16px; position: relative; border-bottom: 1px solid var(--sidebar-border); }
 .trace-item::before { content: ''; position: absolute; left: -3px; top: 22px; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
 .reading-column { width: 100%; max-width: 42rem; margin-inline: auto; }
-.reading-interactive .passage-actions { opacity: 1; }
+.passage-controls { position: relative; min-height: 28px; padding-left: 28px; }
+.passage-sign { position: absolute; top: 0; left: 0; width: 28px; height: 28px; color: var(--muted-foreground); opacity: 0.45; }
+.passage-sign:hover, .passage-sign:focus-visible, .passage-sign[aria-expanded=true] { opacity: 1; }
 .prototype-callout { border-block: 1px solid var(--border); border-left: 2px solid var(--primary); padding-inline: 20px; }
 .door-jaw { height: 2px; background: var(--border); transition: transform 500ms var(--ease-organic); }
 .door-trigger { height: 44px; }

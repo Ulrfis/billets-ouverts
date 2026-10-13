@@ -3,6 +3,8 @@ import { DIGRESSIONS, REACTIONS, SEED_AVIS, MARGINALIA, type ReactionId } from "
 import { addToQueue, keepTrace, setAvis, useStore } from "@/lib/store";
 import { cleanPassageText, hasTrace } from "@/lib/traces";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Plus, Minus, MessageCircle, Bookmark, Hash } from "lucide-react";
 
 const toneClass: Record<string, string> = {
   primary: "border-primary text-primary bg-accent",
@@ -71,6 +73,7 @@ export function PassageBlock({
   const plain = cleanPassageText(text);
   const kept = useStore((s) => hasTrace(s.traces, "passage", id, plain));
   const [kwOpen, setKwOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [openDig, setOpenDig] = useState<Set<string>>(new Set());
   const [panel, setPanel] = useState(false);
@@ -81,7 +84,6 @@ export function PassageBlock({
 
   const digs = digressions ?? DIGRESSIONS;
   const seed = SEED_AVIS[id] ?? {};
-  const totalSeed = Object.values(seed).reduce((a, b) => a + (b ?? 0), 0);
   const counts = (r: ReactionId) => (seed[r] ?? 0) + (mine === r ? 1 : 0);
   const notes = interactive && showNotes ? MARGINALIA.filter((n) => n.passageId === id) : [];
   const digIds = interactive ? [...text.matchAll(/\[\[(\w+)\|/g)].flatMap((x) => x[1] && digs[x[1]] ? [x[1]] : []) : [];
@@ -95,14 +97,6 @@ export function PassageBlock({
 
   return (
     <div className="group relative" id={`passage-${id}`}>
-      {/* margin trace */}
-      {interactive && totalSeed + (mine ? 1 : 0) > 0 && (
-        <span
-          aria-hidden
-          className="absolute -left-4 top-2 bottom-2 w-0.5 rounded-full bg-primary transition-opacity"
-          style={{ opacity: Math.min(0.15 + (totalSeed + (mine ? 1 : 0)) / 25, 0.7) }}
-        />
-      )}
       <p className="prose-billet">
         {content ?? (interactive ? renderText(text, openDig, toggle) : plain)}
         {notes.map((n, i) => (
@@ -144,34 +138,44 @@ export function PassageBlock({
       ))}
 
       {interactive && <>
-      {/* avis marker */}
-      <div className="passage-actions mt-1 flex min-h-7 flex-wrap items-center gap-2 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 data-[active=true]:md:opacity-100" data-active={panel || !!mine || kept || kwOpen}>
-        <button
+      <div className="passage-controls">
+        <Button variant="ghost" size="icon" className="passage-sign" aria-label={`Actions du passage ${index}`} title={actionsOpen ? "Replier les actions" : "Actions du passage"} aria-expanded={actionsOpen} aria-controls={`actions-${id}`} onClick={() => setActionsOpen((v) => !v)}>
+          {actionsOpen ? <Minus aria-hidden /> : <Plus aria-hidden />}
+        </Button>
+      {actionsOpen && <div id={`actions-${id}`}>
+      <div className="passage-actions flex min-h-8 flex-wrap items-center gap-1">
+        <Button variant="ghost" size="icon"
           type="button"
+          aria-label={mine ? `Votre avis : ${REACTIONS.find((r) => r.id === mine)?.label}` : "Réagir"}
+          title="Réagir"
           aria-expanded={panel}
           aria-controls={`avis-${id}`}
           onClick={() => setPanel((v) => !v)}
-          className="font-label rounded-full border border-border px-2.5 py-0.5 text-[0.7rem] text-muted-foreground hover:border-primary hover:text-primary"
+          className="text-muted-foreground"
         >
-          {mine ? `Votre avis : ${REACTIONS.find((r) => r.id === mine)?.label}` : `¶ ${index} · Réagir`}
-        </button>
-        <button
+          <MessageCircle aria-hidden />
+        </Button>
+        <Button variant="ghost" size="icon"
           type="button"
+          aria-label={kept ? "Gardé" : "Garder"}
+          title={kept ? "Gardé" : "Garder"}
           aria-pressed={kept}
           disabled={kept || !plain}
           onClick={() => keepTrace({ kind: "passage", passageId: id, text: plain, excerpt: plain })}
-          className="font-label rounded-full border border-border px-2.5 py-0.5 text-[0.7rem] text-muted-foreground hover:border-primary hover:text-primary disabled:border-primary disabled:text-primary"
+          className={kept ? "text-primary" : "text-muted-foreground"}
         >
-          {kept ? "Gardé" : "Garder"}
-        </button>
-        <button
+          <Bookmark aria-hidden />
+        </Button>
+        <Button variant="ghost" size="icon"
           type="button"
+          aria-label="Ajouter un mot-clé"
+          title="Ajouter un mot-clé"
           aria-expanded={kwOpen}
           onClick={() => setKwOpen((v) => !v)}
-          className="font-label rounded-full border border-border px-2.5 py-0.5 text-[0.7rem] text-muted-foreground hover:border-primary hover:text-primary"
+          className="text-muted-foreground"
         >
-          + Mot-clé
-        </button>
+          <Hash aria-hidden />
+        </Button>
       </div>
       {kwOpen && (
         <form
@@ -186,7 +190,7 @@ export function PassageBlock({
         >
           <label htmlFor={`kw-${id}`} className="sr-only">Mot-clé pour ce passage</label>
           <input id={`kw-${id}`} value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Un mot qui vous reste…" maxLength={60} className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm" autoFocus />
-          <button type="submit" disabled={!keyword.trim()} className="rounded-md bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50">Garder</button>
+          <Button type="submit" size="sm" disabled={!keyword.trim()}>Garder</Button>
         </form>
       )}
 
@@ -292,6 +296,8 @@ export function PassageBlock({
           )}
         </div>
       )}
+      </div>}
+      </div>
       </>}
     </div>
   );
