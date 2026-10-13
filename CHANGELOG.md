@@ -159,3 +159,4 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 ## 2026-10-13 — Rêve réel
 - Le dé de la nuit génère un vrai rêve (OpenRouter, réglages en dur dans src/lib/ai-config.ts) et peut le lire à voix haute (Gradium) ; 3 rêves par jour par appareil.
 - Proposition de base Notion « Organique IA » : NOTION-IA-BASE.md (non créée).
+- Base Notion « Organique IA » créée à côté de « Réglages », 2 lignes initiales ; pas encore lue par l app.
