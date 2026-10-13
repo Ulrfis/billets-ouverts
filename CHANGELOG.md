@@ -66,6 +66,12 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ---
 
+
+## 2026-10-13 — Carte retournée
+### Added
+- Le callout lié se retourne sur place puis s'agrandit sur la colonne de lecture, sans toucher à la colonne de gauche, et affiche la page liée en entier.
+- Le lien d'un callout est aussi détecté dans sa dernière ligne.
+- NOTION-CURSOR-AUDIT.md : état des lieux des ajouts Cursor dans Notion.
 ## Vérification documentaire — 2026-10-12
 
 - Tests : **6 réussis dans 2 fichiers** (`bunx vitest run`).
