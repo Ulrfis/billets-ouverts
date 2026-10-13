@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,15 +21,33 @@ function Spans({ spans }: { spans: EditorialSpan[] }) {
   })}</>;
 }
 
+type Rect = { top: number; left: number; width: number; height: number };
+const rectOf = (el: Element | null): Rect => {
+  const r = el?.getBoundingClientRect();
+  return r ? { top: r.top, left: r.left, width: r.width, height: r.height } : { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+};
+
 function Callout({ block, nested, children }: { block: EditorialBlock; nested: boolean; children: ReactNode }) {
   const load = useServerFn(getNotionCallout);
-  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const [phase, setPhase] = useState<"closed" | "flip" | "open" | "closing">("closed");
+  const [from, setFrom] = useState<Rect | null>(null);
+  const [to, setTo] = useState<Rect | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [page, setPage] = useState<{ title: string; blocks: EditorialBlock[] } | null>(null);
-  const toggle = async () => {
-    setOpen((value) => !value);
-    if (open || page || loading) return;
+  const linked = Boolean(block.targetPageId) && !nested;
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const open = async () => {
+    if (!linked || phase !== "closed") return;
+    // Overlay covers only the reading column; the reader's sidebar stays untouched.
+    const content = rectOf(document.querySelector(".reader-content"));
+    const viewport = { top: 0, left: content.left, width: content.width, height: window.innerHeight };
+    setFrom(rectOf(ref.current)); setTo(viewport);
+    if (reduce()) setPhase("open"); else { setPhase("flip"); window.setTimeout(() => setPhase("open"), 550); }
+    if (page || loading) return;
     setLoading(true); setError("");
     try {
       const result = await load({ data: { blockId: block.id } });
@@ -36,16 +55,47 @@ function Callout({ block, nested, children }: { block: EditorialBlock; nested: b
     } catch { setError("La page liée est indisponible. Vous pouvez poursuivre la lecture."); }
     finally { setLoading(false); }
   };
-  return <aside className="prototype-callout my-8" aria-label="Passage lié">
-    {block.targetPageId && !nested ? <Button variant="ghost" className="h-auto w-full justify-between whitespace-normal py-4 text-left" aria-expanded={open} aria-controls={`callout-${block.id}`} onClick={toggle}>
-      <span className="font-display text-xl">{editorialText(block) || "Page liée"}</span><ArrowUpRight aria-hidden className={open ? "rotate-90 transition-transform" : "transition-transform"} />
-    </Button> : block.spans.length > 0 ? <p className="prose-billet py-4"><Spans spans={block.spans} /></p> : null}
+  const close = () => {
+    if (reduce()) { setPhase("closed"); ref.current?.focus(); return; }
+    setFrom(rectOf(ref.current)); setPhase("closing");
+    window.setTimeout(() => { setPhase("closed"); ref.current?.focus(); }, 550);
+  };
+  useEffect(() => {
+    if (phase === "open") closeRef.current?.focus();
+    if (phase === "closed") return undefined;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") close(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const box = phase === "open" ? to : from;
+  const flipped = phase === "flip" || phase === "open";
+  return <aside ref={ref} tabIndex={linked ? 0 : undefined} role={linked ? "button" : undefined}
+    aria-label={linked ? `Retourner : ${editorialText(block) || "page liée"}` : "Passage lié"}
+    onClick={linked ? open : undefined} onKeyDown={linked ? (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); void open(); } } : undefined}
+    className={`prototype-callout my-8${linked ? " callout-linked" : ""}`} style={{ visibility: phase === "closed" ? "visible" : "hidden" }}>
+    {block.spans.length > 0 && <p className="prose-billet py-4 font-semibold"><Spans spans={block.spans} /></p>}
     {children}
-    {open && <div id={`callout-${block.id}`} className="editorial-callout-page border-t border-border py-6" aria-busy={loading}>
-      {loading && <p role="status" className="text-sm text-muted-foreground">Ouverture…</p>}
-      {error && <div role="status"><p className="text-sm text-muted-foreground">{error}</p><Button variant="link" onClick={() => { setOpen(false); }}>Revenir au texte</Button></div>}
-      {page && <><h3 className="mb-6 text-2xl">{page.title}</h3><EditorialArticle blocks={page.blocks} nested /><Button variant="link" onClick={() => setOpen(false)}>Replier</Button></>}
-    </div>}
+    {linked && <p className="mt-2 flex items-center gap-2 text-sm text-primary"><ArrowUpRight aria-hidden className="h-4 w-4" />Retourner la carte</p>}
+    {phase !== "closed" && box && typeof document !== "undefined" && createPortal(
+      <div className="callout-overlay" role="dialog" aria-modal="true" aria-label={page?.title ?? "Page liée"} onClick={(event) => event.stopPropagation()}>
+        <div className="callout-card" style={{ top: box.top, left: box.left, width: box.width, height: box.height }}>
+          <div className={`callout-card-inner${flipped ? " is-flipped" : ""}`}>
+            <div className="callout-face callout-front" aria-hidden><p className="font-semibold"><Spans spans={block.spans} /></p></div>
+            <div className="callout-face callout-back">
+              <div className="callout-back-bar">
+                <span className="truncate font-display text-lg">{page?.title ?? "Page liée"}</span>
+                <Button ref={closeRef} variant="ghost" size="sm" onClick={close}>Revenir au texte</Button>
+              </div>
+              <div className="callout-back-body" aria-busy={loading}>
+                {loading && <p role="status" className="text-sm text-muted-foreground">Ouverture…</p>}
+                {error && <p role="status" className="text-sm text-muted-foreground">{error}</p>}
+                {page && <><h2 className="mb-6 text-3xl">{page.title}</h2><EditorialArticle blocks={page.blocks} nested /></>}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>, document.body)}
   </aside>;
 }
 

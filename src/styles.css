@@ -219,3 +219,17 @@
 
 .trace-return { outline: 2px solid var(--color-gold, currentColor); outline-offset: 6px; border-radius: 4px; transition: outline-color 1s; }
 @media (prefers-reduced-motion: reduce) { .trace-return { transition: none; } }
+
+/* Linked callout: flips in place, then grows over the reading column only. */
+.callout-linked { cursor: pointer; transition: box-shadow .2s; }
+.callout-linked:hover, .callout-linked:focus-visible { box-shadow: 0 0 0 1px var(--primary); outline: none; }
+.callout-overlay { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.callout-card { position: fixed; perspective: 1600px; pointer-events: auto; transition: top .5s ease, left .5s ease, width .5s ease, height .5s ease; }
+.callout-card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .5s ease; }
+.callout-card-inner.is-flipped { transform: rotateY(180deg); }
+.callout-face { position: absolute; inset: 0; backface-visibility: hidden; background: var(--card); color: var(--card-foreground); border: 1px solid var(--border); overflow: hidden; }
+.callout-front { padding: 1.5rem; }
+.callout-back { transform: rotateY(180deg); display: flex; flex-direction: column; box-shadow: 0 20px 60px -20px color-mix(in oklab, var(--foreground) 40%, transparent); }
+.callout-back-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .5rem 1rem; border-bottom: 1px solid var(--border); }
+.callout-back-body { flex: 1; overflow-y: auto; padding: 2rem clamp(1rem, 5vw, 3rem); max-width: 48rem; width: 100%; margin: 0 auto; }
+@media (prefers-reduced-motion: reduce) { .callout-card, .callout-card-inner { transition: none; } }

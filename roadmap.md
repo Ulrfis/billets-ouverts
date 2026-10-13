@@ -24,10 +24,10 @@
 - [x] Vérifier les commentaires (403) et interpréter les fragments éditoriaux sans ambiguïté avec repli relationnel.
 - [x] Préparer les ajouts du pilote et les propositions Citations / Prompts, sans écrire dans Notion.
 - [x] Tester le rendu, les permissions, le texte intact ; actualiser les trois documents.
-- [ ] Ajouts Notion et test éditorial réel callout/fragments — attendent l’accord distinct sur NOTION-LOT2-PROPOSAL.md et la page cible.
+- [x] Callout lié (retournement puis page entière sur la colonne de lecture) et 2e séparateur vérifiés sur le pilote réel. Repères : validés, activation reportée.
 
 # Lire, garder, rêver — lot 3 autorisé (avant les ajouts Notion)
 - [x] Garder passages et mots-clés, recherche, suppression, sans doublon, retour au passage ; conservation locale.
 
 # Lots suivants
-- [ ] Lots 4 à 6 — attendent la validation du lot 3.
+- [ ] Lots 4 à 6 — attendent la validation du lot 3.- [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
