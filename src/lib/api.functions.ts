@@ -170,9 +170,33 @@ export const getIceQuotes = createServerFn({ method: "GET" }).handler(async () =
   }
 });
 
+// Last good billet per server instance: fresh for 5 min, then refreshed in the background;
+// a failed refresh keeps serving the last good copy instead of the demo text.
+let notionCache: { at: number; value: Awaited<ReturnType<typeof loadNotionContent>> } | null = null;
+let notionInflight: ReturnType<typeof loadNotionContent> | null = null;
+const NOTION_FRESH_MS = 5 * 60_000;
+
+function refreshNotion(key: string) {
+  notionInflight ??= loadNotionContent(key).then((value) => {
+    if (value.ok) notionCache = { at: Date.now(), value };
+    else console.error("Notion billet unavailable", value.reason);
+    return value;
+  }).finally(() => { notionInflight = null; });
+  return notionInflight;
+}
+
 export const getNotionContent = createServerFn({ method: "GET" }).handler(async () => {
   const key = process.env["NOTION_API_KEY"];
   if (!key) return { ok: false as const, reason: "non configuré" };
+  if (notionCache) {
+    if (Date.now() - notionCache.at > NOTION_FRESH_MS) void refreshNotion(key).catch(() => {});
+    return notionCache.value;
+  }
+  const value = await refreshNotion(key);
+  return value.ok ? value : (notionCache?.value ?? value);
+});
+
+async function loadNotionContent(key: string) {
   try {
     const page = await notionGet(`/pages/${BILLET_PAGE_ID}`, key);
     const props = page["properties"] as Record<string, NotionProp>;
@@ -182,9 +206,9 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const cover = coverUrl(imageProperty);
 
     // Corps du billet -> sections / passages
-    const editorialBlocks = await editorialTree(BILLET_PAGE_ID, key);
-    const editorial = await editorialFragments(editorialBlocks, props, key);
     const blocks = await allBlocks(BILLET_PAGE_ID, key);
+    const editorialBlocks = await editorialTree(BILLET_PAGE_ID, key, 0, { remaining: 800 }, blocks);
+    const editorial = await editorialFragments(editorialBlocks, props, key);
     const sections: { title: string; paragraphs: string[] }[] = [];
     for (const b of blocks) {
       const text = blockText(b);
