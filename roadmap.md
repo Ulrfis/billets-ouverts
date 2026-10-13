@@ -8,6 +8,7 @@
 - [x] Vérifier le billet et les interactions avec les contenus réels.
 
 # Documentation du projet
+- [ ] Actualiser README, STORY et CHANGELOG après les mondes, le rêve IA et la création d’Organique IA ; préparer une reprise précise par Cursor.
 - [x] Adapter README.md au modèle MemoWays et à l’état réel.
 - [x] Ajouter STORY.md avec la chronologie et les limites connues.
 - [x] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.
