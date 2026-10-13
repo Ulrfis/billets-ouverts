@@ -58,6 +58,7 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
   journey: RefObject<Journey>; onInspect: (index: number) => void;
 }) {
   const group = useRef<THREE.Group>(null);
+  const inscription = useRef<THREE.Mesh>(null);
   const time = useRef(index * 1.7);
   const texture = useMemo(() => quoteTexture(quote, palette.ink), [quote, palette.ink]);
   useEffect(() => () => texture.dispose(), [texture]);
@@ -69,6 +70,8 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
     object.position.set(cubeX(index) + Math.sin(t * .19) * .55, .7 + Math.sin(t * .27) * .5, -index * SPACING);
     object.rotation.set(.06 + Math.sin(t * .17) * .065, .24 + Math.sin(t * .15) * .16, -.06 + Math.sin(t * .13) * .07);
     object.visible = Math.abs(-index * SPACING + journey.current.distance) < 67;
+    // Reveal inscriptions on approach, avoiding distant text superimposed through the ice.
+    if (inscription.current) inscription.current.visible = index === journey.current.active;
   });
   return <group ref={group} position={[cubeX(index), .7, -index * SPACING]}>
     <RoundedBox args={[8.4, 7.8, 4.6]} radius={.65} smoothness={4} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
@@ -77,7 +80,7 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
         temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.edge} attenuationDistance={15}
         clearcoat={1} clearcoatRoughness={.08} />
     </RoundedBox>
-    <mesh position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
+    <mesh ref={inscription} position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
       <planeGeometry args={[6.7, 6.7]} />
       <meshBasicMaterial map={texture} transparent alphaTest={.05} depthWrite toneMapped={false} side={THREE.DoubleSide} />
     </mesh>
