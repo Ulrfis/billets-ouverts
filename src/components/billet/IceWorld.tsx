@@ -76,7 +76,7 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
     <RoundedBox args={[8.4, 8.4, 8.4]} radius={.28} smoothness={4} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
       <MeshTransmissionMaterial transmissionSampler samples={4} transmission={1} thickness={7.2} roughness={.075} depthWrite={false}
         ior={1.31} chromaticAberration={0} anisotropicBlur={.025} distortion={.035} distortionScale={.23}
-        temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.edge} attenuationDistance={15}
+        temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.ice} attenuationDistance={40}
         clearcoat={1} clearcoatRoughness={.08} envMapIntensity={1.2} />
     </RoundedBox>
     <mesh ref={inscription} position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
