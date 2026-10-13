@@ -10,6 +10,14 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Ajouté
 
+#### 2026-10-13 — Organique IA branchée
+- Lecture serveur par Clé des usages `reve.nuit` et `dialogue.passage` ; modèle, consigne, activation, sampling et voix suivent Notion, avec valeurs actuelles de secours si la base est indisponible ou les champs invalides.
+- Modèle de secours distinct essayé en cas d’échec du principal ; `Actif=false` bloque génération et synthèse de l’usage.
+- Limites du rêve synchronisées à l’ouverture et relues au lancement ; plafond de traces également vérifié côté serveur, quota quotidien toujours local et contournable.
+- Prompt du rêve malformé dans le pilote détecté : secours `DREAM_AI` sans corriger Notion ; autres champs valides conservés.
+- Neuf nouveaux tests de réglages ; suite complète : 36 tests réussis dans 7 fichiers. Rêve et dialogue réels vérifiés dans le navigateur sans erreur React ; écoute proposée, audio complet non retesté.
+- README, STORY, guide Organique IA et feuille de route actualisés pour Cursor. Aucune écriture Notion ni publication.
+
 #### 2026-10-13 — Mondes jour et nuit (lot 5, version calme)
 - Derrière chaque séparateur-porte, un monde plein écran s'ouvre par-dessus la colonne de lecture : le jour, quinze citations-glaçons d'exemple dérivent lentement et peuvent être gardées dans le fil de traces ; la nuit, « La branche et l'écran » prépare le rêve à partir des traces choisies.
 - Les traces gagnent un type « citation » et une sélection explicite pour le rêve (au plus 5), conservée localement ; la sidebar affiche le compte de traces choisies et une case « Choisir pour le rêve de nuit ».

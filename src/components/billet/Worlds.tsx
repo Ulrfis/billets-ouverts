@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Les mondes derrière les séparateurs. Version calme en HTML : aucune 3D,
- * aucune génération payante. Le jour dérive entre des citations-glaçons
+ * génération OpenRouter après geste explicite la nuit. Le jour dérive entre des citations-glaçons
  * collectables ; la nuit parcourt les traces choisies avant le rêve.
  */
 
