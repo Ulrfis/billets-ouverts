@@ -160,3 +160,23 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 - Le dé de la nuit génère un vrai rêve (OpenRouter, réglages en dur dans src/lib/ai-config.ts) et peut le lire à voix haute (Gradium) ; 3 rêves par jour par appareil.
 - Proposition de base Notion « Organique IA » : NOTION-IA-BASE.md (non créée).
 - Base Notion « Organique IA » créée à côté de « Réglages », 2 lignes initiales ; pas encore lue par l app.
+
+## 2026-10-13 — Consolidation documentaire pour Cursor (sans nouvelle publication)
+
+### Ajouté
+- Guide de reprise README 7.7 : intentions « lire, garder, rêver », contrats UX, fichiers à examiner, limites et pistes de mutualisation Notion ; aucune synchronisation du code Cursor effectuée.
+- Schéma et identifiant Organique IA documentés : data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, lignes `reve.nuit` et `dialogue.passage`, activation, modèles/secours, prompts, limites, voix et versions. Création confirmée précédemment, aucune lecture de réglages applicative.
+- STORY complété avec fil personnel, callout retourné, deux portes, mondes HTML/CSS, activation IA, audit Cursor et objectif Coolify ; durées et preuves non inventées.
+
+### Modifié
+- README, prompt de régénération et brouillon de fiche Notion alignés sur les développements récents ; brouillon non envoyé. Les limites des anciennes étapes restent des faits historiques, pas l’état courant.
+- Précision de l’entrée « Rêve réel » : la proposition a ensuite été créée sur demande ; « non créée » décrit l’étape initiale. La base n’est toujours pas branchée et aucun modèle de secours automatique ne s’exécute.
+- Statut IA précisé : rêve `openai/gpt-4o-mini`, température 0,9, 700 jetons max ; 150–250 mots visés, non contrôlés en sortie ; 1–5 traces validées côté serveur, 1 200 caractères chacune. Seuls les textes choisis sont transmis.
+- Plafond de trois rêves réussis/jour UTC/appareil décrit comme un compteur local contournable, pas un quota serveur ni une garantie de budget. Rêve et audio non sauvegardés ; lecture Gradium implémentée, parcours complet non revalidé ici.
+- Réglages encore dispersés documentés : rêve dans `ai-config.ts`, dialogue dans `api.functions.ts`, limites UI dans `quotes.ts`, compteur dans `Worlds.tsx` ; pas de centralisation intégrale revendiquée.
+- Repères Distribution / Réglementation / Expérience validés, usage contextuel reporté. Coolify envisagé, sans adaptateur/recette de production ou déploiement validés.
+
+### Vérifié / limites
+- `bunx vitest run` le 2026-10-13 à 09:33 UTC : **27 tests réussis, 6 fichiers**. Contrôles de sources séparés des essais navigateur/IA historiques.
+- Aucun changement de fonctionnalité, nouvel appel payant IA/audio, écriture Notion, transfert Cursor ni publication pendant cette actualisation. Aucun lint, build ou typecheck manuel ; aucun résultat actuel de déploiement revendiqué.
+- L’URL publiée fournie par le projet n’atteste pas de la parité avec le code actuel. Les services vocaux, erreurs réseau et refus après trois rêves restent à tester spécifiquement.

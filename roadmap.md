@@ -8,6 +8,7 @@
 - [x] Vérifier le billet et les interactions avec les contenus réels.
 
 # Documentation du projet
+- [x] Actualiser README, STORY et CHANGELOG après les mondes, le rêve IA et la création d’Organique IA ; préparer une reprise précise par Cursor (27 tests réussis, liens contrôlés).
 - [x] Adapter README.md au modèle MemoWays et à l’état réel.
 - [x] Ajouter STORY.md avec la chronologie et les limites connues.
 - [x] Ajouter CHANGELOG.md au format Keep a Changelog et vérifier les trois documents.
@@ -29,10 +30,15 @@
 # Lire, garder, rêver — lot 3 autorisé (avant les ajouts Notion)
 - [x] Garder passages et mots-clés, recherche, suppression, sans doublon, retour au passage ; conservation locale.
 
-# Lire, garder, rêver — lot 5 (version calme, sans IA)
+# Lire, garder, rêver — lot 5 (version calme initiale, puis IA)
 - [x] Mondes jour/nuit derrière les portes : glaçons de citations récoltables, chemin du rêve avec traces choisies (≤ 5), retour exact au texte.
 - [x] Tests traces (10) et vérification navigateur des deux mondes ; documentation actualisée.
 
 # Lots suivants
-- [ ] Lot 5 IA : rêve réellement généré et lu à voix haute — attend la validation des services IA.
-- [ ] Lot 6 — attend la validation du lot 5.- [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
+- [x] Lot 5 IA : génération OpenRouter activée, écoute Gradium implémentée ; essai texte réel rapporté, voix complète non revalidée.
+- [x] Organique IA créée dans Notion, deux usages initiaux ; aucune lecture applicative active.
+- [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
+- [ ] Branchement Organique IA — attend une demande distincte ; valeurs actuelles en dur.
+- [ ] Validation complète IA/voix/quota et lot 6 — attend arbitrage et validation de l’expérience du lot 5.
+- [ ] Usages contextuels des trois repères — reportés explicitement par Ulrich.
+- [ ] Déploiement Coolify — objectif envisagé, aucune réalisation demandée ni recette validée.

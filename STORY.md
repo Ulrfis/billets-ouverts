@@ -3,9 +3,9 @@
 > **Status**: 🟡 In Progress — prototype utilisable, intégrations et parcours partiellement vérifiés  
 > **Creator**: Ulrich Fischer ; réalisation assistée par Lovable  
 > **Started**: 2026-10-11 — développement spécifique, selon Git  
-> **Last Updated**: 2026-10-12
+> **Last Updated**: 2026-10-13
 
-Ce récit est reconstitué après développement à partir du brief, de la conversation disponible, de Git et du code. Les prompts reformulés sont signalés ; les durées, émotions et motivations personnelles non exprimées ne sont pas inventées. Référence analysée : `c0c31ea`.
+Ce récit est reconstitué après développement à partir du brief, de la conversation disponible, de Git et du code. Les prompts reformulés sont signalés ; les durées, émotions et motivations personnelles non exprimées ne sont pas inventées. Référence historique initiale : `c0c31ea` ; état courant relu le 2026-10-13. Les attentes des anciennes entrées décrivent leur date, pas les blocages actuels.
 
 ---
 
@@ -185,6 +185,52 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### 2026-10-13 — Fil personnel, carte retournée et deux portes
+
+**Intent** : garder et retrouver ce qui traverse la lecture, puis explorer une page liée sans remplacer le billet ni toucher à la colonne personnelle.
+
+**Prompt(s)** — extraits exacts : « le bloc se retourne sur place dans le texte », « On monte la page en entier », « Les deux séparateurs, ce sont les mêmes expériences ».
+
+**Outcome** : le lot 3 a remplacé le fil d’exemple par des passages et mots-clés enregistrés localement, recherche sans accents/casse, dédoublonnage, suppression et retour au bloc d’origine. Ulrich a ajouté le lien du callout et un séparateur avant « Le roi est mort… vive le roi ! ». Le callout pivote puis s’agrandit au-dessus de la colonne de lecture ; page liée entière dans les blocs pris en charge, sidebar desktop intacte, écran superposé sur smartphone. Les deux séparateurs donnent accès au même monde selon jour/nuit. Trois repères validés (Distribution, Réglementation, Expérience), mais activation contextuelle reportée.
+
+**Verification** : parcours réel de la carte et des deux portes rapporté dans la session précédente, avec retour, ordinateur et smartphone ; test automatisé de lecture liée après geste conservé. Pas de nouvel essai navigateur dans la mise à jour documentaire du 2026-10-13.
+
+**Friction / resolution** : distinguer page liée entièrement lue et copie de toute l’interface Notion ; garder la lecture éditoriale et l’autorisation serveur. Les anciens avis positionnels ne sont pas remappés au hasard.
+
+**Tool** : Lovable, Notion en lecture pour la vérification ; ajouts éditoriaux effectués par Ulrich. **Time** : non mesuré.
+
+### 2026-10-13 — Lot 5, mondes calmes puis rêve réel
+
+**Intent** : donner deux prolongements à la lecture, sans développer toutes les pistes en parallèle.
+
+**Outcome initial** : le jour, quinze phrases-glaçons d’exemple sans attribution dérivent en HTML/CSS et peuvent être récoltées. La nuit, « La branche et l’écran » reçoit les traces sélectionnées explicitement. Les traces passent à la version 2 (citations et sélection persistée), sans sélection automatique des anciennes traces. Pas de 3D ni de corpus Citations Notion branché.
+
+**Activation ultérieure** : après la demande d’Ulrich, le dé appelle réellement OpenRouter avec `openai/gpt-4o-mini`. Le rêve utilise `DREAM_AI` dans `ai-config.ts` : température 0,9, 700 jetons max, prose française sensorielle de 150–250 mots visés, sans invention présentée comme citation. Le serveur accepte 1–5 traces de 1 200 caractères max ; seuls leurs textes sont transmis. Écoute Gradium proposée après un autre geste, arrêt à la fermeture. Le rêve reste temporaire, non enregistré dans le fil.
+
+**Verification** : parcours des mondes sur le billet réel, 15 glaçons, récolte, sélection, retour et absence de pageerror rapportés avant activation. Essai OpenRouter réel réussi rapporté ensuite. Le parcours vocal complet, les exceptions réseau et le refus après trois succès ne sont pas prouvés par les contrôles de cette tâche documentaire.
+
+**Friction / resolution** : modèle initial refusé/retiré par OpenRouter, remplacé par celui du dialogue ; aucun modèle de secours automatique implémenté. Plafond de trois succès par jour UTC/appareil enregistré en localStorage, effaçable et contournable : confort du prototype, pas protection budgétaire serveur. L’objectif de mots n’est pas vérifié sur la sortie. Dialogue, limites UI et quota restent séparés des réglages du rêve : ne pas annoncer que toute la mécanique est centralisée.
+
+**Tool** : Lovable, OpenRouter, Gradium (implémentation). **Time** : non mesuré.
+
+### 2026-10-13 — Organique IA et reprise Cursor
+
+**Intent** : sortir à terme le pilotage de l’IA de l’outil de construction, conserver un prototype rapide mais documenté et transposable.
+
+**Prompt(s)** — extraits exacts : « Crée la base Notion “Organique IA” » ; « Cursor est en retard. Il ne faut pas trop inférer de Cursor. »
+
+**Outcome** : base Organique IA créée sur accord explicite, data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, avec deux lignes `reve.nuit` et `dialogue.passage` ; champs usages, activation, modèles/secours, consigne, température, jetons, mots, traces, usages/jour, voix, version et notes. La création est confirmée dans la conversation précédente ; aucune relecture distante dans cette tâche. L’application ne la lit pas : un changement dans Notion ne modifie pas son comportement. Les clés restent hors Notion et hors Git.
+
+**Cursor / mutualisation** : audit Notion en lecture seule consigné dans `NOTION-CURSOR-AUDIT.md` : Réglages contient des anciens interrupteurs, consignes, caps IA et ligne éditoriale. Aucun import applicatif réalisé ; l’instantané ne vaut pas audit actuel du code Cursor. Mutualiser intentions et contenus utiles sans rétablir l’ancien catalogue de fonctions. Priorité conservée : sidebar personnelle jour/nuit et « lire, garder, rêver ».
+
+**Documentation actuelle** : README (section 7.7), prompt de régénération et brouillon Notion actualisés pour la reprise ; STORY conserve les étapes et limites, CHANGELOG les ajouts successifs. Coolify reste une cible envisagée : aucune recette de production, adaptation Node/conteneur ni livraison auto-hébergée vérifiée. Le code fournit des contrats et modules testés à reprendre, sans preuve qu’il faille repartir de zéro ni qu’il soit prêt pour production.
+
+**Verification** : le 2026-10-13 à 09:33 UTC, suite complète : 27 tests réussis dans 6 fichiers. Aucun appel IA/audio, nouvelle écriture Notion, synchronisation Cursor ou publication pendant cette mise à jour ; lint historique non rejoué, build/typecheck manuels non exécutés.
+
+**Next** : branchement Organique IA à décider explicitement ; validation du parcours IA/voix/quota et contrôles de coûts avant exposition publique ; lot 6 à valider. Usage des trois repères différé.
+
+**Tool** : Lovable, Notion pour la création antérieure, Vitest pour la vérification actuelle. **Time** : non mesuré.
+
 ### 2026-10-13 — Moins de commandes, plus de lecture
 
 **Intent** : laisser les animations occuper toute la largeur depuis le haut et retirer les slogans et actions permanents.
@@ -322,9 +368,14 @@ Utiliser seulement les citations attestées. Ne pas inventer temps, coûts, émo
 | 2026-10-12 | Variantes/généalogie fictives ; marginalia mobiles potentiellement décalées sur Notion | Moyen | Auditer les sources et identifiants avant intégration complète |
 | 2026-10-12 | Modération locale publique, tableau d’avis fictif | Haut avant publication | Choisir la portée du service ; ne pas assimiler à une administration |
 | 2026-10-12 | Budget simulé sans contrôle serveur ni reset | Haut avant publication IA | Décision spécifique sur quotas et coûts |
+| 2026-10-13 | Rêve : trois succès/jour contrôlés uniquement sur l’appareil | Haut avant exposition publique | Définir quotas serveur et coût réel ; localStorage n’est pas une protection |
+| 2026-10-13 | Organique IA créée mais non lue | Modifications Notion sans effet sur les prompts/modèles | Branchement distinct à décider, avec validation et repli en dur |
+| 2026-10-13 | Rêves temporaires, voix/erreurs/quota non vérifiés entièrement | Moyen | Arbitrer conservation puis tests dédiés ; ne pas annoncer une archive de rêves |
+| 2026-10-13 | Coolify envisagé, aucune recette de production validée | Bloque une livraison auto-hébergée prête à lancer | Choisir/valider adaptateur, médias, secrets et garde-fous ; voir README 7.7 |
 | 2026-10-12 | E-mail saisi non enregistré ; acceptation non tracée par contribution | Moyen | Clarifier l’usage ou adapter la collecte sur demande |
 | 2026-10-12 | Anciens avis positionnels | Moyen | Lot 2 : nouveaux avis Notion sur IDs stables ; aucun remappage arbitraire des anciens avis, modération toujours basée sur le secours |
 | 2026-10-12 | Commentaires Notion refusés et aucun callout lié du pilote | Bloque le test éditorial réel du lot 2 | Repli et ajouts proposés, attendent accord distinct avant écriture |
+| 2026-10-13 | Actualisation de la ligne précédente | Callout lié et deuxième séparateur désormais testés ; commentaires toujours refusés | Trois repères validés, activation volontairement reportée ; ancien blocage callout levé |
 | 2026-10-12 | Lint : 189 erreurs, 6 avertissements | Moyen | Correction dédiée ; pas de reformatage global dans cette demande |
 | 2026-10-12 | Exceptions réseau / limites IA non testées de bout en bout | Moyen | Tests dédiés avec services réels et erreurs |
 | 2026-10-12 | Fiche/relations de synchronisation Notion inconnues | Bas | Résoudre les pages cibles avant toute écriture |
@@ -335,7 +386,13 @@ Ces sujets sont documentés, **pas ajoutés implicitement au périmètre de la p
 
 ## Contrats de session (DBC)
 
-### Dernière session — 2026-10-12, adaptation documentaire
+### Dernière session — 2026-10-13, consolidation pour Cursor
+
+**Préconditions** : décisions récentes, documents et code relus ; audit complémentaire de l’implémentation ; base Organique IA connue comme créée, non branchée. Pas de nouvelle vérification du déploiement externe.
+
+**Postconditions** : README, STORY et CHANGELOG actualisés ; intentions, fichiers de reprise, schéma Notion, limites de persistance/quota et statut Coolify explicités. 27 tests réussis dans 6 fichiers. Liens locaux des trois documents résolus, blocs Markdown équilibrés et seize rubriques README contrôlés. Aucun changement fonctionnel, coût de test IA/audio, nouvelle écriture Notion ou publication ; build/typecheck manuels et lint non rejoués.
+
+### Session historique — 2026-10-12, adaptation documentaire
 
 **Préconditions vérifiées au départ :**
 - [x] Modèles fournis et ancien README lus.
