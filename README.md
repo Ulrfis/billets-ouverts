@@ -41,6 +41,8 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 
 ### 2.4 Contexte et genèse
 
+**Direction du monde jour (2026-10-13) :** espace abstrait blanc pur, sans fond nuageux ni bleu ; cubes de verre incolore de dimensions égales, rotation continue et flottement. Reflets locaux neutres, pilotage souris conservé et citations/années Notion inchangées. Le GIF nuage reste dans la sidebar, jamais dans l’espace 3D.
+
 Le brief demandait une page française avec dix interactions, sans comptes, avec un stockage local. Le premier texte fictif a été conservé comme secours. La connexion Notion a ensuite permis de lire le billet réel et ses relations. Une révision a simplifié l’en-tête, déplacé les versions et regroupé les matériaux liés dans un panneau. Voir [STORY.md](STORY.md).
 
 ## 3. Sources de vérité et liens

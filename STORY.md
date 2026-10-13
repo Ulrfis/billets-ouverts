@@ -11,6 +11,10 @@ Ce récit est reconstitué après développement à partir du brief, de la conve
 
 ## Genesis Block
 
+### Ajustement de l’immersion — 2026-10-13
+
+Ulrich retient les glaçons et le pilotage souris, mais rejette le ciel réaliste, le bleu et les volumes trop plats. L’espace devient blanc abstrait, les trois dimensions des cubes sont égales et leur rotation plus perceptible. Le verre conserve la réfraction avec des reflets neutres ; les citations et la sidebar restent indépendantes de ce changement esthétique.
+
 ### The Friction
 
 Un article linéaire ne laisse pas facilement le lecteur réagir à un fragment, explorer une digression et contribuer tout en restant dans la lecture. C’est le problème exploré par le brief ; aucune anecdote personnelle d’Ulrich n’a été recueillie.

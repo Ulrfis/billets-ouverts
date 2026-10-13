@@ -10,6 +10,10 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Ajouté
 
+#### 2026-10-13 — Immersion blanche abstraite
+- Suppression du ciel nuageux et de toute teinte bleue dans le monde des glaçons ; fond blanc pur, verre incolore et reflets neutres, sans dispersion colorée. GIF de la sidebar inchangé.
+- Volumes de dimensions égales sur les trois axes, arêtes légèrement adoucies, rotation continue et flottement plus perceptible. Pilotage souris, citations intégrales, années et récolte conservés ; aucune modification Notion.
+
 #### Immersion jour — glaçons 3D et corpus Résonances
 - Scène Three.js / React Three Fiber chargée à l’ouverture : grands volumes arrondis, transmission, réfraction, dispersion chromatique, nuages et caméra en traversée flottante. Inspiration esthétique : Amazing Glass, sans reprise de son code.
 - `getIceQuotes` lit toute la source Résonances `271cf312-2a64-4dd5-8f29-df9b5e5d684f`, même sans relation au billet : seuls ID, Citation intégrale et Année sont exposés. Aucune écriture Notion, aucune substitution par Thèse ou texte inventé.
