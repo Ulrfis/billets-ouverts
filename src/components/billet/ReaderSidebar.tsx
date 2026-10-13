@@ -27,11 +27,13 @@ function TraceThread({ onReturn }: { onReturn?: (() => void) | undefined }) {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const shown = searchTraces(traces, query);
+  const chosen = selectedTraces(traces).length;
   return <>
     <div className="mt-10 flex items-center justify-between border-b border-sidebar-border pb-3">
       <h2 className="font-label text-xs text-sidebar-foreground">Le fil des traces</h2>
       <span className="text-xs text-muted-foreground">{traces.length} {traces.length > 1 ? "traces" : "trace"}</span>
     </div>
+    {chosen > 0 && <p className="mt-3 flex items-center gap-2 text-xs text-primary"><Moon className="size-3.5" aria-hidden />{chosen} {chosen > 1 ? "traces choisies" : "trace choisie"} pour le rêve de nuit</p>}
     {traces.length > 0 && <div className="relative mt-4">
       <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
       <label htmlFor="trace-search" className="sr-only">Chercher dans vos traces</label>
@@ -42,15 +44,19 @@ function TraceThread({ onReturn }: { onReturn?: (() => void) | undefined }) {
     : shown.length === 0 ? <p role="status" className="mt-4 text-sm text-muted-foreground">Aucune trace pour « {query} ».</p>
     : <ol className="trace-thread mt-4" aria-live="polite">
       {shown.map((trace) => {
-        const Icon = trace.kind === "passage" ? Bookmark : Hash;
+        const Icon = trace.kind === "passage" ? Bookmark : trace.kind === "citation" ? Quote : Hash;
         return <li key={trace.id} className="trace-item">
           <details>
             <summary className="cursor-pointer list-none py-3 focus-visible:outline-ring">
-              <span className="flex items-center gap-2 text-xs text-primary"><Icon className="size-3.5" aria-hidden />{trace.kind === "passage" ? "Passage" : "Mot-clé"}</span>
+              <span className="flex items-center gap-2 text-xs text-primary"><Icon className="size-3.5" aria-hidden />{trace.kind === "passage" ? "Passage" : trace.kind === "citation" ? "Citation" : "Mot-clé"}</span>
               <span className="mt-1.5 block font-display text-base leading-snug text-sidebar-foreground line-clamp-3">{trace.text}</span>
             </summary>
             <div className="pb-4 text-sm leading-relaxed text-muted-foreground">
-              {trace.kind === "mot-clé" && <p className="line-clamp-4 italic">« {trace.excerpt}{trace.excerpt.length >= 160 ? "…" : ""} »</p>}
+              {trace.kind !== "passage" && <p className="line-clamp-4 italic">« {trace.excerpt}{trace.excerpt.length >= 160 ? "…" : ""} »</p>}
+              <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs text-sidebar-foreground">
+                <input type="checkbox" checked={trace.selected === true} onChange={() => selectTrace(trace.id)} className="size-3.5 accent-primary" />
+                Choisir pour le rêve de nuit
+              </label>
               <div className="mt-2 flex gap-3 text-xs">
                 <button type="button" className="inline-flex items-center gap-1 text-primary underline underline-offset-2" onClick={() => { onReturn?.(); window.setTimeout(() => goToPassage(trace.passageId, navigate), onReturn ? 250 : 0); }}><CornerDownLeft className="size-3" aria-hidden />Revenir au passage</button>
                 <button type="button" className="inline-flex items-center gap-1 text-muted-foreground underline underline-offset-2 hover:text-rose" onClick={() => forgetTrace(trace.id)} aria-label={`Supprimer la trace : ${trace.text.slice(0, 40)}`}><Trash2 className="size-3" aria-hidden />Supprimer</button>
