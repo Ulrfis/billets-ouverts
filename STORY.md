@@ -185,6 +185,20 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### 2026-10-13 — Organique IA devient le pilotage effectif
+
+**Intent** : brancher la base sur le rêve et le dialogue en conservant leurs valeurs actuelles comme secours.
+
+**Outcome** : lecture serveur par Clé exacte à chaque génération et demande vocale ; modèle, consigne, activation, température, jetons et voix personnalisables. Modèle de secours distinct essayé après échec ; limites du rêve synchronisées dans l’interface et plafond de traces revalidé serveur. `Actif=false` bloque génération et synthèse. Les valeurs en dur `DREAM_AI` et `DIALOGUE_AI` restent le secours après délai Notion de cinq secondes, erreur, ligne absente/ambiguë ou champ invalide.
+
+**Friction / resolution** : la vraie cellule Prompt système du rêve contenait la Clé, l’intitulé et le modèle concaténés. Cette cellule est rejetée et la consigne actuelle conservée, sans écrire dans Notion ; les autres réglages valides restent actifs. Le dialogue possède une consigne valide. Une correction éditoriale de la cellule reste nécessaire pour que Notion pilote aussi le prompt du rêve.
+
+**Verification** : 36 tests réussis dans 7 fichiers, dont 9 de réglages, secours HTTP, activation et modèle secours. Sur `/`, un rêve puis une réponse de dialogue réellement générés, captures confirmées, 108 passages rendus et aucune erreur React. Bouton d’écoute visible ; pas de nouvelle validation du parcours vocal complet ni des quotas réels. Build automatique réussi après correction TypeScript des bornes optionnelles.
+
+**Limits / next** : quota rêve local UTC et contournable, pas de nouveau quota dialogue ; longueur en mots visée, non garantie ; clés serveur inchangées. Aucun import des réglages Cursor, aucune écriture Notion ni publication. Contrat détaillé dans NOTION-IA-BASE.md, reprise technique actualisée dans README.
+
+**Tool** : Lovable, API Notion en lecture, OpenRouter, Vitest et Playwright. **Time** : non mesuré.
+
 ### 2026-10-13 — Fil personnel, carte retournée et deux portes
 
 **Intent** : garder et retrouver ce qui traverse la lecture, puis explorer une page liée sans remplacer le billet ni toucher à la colonne personnelle.
@@ -369,7 +383,7 @@ Utiliser seulement les citations attestées. Ne pas inventer temps, coûts, émo
 | 2026-10-12 | Modération locale publique, tableau d’avis fictif | Haut avant publication | Choisir la portée du service ; ne pas assimiler à une administration |
 | 2026-10-12 | Budget simulé sans contrôle serveur ni reset | Haut avant publication IA | Décision spécifique sur quotas et coûts |
 | 2026-10-13 | Rêve : trois succès/jour contrôlés uniquement sur l’appareil | Haut avant exposition publique | Définir quotas serveur et coût réel ; localStorage n’est pas une protection |
-| 2026-10-13 | Organique IA créée mais non lue | Modifications Notion sans effet sur les prompts/modèles | Branchement distinct à décider, avec validation et repli en dur |
+| 2026-10-13 | Organique IA branchée ; prompt rêve malformé | Consigne du rêve reste en secours, autres champs valides actifs | Corriger éditorialement la cellule Prompt système dans Notion ; lecture validée et repli implémentés |
 | 2026-10-13 | Rêves temporaires, voix/erreurs/quota non vérifiés entièrement | Moyen | Arbitrer conservation puis tests dédiés ; ne pas annoncer une archive de rêves |
 | 2026-10-13 | Coolify envisagé, aucune recette de production validée | Bloque une livraison auto-hébergée prête à lancer | Choisir/valider adaptateur, médias, secrets et garde-fous ; voir README 7.7 |
 | 2026-10-12 | E-mail saisi non enregistré ; acceptation non tracée par contribution | Moyen | Clarifier l’usage ou adapter la collecte sur demande |
@@ -386,7 +400,13 @@ Ces sujets sont documentés, **pas ajoutés implicitement au périmètre de la p
 
 ## Contrats de session (DBC)
 
-### Dernière session — 2026-10-13, consolidation pour Cursor
+### Dernière session — 2026-10-13, branchement Organique IA
+
+**Préconditions** : accord de branchement, base existante lue côté serveur ; valeurs actuelles conservées comme secours et clés disponibles sans exposition.
+
+**Postconditions** : usages rêve/dialogue et voix chargés depuis Notion avec validation, désactivation et modèle secours ; limites du rêve synchronisées. 36 tests réussis dans 7 fichiers ; rêve et dialogue réels observés sans pageerror ; build automatique réussi. README, STORY, CHANGELOG et guide de la base actualisés. Prompt rêve malformé rejeté sans modifier Notion. Pas de publication ni test audio complet ; quota local toujours contournable.
+
+### Session historique — 2026-10-13, consolidation pour Cursor
 
 **Préconditions** : décisions récentes, documents et code relus ; audit complémentaire de l’implémentation ; base Organique IA connue comme créée, non branchée. Pas de nouvelle vérification du déploiement externe.
 

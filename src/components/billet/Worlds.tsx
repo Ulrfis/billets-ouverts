@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowUp, Bookmark, Check, Dices, Square, TreePine, Volume2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { dreamSettingsQuery } from "@/lib/ai-settings-query";
 import { Button } from "@/components/ui/button";
 import { EXAMPLE_QUOTES, DREAM_LIMITS, type Quote } from "@/data/quotes";
-import { generateDream, speak } from "@/lib/api.functions";
+import { generateDream, speak, getDreamSettings } from "@/lib/api.functions";
 import { keepTrace, useStore } from "@/lib/store";
 import { hasTrace, selectedTraces } from "@/lib/traces";
 import { useReader } from "./ReaderContext";
@@ -12,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Les mondes derrière les séparateurs. Version calme en HTML : aucune 3D,
- * aucune génération payante. Le jour dérive entre des citations-glaçons
+ * génération OpenRouter après geste explicite la nuit. Le jour dérive entre des citations-glaçons
  * collectables ; la nuit parcourt les traces choisies avant le rêve.
  */
 
@@ -83,27 +85,34 @@ function NightWorld() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const runDream = useServerFn(generateDream);
   const runSpeak = useServerFn(speak);
-  const tooMany = chosen.length > DREAM_LIMITS.maxTraces;
+  const readSettings = useServerFn(getDreamSettings);
+  const { data: settings } = useQuery(dreamSettingsQuery);
+  const maxTraces = settings?.maxTraces ?? DREAM_LIMITS.maxTraces;
+  const tooMany = chosen.length > maxTraces;
   useEffect(() => () => { audioRef.current?.pause(); }, []);
 
   async function roll() {
     setDiceRolled(true);
     setError(null);
-    if (dreamsToday() >= DREAM_LIMITS.perDay) {
-      setError(`Trois rêves par jour sur cet appareil : la nuit reprendra demain.`);
-      return;
-    }
     setBusy(true);
-    const r = await runDream({ data: { traces: chosen.slice(0, DREAM_LIMITS.maxTraces).map((t) => t.text.slice(0, 1200)) } });
-    setBusy(false);
-    if (r.ok) { setDream(r.text); countDream(); } else setError(r.error);
+    try {
+      const current = await readSettings();
+      if (!current.active) { setError("Le rêve est désactivé pour le moment."); return; }
+      if (chosen.length > current.maxTraces) { setError(`Choisissez au plus ${current.maxTraces} traces.`); return; }
+      if (dreamsToday() >= current.perDay) {
+        setError(`${current.perDay} rêves par jour sur cet appareil : la nuit reprendra demain.`); return;
+      }
+      const r = await runDream({ data: { traces: chosen.map((t) => t.text.slice(0, 1200)) } });
+      if (r.ok) { setDream(r.text); countDream(); } else setError(r.error);
+    } catch { setError("Le rêve est momentanément indisponible."); }
+    finally { setBusy(false); }
   }
 
   async function listen() {
     if (!dream) return;
     if (voice === "playing") { audioRef.current?.pause(); setVoice("idle"); return; }
     setVoice("loading");
-    const r = await runSpeak({ data: { text: dream.slice(0, 3000) } });
+    const r = await runSpeak({ data: { text: dream.slice(0, 3000), usage: "reve.nuit" } });
     if (!r.ok) { setError(r.error); setVoice("idle"); return; }
     const audio = new Audio(`data:${r.mime};base64,${r.audio}`);
     audioRef.current = audio;
@@ -119,7 +128,7 @@ function NightWorld() {
         <h3 className="text-center font-display text-3xl">La branche et l’écran</h3>
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Le rêve naîtra de vos traces, et d’elles seulement. Choisissez-les dans le fil de traces
-          (au plus {DREAM_LIMITS.maxTraces}), puis lancez le dé.
+          (au plus {maxTraces}), puis lancez le dé.
         </p>
 
         {chosen.length === 0 ? (
@@ -142,17 +151,18 @@ function NightWorld() {
         <div className="mt-10 border-t border-border pt-6 text-center">
           {tooMany && (
             <p role="status" className="mb-4 text-sm text-rose">
-              {chosen.length} traces choisies : le rêve n’en retiendra que {DREAM_LIMITS.maxTraces}. Désélectionnez-en dans le fil.
+              {chosen.length} traces choisies : choisissez-en au plus {maxTraces} dans le fil.
             </p>
           )}
           <Button
             size="lg"
-            disabled={chosen.length === 0 || tooMany || busy}
-            aria-disabled={chosen.length === 0 || tooMany || busy}
+            disabled={chosen.length === 0 || tooMany || busy || settings?.active === false}
+            aria-disabled={chosen.length === 0 || tooMany || busy || settings?.active === false}
             onClick={roll}
           >
             <Dices aria-hidden /> {busy ? "Le rêve se forme…" : dream ? "Relancer le dé" : "Lancer le dé"}
           </Button>
+          {settings?.active === false && <p role="status" className="mt-4 text-sm text-muted-foreground">Le rêve est désactivé pour le moment.</p>}
           {diceRolled && error && (
             <p role="alert" className="mx-auto mt-6 max-w-md text-sm text-rose">{error}</p>
           )}

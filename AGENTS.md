@@ -20,5 +20,5 @@
 - Linked callout reads must re-authorize their block and explicit destination against the pilot on the server; nested linked callouts are inert to prevent cycles and private arbitrary-page reads.
 - Only explicit editorial fragment comments or explicitly related fallback rows may become public annotations; ordinary comments and author data stay private, and missing comment permissions must not interrupt reading.
 - Uploaded sidebar media uses asset pointers plus fixed-frame derivatives; render only visible media and honor reduced-motion before animation begins.
-- Night dream generation uses the browser-safe DREAM_AI configuration and the existing server API boundary; Notion Organique IA is documentation-only until explicitly wired, so remote configuration must never be claimed to control the current runtime.
+- Dream and dialogue configuration is resolved from the explicit Organique IA usage row through the existing server API boundary; browser-safe defaults and field validation preserve current behavior when Notion fails, with only public dream control limits exposed to the browser.
 - Trace transformations stay in the browser-safe pure traces module and are persisted through the existing reader store, keeping compatibility and selection behavior independently testable.

@@ -80,7 +80,7 @@ export function DialoguePanel({
     setMsgs([...next, { role: "assistant", content: r.text }]);
     setState((s) => ({ ...s, spent: s.spent + (r.cost ?? 0.001) }));
     if (mode === "voix") {
-      const a = await tts({ data: { text: r.text } });
+      const a = await tts({ data: { text: r.text, usage: "dialogue.passage" } });
       if (a.ok) new Audio(`data:${a.mime};base64,${a.audio}`).play().catch(() => {});
       else {
         setNotice("Voix indisponible — passage en mode texte.");

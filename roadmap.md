@@ -8,6 +8,7 @@
 - [x] Vérifier le billet et les interactions avec les contenus réels.
 
 # Documentation du projet
+- [x] Brancher Organique IA pour rêve/dialogue : 36 tests, rêve et dialogue réels vérifiés ; repli du prompt rêve malformé, documentation actualisée.
 - [x] Actualiser README, STORY et CHANGELOG après les mondes, le rêve IA et la création d’Organique IA ; préparer une reprise précise par Cursor (27 tests réussis, liens contrôlés).
 - [x] Adapter README.md au modèle MemoWays et à l’état réel.
 - [x] Ajouter STORY.md avec la chronologie et les limites connues.
@@ -36,9 +37,10 @@
 
 # Lots suivants
 - [x] Lot 5 IA : génération OpenRouter activée, écoute Gradium implémentée ; essai texte réel rapporté, voix complète non revalidée.
-- [x] Organique IA créée dans Notion, deux usages initiaux ; aucune lecture applicative active.
+- [x] Organique IA créée dans Notion, deux usages initiaux ; lecture applicative désormais active.
 - [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
-- [ ] Branchement Organique IA — attend une demande distincte ; valeurs actuelles en dur.
+- [x] Branchement Organique IA avec validation, activation, modèle secours et valeurs actuelles en repli ; aucune écriture Notion.
+- [ ] Corriger éditorialement le Prompt système du rêve dans Notion (métadonnées concaténées) ; secours actif en attendant.
 - [ ] Validation complète IA/voix/quota et lot 6 — attend arbitrage et validation de l’expérience du lot 5.
 - [ ] Usages contextuels des trois repères — reportés explicitement par Ulrich.
 - [ ] Déploiement Coolify — objectif envisagé, aucune réalisation demandée ni recette validée.

@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { completeAi, dreamPrompt, loadAiSettings } from "./ai-settings";
 import { coverUrl, allowsContributorCredit } from "./notion-properties";
 import { allowedCalloutTarget, editorialText, exactFragment, flattenEditorialBlocks, fragmentFromComment, parseEditorialBlock, type EditorialBlock, type EditorialFragment } from "./notion-editorial";
 
@@ -255,42 +256,25 @@ const DialogueInput = z.object({
     .max(30),
 });
 
+export const getDreamSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const settings = await loadAiSettings("reve.nuit", process.env["NOTION_API_KEY"]);
+  return { active: settings.active !== false, maxTraces: settings.maxTraces ?? 5, perDay: settings.perDay ?? 3, source: settings.source, version: settings.version ?? "" };
+});
+
 export const dialogueReply = createServerFn({ method: "POST" })
   .inputValidator((d) => DialogueInput.parse(d))
   .handler(async ({ data }) => {
     const key = process.env["OPENROUTER_API_KEY"];
     if (!key) return { ok: false as const, error: "Dialogue indisponible (clé manquante)." };
-    const system = `Tu es la voix d'un essai intitulé « Et si… le cinéma embrassait le web ? » (2019). Tu dialogues avec un lecteur, en français, sur un ton réflexif, ouvert, sans jamais être péremptoire. Tu admets le doute, tu reformules, tu relances par une question. Réponds en 2 à 5 phrases.
-Tu t'appuies STRICTEMENT sur les matériaux ci-dessous. Si une question en sort, dis-le simplement et ramène la conversation au passage.
-
+    const settings = await loadAiSettings("dialogue.passage", process.env["NOTION_API_KEY"]);
+    if (settings.active === false) return { ok: false as const, error: "Le dialogue est désactivé pour le moment." };
+    const system = `${settings.prompt}
 PASSAGE :
 ${data.passage}
 
 CARNET ET RÉSONANCES VALIDÉES :
 ${data.context}`;
-    try {
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "openai/gpt-4o-mini",
-          messages: [{ role: "system", content: system }, ...data.messages],
-        }),
-      });
-      if (!res.ok) {
-        const t = await res.text();
-        return { ok: false as const, error: `OpenRouter ${res.status}: ${t.slice(0, 200)}` };
-      }
-      const j = (await res.json()) as {
-        choices?: { message?: { content?: string } }[];
-        usage?: { total_tokens?: number };
-      };
-      const text = j.choices?.[0]?.message?.content ?? "";
-      const cost = ((j.usage?.total_tokens ?? 500) / 1_000_000) * 0.6;
-      return { ok: true as const, text, cost };
-    } catch (e) {
-      return { ok: false as const, error: String(e) };
-    }
+    return completeAi(settings, key, [{ role: "system", content: system }, ...data.messages]);
   });
 
 export const generateDream = createServerFn({ method: "POST" })
@@ -300,32 +284,13 @@ export const generateDream = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const key = process.env["OPENROUTER_API_KEY"];
     if (!key) return { ok: false as const, error: "Le rêve est indisponible (clé OpenRouter manquante)." };
-    const { DREAM_AI } = await import("./ai-config");
-    try {
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: DREAM_AI.model,
-          temperature: DREAM_AI.temperature,
-          max_tokens: DREAM_AI.maxTokens,
-          messages: [
-            { role: "system", content: DREAM_AI.prompt },
-            { role: "user", content: data.traces.map((t, i) => `Trace ${i + 1} : ${t}`).join("\n\n") },
-          ],
-        }),
-      });
-      if (!res.ok) {
-        const t = await res.text();
-        return { ok: false as const, error: `OpenRouter ${res.status}: ${t.slice(0, 200)}` };
-      }
-      const j = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-      const text = (j.choices?.[0]?.message?.content ?? "").trim();
-      if (!text) return { ok: false as const, error: "Le rêve est revenu vide." };
-      return { ok: true as const, text, model: DREAM_AI.model };
-    } catch (e) {
-      return { ok: false as const, error: String(e) };
-    }
+    const settings = await loadAiSettings("reve.nuit", process.env["NOTION_API_KEY"]);
+    if (settings.active === false) return { ok: false as const, error: "Le rêve est désactivé pour le moment." };
+    if (data.traces.length > (settings.maxTraces ?? 5)) return { ok: false as const, error: `Choisissez au plus ${settings.maxTraces ?? 5} traces pour ce rêve.` };
+    return completeAi(settings, key, [
+      { role: "system", content: dreamPrompt(settings) },
+      { role: "user", content: data.traces.map((t, i) => `Trace ${i + 1} : ${t}`).join("\n\n") },
+    ]);
   });
 
 export const transcribe = createServerFn({ method: "POST" })
@@ -346,17 +311,19 @@ export const transcribe = createServerFn({ method: "POST" })
   });
 
 export const speak = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ text: z.string().max(3000) }).parse(d))
+  .inputValidator((d) => z.object({ text: z.string().max(3000), usage: z.enum(["reve.nuit", "dialogue.passage"]).default("dialogue.passage") }).parse(d))
   .handler(async ({ data }) => {
     const key = process.env["GRADIUM_API_KEY"];
     if (!key) return { ok: false as const, error: "Synthèse vocale indisponible." };
+    const settings = await loadAiSettings(data.usage, process.env["NOTION_API_KEY"]);
+    if (settings.active === false) return { ok: false as const, error: "Cet usage est désactivé pour le moment." };
     try {
       const res = await fetch("https://eu.api.gradium.ai/api/post/speech/tts", {
         method: "POST",
         headers: { "x-api-key": key, "Content-Type": "application/json" },
         body: JSON.stringify({
           text: data.text,
-          voice_id: process.env["GRADIUM_VOICE_ID"] || "b35yykvVppLXyw_l",
+          voice_id: settings.voice || process.env["GRADIUM_VOICE_ID"] || "b35yykvVppLXyw_l",
           output_format: "wav",
           only_audio: true,
         }),
