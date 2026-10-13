@@ -293,6 +293,41 @@ ${data.context}`;
     }
   });
 
+export const generateDream = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z.object({ traces: z.array(z.string().min(1).max(1200)).min(1).max(5) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const key = process.env["OPENROUTER_API_KEY"];
+    if (!key) return { ok: false as const, error: "Le rêve est indisponible (clé OpenRouter manquante)." };
+    const { DREAM_AI } = await import("./ai-config");
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: DREAM_AI.model,
+          temperature: DREAM_AI.temperature,
+          max_tokens: DREAM_AI.maxTokens,
+          messages: [
+            { role: "system", content: DREAM_AI.prompt },
+            { role: "user", content: data.traces.map((t, i) => `Trace ${i + 1} : ${t}`).join("\n\n") },
+          ],
+        }),
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        return { ok: false as const, error: `OpenRouter ${res.status}: ${t.slice(0, 200)}` };
+      }
+      const j = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+      const text = (j.choices?.[0]?.message?.content ?? "").trim();
+      if (!text) return { ok: false as const, error: "Le rêve est revenu vide." };
+      return { ok: true as const, text, model: DREAM_AI.model };
+    } catch (e) {
+      return { ok: false as const, error: String(e) };
+    }
+  });
+
 export const transcribe = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ audio: z.string().max(15_000_000), mime: z.string() }).parse(d))
   .handler(async ({ data }) => {

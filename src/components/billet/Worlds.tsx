@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUp, Bookmark, Check, Dices, TreePine } from "lucide-react";
+import { ArrowUp, Bookmark, Check, Dices, Square, TreePine, Volume2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { EXAMPLE_QUOTES, DREAM_PROMPT, DREAM_LIMITS, type Quote } from "@/data/quotes";
+import { EXAMPLE_QUOTES, DREAM_LIMITS, type Quote } from "@/data/quotes";
+import { generateDream, speak } from "@/lib/api.functions";
 import { keepTrace, useStore } from "@/lib/store";
 import { hasTrace, selectedTraces } from "@/lib/traces";
 import { useReader } from "./ReaderContext";
@@ -57,11 +59,58 @@ function DayWorld() {
   );
 }
 
+const DREAM_DAY_KEY = "billets-ouverts-dreams";
+function dreamsToday(): number {
+  try {
+    const v = JSON.parse(localStorage.getItem(DREAM_DAY_KEY) || "{}") as { day?: string; n?: number };
+    return v.day === new Date().toISOString().slice(0, 10) ? v.n ?? 0 : 0;
+  } catch { return 0; }
+}
+function countDream() {
+  try {
+    localStorage.setItem(DREAM_DAY_KEY, JSON.stringify({ day: new Date().toISOString().slice(0, 10), n: dreamsToday() + 1 }));
+  } catch { /* stockage refusé : on continue */ }
+}
+
 function NightWorld() {
   const traces = useStore((s) => s.traces);
   const chosen = selectedTraces(traces);
   const [diceRolled, setDiceRolled] = useState(false);
+  const [dream, setDream] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [voice, setVoice] = useState<"idle" | "loading" | "playing">("idle");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const runDream = useServerFn(generateDream);
+  const runSpeak = useServerFn(speak);
   const tooMany = chosen.length > DREAM_LIMITS.maxTraces;
+  useEffect(() => () => { audioRef.current?.pause(); }, []);
+
+  async function roll() {
+    setDiceRolled(true);
+    setError(null);
+    if (dreamsToday() >= DREAM_LIMITS.perDay) {
+      setError(`Trois rêves par jour sur cet appareil : la nuit reprendra demain.`);
+      return;
+    }
+    setBusy(true);
+    const r = await runDream({ data: { traces: chosen.slice(0, DREAM_LIMITS.maxTraces).map((t) => t.text.slice(0, 1200)) } });
+    setBusy(false);
+    if (r.ok) { setDream(r.text); countDream(); } else setError(r.error);
+  }
+
+  async function listen() {
+    if (!dream) return;
+    if (voice === "playing") { audioRef.current?.pause(); setVoice("idle"); return; }
+    setVoice("loading");
+    const r = await runSpeak({ data: { text: dream.slice(0, 3000) } });
+    if (!r.ok) { setError(r.error); setVoice("idle"); return; }
+    const audio = new Audio(`data:${r.mime};base64,${r.audio}`);
+    audioRef.current = audio;
+    audio.onended = () => setVoice("idle");
+    await audio.play().catch(() => setVoice("idle"));
+    setVoice("playing");
+  }
   return (
     <div className="world-night">
       <div className="dream-trunk" aria-hidden />
@@ -98,24 +147,27 @@ function NightWorld() {
           )}
           <Button
             size="lg"
-            disabled={chosen.length === 0 || tooMany}
-            aria-disabled={chosen.length === 0 || tooMany}
-            onClick={() => setDiceRolled(true)}
+            disabled={chosen.length === 0 || tooMany || busy}
+            aria-disabled={chosen.length === 0 || tooMany || busy}
+            onClick={roll}
           >
-            <Dices aria-hidden /> Lancer le dé
+            <Dices aria-hidden /> {busy ? "Le rêve se forme…" : dream ? "Relancer le dé" : "Lancer le dé"}
           </Button>
-          {diceRolled && (
-            <div role="status" className="animate-fade-rise mx-auto mt-6 max-w-md space-y-3 text-left text-sm text-muted-foreground">
-              <p>
-                Le dé est lancé — la génération réelle arrive au prochain lot. Elle enverra
-                uniquement vos {Math.min(chosen.length, DREAM_LIMITS.maxTraces)} traces choisies
-                vers les services de génération et de voix, avec ce prompt modifiable :
-              </p>
-              <blockquote className="border-l-2 border-primary pl-4 italic">{DREAM_PROMPT}</blockquote>
-              <p className="text-xs">
-                Limites proposées : {DREAM_LIMITS.maxTraces} traces, {DREAM_LIMITS.minWords}–{DREAM_LIMITS.maxWords} mots,
-                {" "}{DREAM_LIMITS.perDay} rêves par jour sur cet appareil.
-              </p>
+          {diceRolled && error && (
+            <p role="alert" className="mx-auto mt-6 max-w-md text-sm text-rose">{error}</p>
+          )}
+          {dream && (
+            <div role="status" className="animate-fade-rise mx-auto mt-8 max-w-xl space-y-4 text-left">
+              {dream.split(/\n+/).map((p, i) => (
+                <p key={i} className="font-display text-xl leading-relaxed">{p}</p>
+              ))}
+              <div className="flex items-center gap-3 pt-2">
+                <Button variant="outline" size="sm" onClick={listen} disabled={voice === "loading"}>
+                  {voice === "playing" ? <Square aria-hidden /> : <Volume2 aria-hidden />}
+                  {voice === "loading" ? "La voix arrive…" : voice === "playing" ? "Arrêter" : "Écouter le rêve"}
+                </Button>
+                <span className="text-xs text-muted-foreground">Rêve généré par IA, à partir de vos traces seulement.</span>
+              </div>
             </div>
           )}
         </div>
