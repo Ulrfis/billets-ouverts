@@ -8,6 +8,7 @@
 - [x] Vérifier le billet et les interactions avec les contenus réels.
 
 # Documentation du projet
+- [ ] Brancher Organique IA pour rêve/dialogue, vérifier le repli, les champs et le parcours réel ; actualiser la documentation.
 - [x] Actualiser README, STORY et CHANGELOG après les mondes, le rêve IA et la création d’Organique IA ; préparer une reprise précise par Cursor (27 tests réussis, liens contrôlés).
 - [x] Adapter README.md au modèle MemoWays et à l’état réel.
 - [x] Ajouter STORY.md avec la chronologie et les limites connues.
