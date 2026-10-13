@@ -2,7 +2,7 @@
 
 > Un prototype de lecture immersive en français : lire un essai, réagir à ses passages, explorer ses prolongements et dialoguer avec le texte.
 >
-> **Type :** Prototype expérimental · **État :** En cours de construction · **Version :** lot 2, grammaire Notion (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Référence historique :** `c0c31ea`, précédant les lots 1 et 2
+> **Type :** Prototype expérimental · **État :** En cours de construction · **Version :** lot 5, mondes jour/nuit (sans release numérotée) · **Mémoire vérifiée le :** 2026-10-12 · **Référence historique :** `c0c31ea`, précédant les lots 1 et 2
 
 ## 1. Fiche d’identité
 
@@ -35,7 +35,7 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 
 ### 2.3 Périmètre actuel
 
-**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF pleine largeur depuis le haut, sans bouton Pause, et deux dosages. Bouton « Information » dans le menu ; poésie au survol/focus de l’animation. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil est personnel et local ; les mondes restent des exemples. Callout lié et fragments réels du pilote attendent les ajouts Notion approuvés. Les formats journalistiques ne sont plus accessibles.
+**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF pleine largeur depuis le haut, sans bouton Pause, et deux dosages. Bouton « Information » dans le menu ; poésie au survol/focus de l’animation. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil est personnel et local. Derrière chaque porte : le jour, quinze citations-glaçons d'exemple dérivent et se gardent dans le fil ; la nuit, « La branche et l'écran » prépare un rêve à partir des traces choisies (au plus 5) — « Lancer le dé » affiche le prompt et les limites, la génération réelle et la voix attendent la validation des services IA. Callout lié et fragments réels du pilote attendent les ajouts Notion approuvés. Les formats journalistiques ne sont plus accessibles.
 
 **Hors périmètre :** comptes, Lovable Cloud, base partagée, publication automatique des contributions dans Notion, véritable administration sécurisée, paiement et suivi budgétaire comptable.
 
@@ -324,6 +324,9 @@ Tests ciblés : couvertures URL/fichiers/GIF, consentement des crédits, route d
 | Build | Contrôle automatique Lovable | Réussi après rédaction : journal `build OK` à 18:48:28 UTC ; non exécuté manuellement | 2026-10-12 |
 | Parcours / revue visuelle | Non rejoués | Documentation seule ; couverture, panneau et changement de version vérifiés dans la session précédente, pas une preuve actuelle IA | 2026-10-12 |
 | Documentation | Contrôle des liens locaux, blocs Markdown, rubriques et marqueurs | Réussi : trois documents, seize rubriques README, marqueurs Notion présents, aucun champ de modèle non remplacé | 2026-10-12 |
+
+### Vérification lot 5 — 2026-10-13
+Monde jour : 15 glaçons rendus, récolte d'une citation dans le fil, fermeture et retour au texte exact. Monde nuit : traces choisies listées, « Lancer le dé » actif, prompt et limites affichés. Aucun pageerror. Dix tests unitaires sur les traces (citation, recherche, sélection, compatibilité legacy). Aucune écriture Notion, aucun appel IA.
 
 ### Vérification lot 1 — 2026-10-12
 
