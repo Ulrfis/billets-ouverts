@@ -192,8 +192,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     if (Date.now() - notionCache.at > NOTION_FRESH_MS) void refreshNotion(key).catch(() => {});
     return notionCache.value;
   }
-  const value = await refreshNotion(key);
-  return value.ok ? value : (notionCache?.value ?? value);
+  return refreshNotion(key);
 });
 
 async function loadNotionContent(key: string) {
