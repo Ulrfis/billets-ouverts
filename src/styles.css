@@ -92,14 +92,14 @@
   --sidebar-border: oklch(0.86 0 0);
   --sidebar-ring: oklch(0.53 0.15 251);
   --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
-  --ice-sky: oklch(0.985 0.009 220);
-  --ice-glass: oklch(0.985 0.012 215);
-  --ice-edge: oklch(0.76 0.055 215);
-  --ice-ink: oklch(0.28 0.032 225);
+  --ice-sky: oklch(1 0 0);
+  --ice-glass: oklch(1 0 0);
+  --ice-edge: oklch(0.55 0 0);
+  --ice-ink: oklch(0.28 0 0);
   --ice-light: oklch(1 0 0);
   --ice-hud: oklch(1 0 0 / 0.68);
   --ice-reading: oklch(1 0 0 / 0.91);
-  --ice-shadow: 0 12px 48px oklch(0.45 0.045 220 / 0.12);
+  --ice-shadow: 0 12px 48px oklch(0.45 0 0 / 0.12);
 }
 
 @layer base {

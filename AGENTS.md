@@ -24,5 +24,5 @@
 - AI generation is awaited without artificial request deadlines; audio and microphone resources stop when their reading panel closes, and async results from closed panels are ignored to prevent surprise playback.
 - The dream allowance parser is browser-safe and validates local counters; daily allowances remain prototype-only, never a server spending guarantee.
 - Trace transformations stay in the browser-safe pure traces module and are persisted through the existing reader store, keeping compatibility and selection behavior independently testable.
-- The day immersion is a lazy, browser-only R3F scene with physical transmission and local cloud textures; keep the article SSR and all world/jaw layers confined to the reading region so the sidebar remains interactive.
+- The day immersion is a lazy, browser-only R3F scene with physical transmission and a locally generated reflection environment; keep the article SSR and all world/jaw layers confined to the reading region so the sidebar remains interactive and no external environment download is required.
 - Day-world quotations read the explicitly authorized Résonances source through getIceQuotes, exposing only complete Citation and Année via a tested pure parser; do not broaden other relation-based reads or substitute invented quotations on failure.

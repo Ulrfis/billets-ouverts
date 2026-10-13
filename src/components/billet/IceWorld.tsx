@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Lightformer, MeshTransmissionMaterial, RoundedBox, useTexture } from "@react-three/drei";
+import { Edges, Environment, Lightformer, MeshTransmissionMaterial, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { ArrowLeft, ArrowRight, Bookmark, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,6 @@ import { keepTrace, useStore } from "@/lib/store";
 import { hasTrace } from "@/lib/traces";
 import type { IceQuote } from "@/lib/ice-quotes";
 import { useReader } from "./ReaderContext";
-import cloudscape from "@/assets/ice-cloudscape.jpg";
 
 type Palette = { sky: string; ice: string; edge: string; ink: string; light: string };
 type Journey = { distance: number; target: number | null; inspected: boolean; active: number };
@@ -67,47 +66,40 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
     if (!object) return;
     if (!reduced) time.current += Math.min(rawDelta, .05);
     const t = time.current;
-    object.position.set(cubeX(index) + Math.sin(t * .19) * .55, .7 + Math.sin(t * .27) * .5, -index * SPACING);
-    object.rotation.set(.06 + Math.sin(t * .17) * .065, .24 + Math.sin(t * .15) * .16, -.06 + Math.sin(t * .13) * .07);
+    object.position.set(cubeX(index) + Math.sin(t * .19) * .8, .7 + Math.sin(t * .27) * .7, -index * SPACING + Math.sin(t * .21) * .4);
+    object.rotation.set(.18 + Math.sin(t * .23) * .2, .38 + t * .085 + Math.sin(t * .15) * .18, -.08 + Math.sin(t * .19) * .12);
     object.visible = Math.abs(-index * SPACING + journey.current.distance) < 67;
     // Reveal inscriptions on approach, avoiding distant text superimposed through the ice.
     if (inscription.current) inscription.current.visible = index === journey.current.active;
   });
   return <group ref={group} position={[cubeX(index), .7, -index * SPACING]}>
-    <RoundedBox args={[8.4, 7.8, 4.6]} radius={.65} smoothness={4} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
-      <MeshTransmissionMaterial transmissionSampler samples={4} transmission={1} thickness={3.2} roughness={.065} depthWrite={false}
-        ior={1.31} chromaticAberration={.025} anisotropicBlur={.025} distortion={.035} distortionScale={.23}
-        temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.edge} attenuationDistance={15}
-        clearcoat={1} clearcoatRoughness={.08} />
+    <RoundedBox args={[8.4, 8.4, 8.4]} radius={.28} smoothness={4} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
+      <MeshTransmissionMaterial transmissionSampler samples={4} transmission={1} thickness={7.2} roughness={.075} depthWrite={false}
+        ior={1.31} chromaticAberration={0} anisotropicBlur={.025} distortion={.035} distortionScale={.23}
+        temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.ice} attenuationDistance={40}
+        clearcoat={1} clearcoatRoughness={.08} envMapIntensity={1.2} />
     </RoundedBox>
     <mesh ref={inscription} position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
       <planeGeometry args={[6.7, 6.7]} />
       <meshBasicMaterial map={texture} transparent alphaTest={.05} depthWrite toneMapped={false} side={THREE.DoubleSide} />
     </mesh>
     {/* Inner seams establish real depth rather than a flat glass panel. */}
-    <RoundedBox args={[7.8, 7.2, 4.05]} radius={.5} smoothness={2}>
-      <meshBasicMaterial color={palette.edge} wireframe transparent opacity={.035} depthWrite={false} />
-    </RoundedBox>
+    <mesh>
+      <boxGeometry args={[7.9, 7.9, 7.9]} />
+      <meshBasicMaterial visible={false} />
+      <Edges color={palette.edge} transparent opacity={.1} depthWrite={false} />
+    </mesh>
   </group>;
 }
 
-function Sky({ palette, journey }: { palette: Palette; journey: RefObject<Journey> }) {
-  const texture = useTexture(cloudscape);
-  const backdrop = useRef<THREE.Mesh>(null);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  useFrame(({ camera }) => {
-    backdrop.current?.position.set(camera.position.x * .1, 0, -journey.current.distance - 95);
-  });
+function WhiteSpace({ palette }: { palette: Palette }) {
   return <>
     <color attach="background" args={[palette.sky]} />
-    <mesh ref={backdrop} position={[0, 0, -95]}>
-      <planeGeometry args={[260, 145]} />
-      <meshBasicMaterial map={texture} toneMapped={false} />
-    </mesh>
     <Environment resolution={128}>
       <Lightformer intensity={3} color={palette.light} position={[0, 12, 5]} scale={[30, 20, 1]} />
-      <Lightformer intensity={2} color={palette.edge} position={[-18, 3, 0]} rotation-y={Math.PI / 2} scale={[25, 12, 1]} />
+      <Lightformer intensity={.65} color={palette.edge} position={[-18, 3, 0]} rotation-y={Math.PI / 2} scale={[25, 12, 1]} />
       <Lightformer intensity={4} color={palette.light} position={[16, 0, -12]} rotation-y={-Math.PI / 2} scale={[5, 25, 1]} />
+      <Lightformer intensity={1} color={palette.light} position={[0, -10, 2]} rotation-x={Math.PI / 2} scale={[18, 18, 1]} />
     </Environment>
   </>;
 }
@@ -185,7 +177,7 @@ export default function IceWorld({ quotes }: { quotes: IceQuote[] }) {
     {palette && <Canvas dpr={[1, 1.35]} camera={{ position: [0, .3, 20], fov: 55, near: .1, far: 180 }} gl={{ antialias: true }} fallback={<p className="p-8">L’espace 3D n’est pas disponible sur cet appareil.</p>}>
       <ambientLight intensity={1} />
       <Suspense fallback={null}>
-        <Sky palette={palette} journey={journey} />
+        <WhiteSpace palette={palette} />
         {quotes.map((item, i) => <Glacier key={item.id} quote={item} index={i} palette={palette} reduced={reducedMotion} journey={journey} onInspect={inspect} />)}
         <DriftCamera journey={journey} count={quotes.length} reduced={reducedMotion} onActive={setActive} />
       </Suspense>

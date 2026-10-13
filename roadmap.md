@@ -1,4 +1,5 @@
 # Corrections du billet
+- [x] Retravailler les glaçons : espace blanc abstrait sans nuages ni bleu, vrais cubes flottants en rotation ; souris et sidebar conservées. Parcours réel vérifié sur ordinateur et format téléphone : citations Notion, navigation et retour, aucune erreur applicative. Fluidité sur appareils réels à évaluer.
 - [x] Immersion jour 3D : glaçons réfractifs, traversée flottante, citations intégrales/années Résonances Notion, mâchoire limitée au billet ; ordinateur/téléphone vérifiés, 42 tests, documentation actualisée. Fluidité sur appareils réels à évaluer.
 - [x] Préparer les premiers essais : consigne Notion corrigée sur accord, rêve/écoute/arrêt/retour réel, erreurs voix/dialogue et quota local vérifiés ; 40 tests, promesses clarifiées et TEST-LECTURE.md ajouté.
 - [x] GIF plein largeur en haut, sans pause ni slogan permanent ; poésie au survol et Information dans le menu.
