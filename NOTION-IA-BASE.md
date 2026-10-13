@@ -2,7 +2,7 @@
 
 Aujourd'hui, tout est écrit en dur dans `src/lib/ai-config.ts` (une entrée par usage).
 Demain, chaque entrée devient une ligne de cette base ; l'application la lit côté serveur,
-et garde les valeurs en dur comme secours si Notion ne répond pas. Rien n'est encore créé dans Notion.
+et garde les valeurs en dur comme secours si Notion ne répond pas. Base créée le 2026-10-13 (data source c66462b5-fbf0-404d-9527-1a96b864bdf5), avec les lignes reve.nuit et dialogue.passage ; l app ne la lit pas encore.
 
 | Propriété | Type | Rôle |
 |---|---|---|
