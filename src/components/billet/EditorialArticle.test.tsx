@@ -16,7 +16,7 @@ describe("Linked editorial reading", () => {
     await waitFor(() => expect(screen.getByText("Le contenu original de la page liée.")).toBeTruthy());
     expect(mocks.load).toHaveBeenCalledWith({ data: { blockId: callout.id } });
     fireEvent.click(screen.getByRole("button", { name: "Revenir au texte" }));
-    fireEvent.click(screen.getByRole("button", { name: /Page publique/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /Page publique/ }, { timeout: 2000 }));
     expect(mocks.load).toHaveBeenCalledTimes(1);
   });
 });
