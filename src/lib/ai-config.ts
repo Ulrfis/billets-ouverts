@@ -15,7 +15,7 @@ export type AiUsage = {
 export const DREAM_AI: AiUsage = {
   key: "reve.nuit",
   usage: "Rêve de nuit à partir des traces choisies",
-  model: "anthropic/claude-3.5-haiku",
+  model: "openai/gpt-4o-mini",
   temperature: 0.9,
   maxTokens: 700,
   prompt:
