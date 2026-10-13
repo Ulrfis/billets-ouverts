@@ -10,6 +10,13 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Ajouté
 
+#### Immersion jour — glaçons 3D et corpus Résonances
+- Scène Three.js / React Three Fiber chargée à l’ouverture : grands volumes arrondis, transmission, réfraction, dispersion chromatique, nuages et caméra en traversée flottante. Inspiration esthétique : Amazing Glass, sans reprise de son code.
+- `getIceQuotes` lit toute la source Résonances `271cf312-2a64-4dd5-8f29-df9b5e5d684f`, même sans relation au billet : seuls ID, Citation intégrale et Année sont exposés. Aucune écriture Notion, aucune substitution par Thèse ou texte inventé.
+- Navigation par flèches, clavier et molette ; lecture agrandie et récolte dans le fil. Réduction des animations respectée.
+- Mâchoire et monde strictement limités à la colonne du billet ; sidebar indépendante, tiroir disponible sur téléphone.
+- 42 tests réussis dans 9 fichiers ; 19 citations réelles affichées, récolte, lecture entière, navigation, tiroir mobile et retour exact (0 px) vérifiés sans erreur React. Performance sur appareils réels à évaluer, navigateur de recette utilisant WebGL logiciel.
+
 #### 2026-10-13 — Préparation des premiers essais
 - Sur accord explicite, seule la consigne `reve.nuit` corrigée dans Notion et relue à l’identique (405 caractères).
 - Erreurs réseau du dialogue et de la voix récupérables ; retour à l’état disponible, lecture audio interrompue à la fermeture, résultats d’un panneau fermé ignorés.

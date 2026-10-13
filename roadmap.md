@@ -1,5 +1,5 @@
 # Corrections du billet
-- [ ] Immersion jour 3D : glaçons réfractifs, traversée flottante, citations intégrales/années Résonances Notion, mâchoire limitée au billet ; vérifier ordinateur/téléphone et documenter.
+- [x] Immersion jour 3D : glaçons réfractifs, traversée flottante, citations intégrales/années Résonances Notion, mâchoire limitée au billet ; ordinateur/téléphone vérifiés, 42 tests, documentation actualisée. Fluidité sur appareils réels à évaluer.
 - [x] Préparer les premiers essais : consigne Notion corrigée sur accord, rêve/écoute/arrêt/retour réel, erreurs voix/dialogue et quota local vérifiés ; 40 tests, promesses clarifiées et TEST-LECTURE.md ajouté.
 - [x] GIF plein largeur en haut, sans pause ni slogan permanent ; poésie au survol et Information dans le menu.
 - [x] Actions des passages repliées derrière un signe discret en mode interactif ; vérifier lecture et traces.
