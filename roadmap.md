@@ -1,4 +1,6 @@
 # Corrections du billet
+- [x] GIF plein largeur en haut, sans pause ni slogan permanent ; poésie au survol et Information dans le menu.
+- [x] Actions des passages repliées derrière un signe discret en mode interactif ; vérifier lecture et traces.
 - [x] Menu persistant et suppression des ajouts entre paragraphes en mode sans distraction ; vérifier les deux modes.
 - [x] Simplifier l’en-tête et déplacer l’accès aux versions.
 - [x] Charger et afficher l’image couverture Notion.

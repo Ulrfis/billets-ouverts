@@ -15,6 +15,7 @@
 - Maintain README.md as the factual product/reference document, STORY.md as the development narrative, and CHANGELOG.md as the append-only change history; keep regeneration instructions and the Notion sync draft aligned with verified behavior without claiming an external sync occurred.
 - ReaderProvider and ReaderFrame wrap the shared Outlet; browser preferences load only after hydration, so sidebar continuity spans routes without SSR storage mismatches.
 - Pass reading interactivity explicitly to article and passage renderers: omit application-added paragraph controls in quiet mode while preserving source Notion blocks and editorial annotations.
+- Keep interactive passage actions behind an explicitly toggled compact disclosure so saved traces or reactions never automatically expand the reading controls.
 - Notion editorial rendering uses browser-safe structured blocks with stable Notion IDs, bounded recursive reads, and separate annotations; never inject markers into original paragraphs. Demo inserts remain only in the fallback article.
 - Linked callout reads must re-authorize their block and explicit destination against the pilot on the server; nested linked callouts are inert to prevent cycles and private arbitrary-page reads.
 - Only explicit editorial fragment comments or explicitly related fallback rows may become public annotations; ordinary comments and author data stay private, and missing comment permissions must not interrupt reading.

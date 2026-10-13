@@ -129,3 +129,17 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 
 ## [Non publié] Lot 3
 - Ajouté : garder un passage ou un mot-clé, chercher, supprimer et revenir au passage depuis le fil des traces (stockage local, doublons refusés).
+
+### 2026-10-13 — Sidebar et commandes épurées
+
+#### Modifié
+- GIF jour/nuit pleine largeur depuis le haut de la sidebar ; bouton Pause supprimé, image fixe conservée en réduction des animations.
+- Slogans permanents sous le GIF retirés ; poésie au survol ou au focus de l’image.
+- En mode interactif, actions repliées derrière un petit + ; icônes Réagir, Garder et Mot-clé avec noms accessibles. Réactions/traces existantes ne forcent plus l’affichage.
+
+#### Ajouté
+- Bouton « Information » tout à droite du menu, ouvrant une présentation initiale du projet, des traces locales et de la connexion simulée.
+
+#### Vérifié
+- Parcours navigateur sur le billet réel : garder, mot-clé, réaction, replier, recherche sans accents, retour et suppression ; GIF jour/nuit chargés, poésie et Information visibles. Aucun pageerror ; onze tests ciblés réussis et build automatique OK.
+- Blocs Notion et mode sans distraction conservés ; aucune écriture Notion, surlignage contextuel nouveau ou publication.

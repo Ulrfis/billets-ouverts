@@ -185,6 +185,16 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### 2026-10-13 — Moins de commandes, plus de lecture
+
+**Intent** : laisser les animations occuper toute la largeur depuis le haut et retirer les slogans et actions permanents.
+
+**Outcome** : GIF sans bouton Pause, image fixe en réduction des animations ; poésie au survol/focus uniquement. « Information » à droite du menu ouvre une première présentation du projet. En interactif, + déplie les icônes Réagir, Garder et Mot-clé ; un avis ou une trace enregistrée ne force plus l’ouverture. Lecture calme et blocs Notion conservés.
+
+**Verification** : billet réel testé dans le navigateur : GIF chargé à 0 px du haut et largeur égale à l’intérieur de la colonne, fenêtres et poésie visibles, actions fermées par défaut, passage et mot-clé gardés, réaction ouverte puis repliée, recherche « elan » retrouvant « Élan », retour et suppression. Aucun pageerror ; onze tests ciblés réussis et build automatique OK.
+
+**Next** : enrichir la présentation sur demande ; les surlignages contextuels et ajouts Notion restent à venir. Aucune écriture Notion ni publication.
+
 ### 2026-10-12 — Menu persistant et lecture calme
 
 **Intent** : garder le menu en haut et réserver les ajouts entre paragraphes au mode interactif.
