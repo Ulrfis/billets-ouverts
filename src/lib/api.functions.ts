@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { completeAi, dreamPrompt, loadAiSettings } from "./ai-settings";
 import { coverUrl, allowsContributorCredit } from "./notion-properties";
+import { iceQuoteFromNotion, type IceQuote } from "./ice-quotes";
 import { allowedCalloutTarget, editorialText, exactFragment, flattenEditorialBlocks, fragmentFromComment, parseEditorialBlock, type EditorialBlock, type EditorialFragment } from "./notion-editorial";
 
 export const getFeatureStatus = createServerFn({ method: "GET" }).handler(async () => ({
@@ -123,6 +124,38 @@ export type NotionResonance = {
   id: string; author: string; source: string; year: number | null;
   lang: string; type: string; voice: string; text: string; url: string;
 };
+
+// Explicitly authorized corpus for the day world, independently of pilot relations.
+const RESONANCES_SOURCE_ID = "271cf312-2a64-4dd5-8f29-df9b5e5d684f";
+export const getIceQuotes = createServerFn({ method: "GET" }).handler(async () => {
+  const key = process.env["NOTION_API_KEY"];
+  if (!key) return { ok: false as const, quotes: [] as IceQuote[] };
+  try {
+    const quotes: IceQuote[] = [];
+    let cursor: string | undefined;
+    // Bounded pagination; only Citation and Année leave the server.
+    for (let batch = 0; batch < 10; batch++) {
+      const response = await fetch(`https://api.notion.com/v1/data_sources/${RESONANCES_SOURCE_ID}/query`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION, "Content-Type": "application/json" },
+        body: JSON.stringify({ page_size: 100, ...(cursor ? { start_cursor: cursor } : {}), sorts: [{ property: "Année", direction: "ascending" }] }),
+      });
+      if (!response.ok) throw new Error("Résonances unavailable");
+      const data = await response.json() as { results?: { id?: unknown; properties?: unknown }[]; has_more?: boolean; next_cursor?: string };
+      for (const row of data.results ?? []) {
+        const quote = iceQuoteFromNotion(row);
+        if (quote) quotes.push(quote);
+      }
+      if (!data.has_more) return { ok: true as const, quotes };
+      cursor = data.next_cursor;
+      if (!cursor) throw new Error("Résonances pagination incomplete");
+    }
+    throw new Error("Résonances reading budget exceeded");
+  } catch (error) {
+    console.error("Résonances read failed", error instanceof Error ? error.message : "unknown");
+    return { ok: false as const, quotes: [] as IceQuote[] };
+  }
+});
 
 export const getNotionContent = createServerFn({ method: "GET" }).handler(async () => {
   const key = process.env["NOTION_API_KEY"];

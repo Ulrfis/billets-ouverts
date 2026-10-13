@@ -8,6 +8,7 @@ Essai accompagné sur le prototype, pas ouverture publique. Aucun compte requis.
 
 1. Lire un extrait sans distraction ; observer si les portes sont comprises sans explication.
 2. Passer en interactif, ouvrir le signe + et garder un passage ; le retrouver, le rechercher puis revenir à son origine.
+   En jour, ouvrir une porte : traverser les glaçons, lire une citation entière et son année, en garder une ; vérifier que le fil reste utilisable à gauche (tiroir sur téléphone), puis revenir au même endroit du billet.
 3. Choisir cette trace pour le rêve, passer à la nuit et ouvrir un séparateur.
 4. Lancer un rêve une fois, le lire puis l’écouter ; arrêter la voix et revenir au billet.
 5. Ouvrir un dialogue depuis un avis ; poser une question textuelle, fermer puis rouvrir : aucune archive promise.
@@ -29,4 +30,4 @@ Recueillir observations, appareil, geste exact et résultat attendu ; ne pas enr
 
 ## Limites avant une ouverture publique
 
-Les citations de jour restent des exemples ; corpus Notion à choisir sur accord distinct. Le plafond quotidien est local et contournable, la jauge budgétaire illustrative. Aucun contrôle serveur de dépenses, stockage partagé, archive de rêves ni administration protégée. Transcription au microphone, qualité audio et retours humains à valider ; Coolify non préparé. Ne pas publier le prototype comme service de production.
+Les citations de jour viennent désormais du champ Citation de toute la base Résonances, avec Année si renseignée ; 19 entrées observées, sans écriture Notion. 42 tests passent ; navigation 3D, récolte, lecture intégrale, tiroir mobile et retour exact vérifiés. Évaluer lisibilité, sensation d’échelle et fluidité sur appareils réels ; recette en WebGL logiciel, sans mesure GPU réelle. Le plafond quotidien est local et contournable, la jauge budgétaire illustrative. Aucun contrôle serveur de dépenses, stockage partagé, archive de rêves ni administration protégée. Transcription au microphone, qualité audio et retours humains à valider ; Coolify non préparé. Ne pas publier le prototype comme service de production.

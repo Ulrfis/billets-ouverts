@@ -185,6 +185,16 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### Immersion jour — devenir petit dans un espace de glaçons
+
+**Intent** : remplacer les cartes statiques par une traversée d’immenses glaçons transparents en mouvement ; porter la citation entière et son année à l’intérieur, sans jamais empiéter sur la sidebar.
+
+**Outcome** : scène Three.js / React Three Fiber, volumes arrondis réfractifs, dispersion légère, nuages et caméra flottante ; lecture agrandie sur geste, navigation et récolte locale. Amazing Glass inspire l’esthétique, sans copie de code. Toute la source Résonances est lue, indépendamment de la relation vide du billet : uniquement ID, Citation et Année. Aucun texte inventé si Notion échoue, aucune écriture distante.
+
+**Verification** : 19 citations Notion, lecture intégrale, récolte, changement de citation, tiroir mobile et retour exact (0 px) ; aucune erreur React. 42 tests dans 9 fichiers. Palette CSS convertie en RGB pour Three ; rendu du texte séparé de la réfraction pour préserver la lecture. Chargement 3D paresseux et réduction des mouvements respectée.
+
+**Limits / next** : performance et sensation d’échelle à éprouver sur téléphones réels ; recette automatisée en WebGL logiciel, pas mesure de fluidité GPU réelle. Année omise si absente, aucun auteur ou champ supplémentaire exposé sans décision. Rêve de nuit inchangé ; repères contextuels toujours différés.
+
 ### 2026-10-13 — Préparer les premiers essais accompagnés
 
 **Intent** : terminer le parcours rêve/écoute/retour et rendre les limites du prototype compréhensibles.
