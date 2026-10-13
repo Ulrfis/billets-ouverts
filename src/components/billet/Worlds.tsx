@@ -11,6 +11,7 @@ import { keepTrace, useStore } from "@/lib/store";
 import { hasTrace, selectedTraces } from "@/lib/traces";
 import { useReader } from "./ReaderContext";
 import { cn } from "@/lib/utils";
+import { DREAM_DAY_KEY, dreamCount, dreamAllowance } from "@/lib/dream-counter";
 
 /**
  * Les mondes derrière les séparateurs. Version calme en HTML : aucune 3D,
@@ -61,11 +62,9 @@ function DayWorld() {
   );
 }
 
-const DREAM_DAY_KEY = "billets-ouverts-dreams";
 function dreamsToday(): number {
   try {
-    const v = JSON.parse(localStorage.getItem(DREAM_DAY_KEY) || "{}") as { day?: string; n?: number };
-    return v.day === new Date().toISOString().slice(0, 10) ? v.n ?? 0 : 0;
+    return dreamCount(localStorage.getItem(DREAM_DAY_KEY), new Date().toISOString().slice(0, 10));
   } catch { return 0; }
 }
 function countDream() {
@@ -83,27 +82,35 @@ function NightWorld() {
   const [busy, setBusy] = useState(false);
   const [voice, setVoice] = useState<"idle" | "loading" | "playing">("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mountedRef = useRef(true);
   const runDream = useServerFn(generateDream);
   const runSpeak = useServerFn(speak);
   const readSettings = useServerFn(getDreamSettings);
   const { data: settings } = useQuery(dreamSettingsQuery);
   const maxTraces = settings?.maxTraces ?? DREAM_LIMITS.maxTraces;
   const tooMany = chosen.length > maxTraces;
-  useEffect(() => () => { audioRef.current?.pause(); }, []);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; audioRef.current?.pause(); };
+  }, []);
 
   async function roll() {
     setDiceRolled(true);
     setError(null);
+    audioRef.current?.pause();
+    setVoice("idle");
     setBusy(true);
     try {
       const current = await readSettings();
       if (!current.active) { setError("Le rêve est désactivé pour le moment."); return; }
       if (chosen.length > current.maxTraces) { setError(`Choisissez au plus ${current.maxTraces} traces.`); return; }
-      if (dreamsToday() >= current.perDay) {
+      if (!dreamAllowance(dreamsToday(), current.perDay)) {
         setError(`${current.perDay} rêves par jour sur cet appareil : la nuit reprendra demain.`); return;
       }
       const r = await runDream({ data: { traces: chosen.map((t) => t.text.slice(0, 1200)) } });
-      if (r.ok) { setDream(r.text); countDream(); } else setError(r.error);
+      if (r.ok) countDream();
+      if (!mountedRef.current) return;
+      if (r.ok) setDream(r.text); else setError(r.error);
     } catch { setError("Le rêve est momentanément indisponible."); }
     finally { setBusy(false); }
   }
@@ -111,14 +118,22 @@ function NightWorld() {
   async function listen() {
     if (!dream) return;
     if (voice === "playing") { audioRef.current?.pause(); setVoice("idle"); return; }
+    setDiceRolled(true);
+    setError(null);
     setVoice("loading");
-    const r = await runSpeak({ data: { text: dream.slice(0, 3000), usage: "reve.nuit" } });
-    if (!r.ok) { setError(r.error); setVoice("idle"); return; }
-    const audio = new Audio(`data:${r.mime};base64,${r.audio}`);
-    audioRef.current = audio;
-    audio.onended = () => setVoice("idle");
-    await audio.play().catch(() => setVoice("idle"));
-    setVoice("playing");
+    try {
+      const r = await runSpeak({ data: { text: dream.slice(0, 3000), usage: "reve.nuit" } });
+      if (!mountedRef.current) return;
+      if (!r.ok) { setError(r.error); setVoice("idle"); return; }
+      const audio = new Audio(`data:${r.mime};base64,${r.audio}`);
+      audioRef.current = audio;
+      audio.onended = () => setVoice("idle");
+      await audio.play();
+      if (!mountedRef.current) { audio.pause(); return; }
+      setVoice("playing");
+    } catch {
+      if (mountedRef.current) { setVoice("idle"); setError("L’écoute est indisponible. Le rêve reste lisible ; vous pouvez réessayer."); }
+    }
   }
   return (
     <div className="world-night">
@@ -176,7 +191,7 @@ function NightWorld() {
                   {voice === "playing" ? <Square aria-hidden /> : <Volume2 aria-hidden />}
                   {voice === "loading" ? "La voix arrive…" : voice === "playing" ? "Arrêter" : "Écouter le rêve"}
                 </Button>
-                <span className="text-xs text-muted-foreground">Rêve généré par IA, à partir de vos traces seulement.</span>
+                <span className="text-xs text-muted-foreground">Rêve IA temporaire · non enregistré.</span>
               </div>
             </div>
           )}
