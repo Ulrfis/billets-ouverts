@@ -10,6 +10,12 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Ajouté
 
+#### 2026-10-13 — Mondes jour et nuit (lot 5, version calme)
+- Derrière chaque séparateur-porte, un monde plein écran s'ouvre par-dessus la colonne de lecture : le jour, quinze citations-glaçons d'exemple dérivent lentement et peuvent être gardées dans le fil de traces ; la nuit, « La branche et l'écran » prépare le rêve à partir des traces choisies.
+- Les traces gagnent un type « citation » et une sélection explicite pour le rêve (au plus 5), conservée localement ; la sidebar affiche le compte de traces choisies et une case « Choisir pour le rêve de nuit ».
+- « Lancer le dé » reste une maquette honnête : le prompt exact et les limites (150-250 mots, 3 rêves par jour) sont affichés ; la génération réelle et la voix attendent la validation des services IA.
+- Dix tests unitaires sur les traces (citation, recherche, sélection, compatibilité) ; vérification navigateur complète des deux mondes, récolte de citation, sélection et retour au texte, sans erreur.
+
 #### 2026-10-12 — Documentation du projet
 - README adapté au modèle MemoWays : identité, parcours, couverture réelle, données, architecture, commandes, preuves, limites, prompt de régénération et brouillon de synchronisation Notion.
 - STORY adapté au modèle : genèse reconstituée, chronique, pivots, apprentissages, fenêtres ouvertes et contrats de session ; inconnues humaines et durées explicitement signalées.
