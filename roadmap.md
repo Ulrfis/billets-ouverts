@@ -1,4 +1,5 @@
 # Corrections du billet
+- [x] Préparer les premiers essais : consigne Notion corrigée sur accord, rêve/écoute/arrêt/retour réel, erreurs voix/dialogue et quota local vérifiés ; 40 tests, promesses clarifiées et TEST-LECTURE.md ajouté.
 - [x] GIF plein largeur en haut, sans pause ni slogan permanent ; poésie au survol et Information dans le menu.
 - [x] Actions des passages repliées derrière un signe discret en mode interactif ; vérifier lecture et traces.
 - [x] Menu persistant et suppression des ajouts entre paragraphes en mode sans distraction ; vérifier les deux modes.
@@ -40,7 +41,8 @@
 - [x] Organique IA créée dans Notion, deux usages initiaux ; lecture applicative désormais active.
 - [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
 - [x] Branchement Organique IA avec validation, activation, modèle secours et valeurs actuelles en repli ; aucune écriture Notion.
-- [ ] Corriger éditorialement le Prompt système du rêve dans Notion (métadonnées concaténées) ; secours actif en attendant.
-- [ ] Validation complète IA/voix/quota et lot 6 — attend arbitrage et validation de l’expérience du lot 5.
+- [x] Corriger uniquement le Prompt système du rêve dans Notion sur accord explicite ; texte actuel relu après écriture.
+- [x] Parcours rêve/écoute et quota local vérifiés (refus avec compteur fixé à trois, sans trois dépenses) ; erreurs récupérables et retour exact.
+- [ ] Évaluer humainement qualité sonore, microphone et expérience ; lot 6 attend ces retours et arbitrages.
 - [ ] Usages contextuels des trois repères — reportés explicitement par Ulrich.
 - [ ] Déploiement Coolify — objectif envisagé, aucune réalisation demandée ni recette validée.

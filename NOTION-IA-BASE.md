@@ -35,10 +35,10 @@ Les lignes « prompt.* » et « cap.* » créées par Cursor dans « Réglages �
 - Voix : champ Notion valide, sinon `GRADIUM_VOICE_ID`, sinon voix actuelle. Deepgram reste inchangé. Version et Notes documentent l’édition, sans historique automatique ; Usage est descriptif.
 - Clés exclusivement dans les variables serveur, jamais dans la base. Aucun changement des données Notion effectué pendant le branchement.
 
-## Anomalie constatée dans le pilote
+## Anomalie du pilote — corrigée sur accord
 
-Lors de la lecture réelle, « Prompt système » de `reve.nuit` contient des métadonnées concaténées (`reve.nuit`, intitulé et modèle), pas une consigne. Le lecteur rejette cette cellule et utilise le prompt `DREAM_AI` ; les autres champs valides restent lus dans Notion. Pour piloter aussi cette consigne, remplacer la cellule dans Notion par le texte souhaité. Le prompt du dialogue est valide.
+La cellule contenait initialement des métadonnées concaténées. Le 2026-10-13, sur accord explicite, seul « Prompt système » de `reve.nuit` a été remplacé par la consigne actuelle `DREAM_AI` (405 caractères), puis relu et comparé. La consigne est désormais valide dans Notion ; le rejet des champs malformés reste une protection. Aucun autre champ ni base modifié.
 
 ## Vérification
 
-36 tests réussis dans 7 fichiers, dont 9 tests de réglages (erreurs Notion, champs invalides, désactivation et modèle secours). Rêve et dialogue réels générés dans le navigateur sur `/`, sans erreur React ; bouton d’écoute du rêve visible. Le parcours audio réel et les quotas ne sont pas intégralement vérifiés de bout en bout.
+40 tests réussis dans 8 fichiers, dont 9 de réglages et 4 de compteur local. Rêve réel à partir d’un passage enregistré et choisi, panne d’écoute hors ligne récupérable, lecture Gradium démarrée puis arrêtée, refus local avec compteur fixé à trois, retour exact (0 px) et aucune erreur React. Le compteur a été fixé pour éviter trois dépenses IA inutiles : ce n’est pas une preuve de trois générations consécutives. Dialogue texte réel vérifié pendant le branchement ; transcription microphone et qualité sonore perçue restent à tester humainement. La génération n’est plus interrompue par un délai artificiel.

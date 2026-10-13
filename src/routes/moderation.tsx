@@ -5,10 +5,10 @@ import { setState, useStore } from "@/lib/store";
 export const Route = createFileRoute("/moderation")({
   head: () => ({
     meta: [
-      { title: "Modération — Billets ouverts" },
-      { name: "description", content: "File de modération et avis agrégés du billet." },
-      { property: "og:title", content: "Modération — Billets ouverts" },
-      { property: "og:description", content: "File de modération et avis agrégés du billet." },
+      { title: "Modération locale — Billets ouverts" },
+      { name: "description", content: "Essai de modération sur cet appareil, sans publication des contributions." },
+      { property: "og:title", content: "Modération locale — Billets ouverts" },
+      { property: "og:description", content: "Essai de modération sur cet appareil, sans publication des contributions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -26,7 +26,8 @@ function Moderation() {
   return (
     <main className="mx-auto max-w-4xl px-5 py-12">
       <Link to="/" className="text-sm text-primary">← Retour au billet</Link>
-      <h1 className="mt-4 text-4xl">Modération</h1>
+      <h1 className="mt-4 text-4xl">Modération locale</h1>
+      <p className="mt-3 text-sm text-muted-foreground">Contributions de cet appareil uniquement. Les décisions ne publient rien ; le tableau d’avis ci-dessous utilise le billet de démonstration.</p>
 
       <section className="mt-10" aria-labelledby="h-avis">
         <h2 id="h-avis" className="text-2xl">Avis par passage</h2>

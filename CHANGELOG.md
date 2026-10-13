@@ -10,6 +10,14 @@ Aucune release numérotée ni publication n’a été vérifiée. Les changement
 
 ### Ajouté
 
+#### 2026-10-13 — Préparation des premiers essais
+- Sur accord explicite, seule la consigne `reve.nuit` corrigée dans Notion et relue à l’identique (405 caractères).
+- Erreurs réseau du dialogue et de la voix récupérables ; retour à l’état disponible, lecture audio interrompue à la fermeture, résultats d’un panneau fermé ignorés.
+- Retrait du délai artificiel de génération OpenRouter ; validation du compteur quotidien local et quatre tests associés.
+- Dialogue annoncé temporaire sans option de fausse conservation ; budget illustratif, contributions et modération locales explicités, métadonnées de modération clarifiées.
+- Guide `TEST-LECTURE.md` pour essais accompagnés et collecte de retours ; aucun nouveau corpus, compte, quota serveur ni déploiement.
+- 40 tests réussis dans 8 fichiers. Parcours réel passage → sélection → rêve → écoute Gradium/arrêt → retour exact (0 px), erreur d’écoute hors ligne récupérée, refus local avec compteur fixé à trois ; aucune erreur React.
+
 #### 2026-10-13 — Organique IA branchée
 - Lecture serveur par Clé des usages `reve.nuit` et `dialogue.passage` ; modèle, consigne, activation, sampling et voix suivent Notion, avec valeurs actuelles de secours si la base est indisponible ou les champs invalides.
 - Modèle de secours distinct essayé en cas d’échec du principal ; `Actif=false` bloque génération et synthèse de l’usage.

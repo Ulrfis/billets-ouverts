@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { dialogueReply, transcribe, speak } from "@/lib/api.functions";
 import { CARNET } from "@/data/billet";
 import { setState, useStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
 type Msg = { role: "user" | "assistant"; content: string };
 const BUDGET = 30;
@@ -32,7 +33,6 @@ export function DialoguePanel({
   features: { dialogue: boolean; stt: boolean; tts: boolean };
   carnet?: string[] | undefined;
 }) {
-  const consent = useStore((s) => s.consent);
   const spent = useStore((s) => s.spent);
   const queue = useStore((s) => s.queue);
   const [step, setStep] = useState<"consent" | "chat">("consent");
@@ -45,18 +45,31 @@ export function DialoguePanel({
   const [live, setLive] = useState("");
   const recRef = useRef<MediaRecorder | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const sessionRef = useRef(0);
   const reply = useServerFn(dialogueReply);
   const stt = useServerFn(transcribe);
   const tts = useServerFn(speak);
 
   useEffect(() => {
+    sessionRef.current += 1;
     if (open) {
       setStep("consent");
       setMsgs([]);
       setInput(seed ?? "");
       setNotice(null);
       setMode("texte");
+      setBusy(false);
     }
+    return () => {
+      sessionRef.current += 1;
+      audioRef.current?.pause();
+      const recorder = recRef.current;
+      if (recorder?.state === "recording") recorder.stop();
+      recorder?.stream.getTracks().forEach((track) => track.stop());
+      setRecording(false);
+      setLive("");
+    };
   }, [open, seed]);
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,9 +83,11 @@ export function DialoguePanel({
     setMsgs(next);
     setInput("");
     setBusy(true);
+    const session = sessionRef.current;
+    try {
     const resonances = queue.filter((q) => q.status === "approved" && q.kind === "résonance").map((q) => `- ${q.text} ${q.url ?? ""}`);
     const r = await reply({ data: { passage, context: [...(carnet ?? CARNET), ...resonances].join("\n"), messages: next } });
-    setBusy(false);
+    if (session !== sessionRef.current) return;
     if (!r.ok) {
       setMsgs([...next, { role: "assistant", content: `⚠ ${r.error}` }]);
       return;
@@ -81,25 +96,42 @@ export function DialoguePanel({
     setState((s) => ({ ...s, spent: s.spent + (r.cost ?? 0.001) }));
     if (mode === "voix") {
       const a = await tts({ data: { text: r.text, usage: "dialogue.passage" } });
-      if (a.ok) new Audio(`data:${a.mime};base64,${a.audio}`).play().catch(() => {});
+      if (session !== sessionRef.current) return;
+      if (a.ok) {
+        const audio = new Audio(`data:${a.mime};base64,${a.audio}`);
+        audioRef.current = audio;
+        await audio.play();
+        if (session !== sessionRef.current) audio.pause();
+      }
       else {
         setNotice("Voix indisponible — passage en mode texte.");
         setMode("texte");
       }
     }
+    } catch {
+      if (session === sessionRef.current) {
+        setNotice("Échange interrompu — vous pouvez réessayer en texte.");
+        setMode("texte");
+      }
+    } finally { if (session === sessionRef.current) setBusy(false); }
   }
 
   async function startRec() {
+    const session = sessionRef.current;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (session !== sessionRef.current) { stream.getTracks().forEach((track) => track.stop()); return; }
       const rec = new MediaRecorder(stream);
       const chunks: Blob[] = [];
       rec.ondataavailable = (e) => chunks.push(e.data);
       rec.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
+        if (session !== sessionRef.current) return;
+        try {
         setLive("Transcription…");
         const blob = new Blob(chunks, { type: rec.mimeType });
         const r = await stt({ data: { audio: toBase64(await blob.arrayBuffer()), mime: rec.mimeType || "audio/webm" } });
+        if (session !== sessionRef.current) return;
         if (!r.ok) {
           setLive("");
           setNotice("Voix indisponible — passage en mode texte.");
@@ -109,6 +141,9 @@ export function DialoguePanel({
         setLive(r.text);
         setTimeout(() => setLive(""), 600);
         send(r.text);
+        } catch {
+          if (session === sessionRef.current) { setLive(""); setNotice("Transcription indisponible — vous pouvez écrire votre message."); setMode("texte"); }
+        }
       };
       rec.start();
       recRef.current = rec;
@@ -132,8 +167,8 @@ export function DialoguePanel({
           <SheetDescription>{title}</SheetDescription>
           <div className="mt-2" aria-label={`Budget : ${spent.toFixed(2)} sur ${BUDGET} dollars ce mois`}>
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span className="font-label">Budget dialogue</span>
-              <span>{spent.toFixed(2)} $ / {BUDGET} $ ce mois</span>
+              <span className="font-label">Budget illustratif</span>
+              <span>{spent.toFixed(2)} $ / {BUDGET} $ · simulation</span>
             </div>
             <div className="mt-1 h-1 rounded-full bg-paper">
               <div className="h-1 rounded-full bg-gold transition-all" style={{ width: `${Math.min((spent / BUDGET) * 100, 100)}%` }} />
@@ -145,21 +180,18 @@ export function DialoguePanel({
           <div className="flex-1 space-y-4 overflow-y-auto p-5 text-sm leading-relaxed text-muted-foreground">
             <h3 className="font-display text-lg">Avant de commencer</h3>
             <p>Les réponses s'appuient uniquement sur ce passage, les carnets de l'auteur et les résonances validées.</p>
-            <p>Acceptez-vous que la transcription de cet échange soit conservée pour nourrir le billet ? Sans votre accord, la conversation est éphémère : rien n'est enregistré.</p>
+            <p>Dans ce prototype, les échanges restent temporaires : ils ne sont ni archivés ni publiés dans le billet. Les messages et, en mode voix, l’audio sont transmis aux services IA pour traitement.</p>
             {!features.dialogue && <p role="alert" className="text-rose">Le dialogue n'est pas encore configuré (clé OpenRouter manquante).</p>}
             <div className="flex flex-col gap-2 pt-2">
-              <button className="rounded-md bg-primary px-4 py-2 text-primary-foreground" onClick={() => { setState((s) => ({ ...s, consent: true })); setStep("chat"); }}>
-                J'accepte la conservation
-              </button>
-              <button className="rounded-md border border-border px-4 py-2 text-ink" onClick={() => { setState((s) => ({ ...s, consent: false })); setStep("chat"); }}>
+              <Button variant="outline" onClick={() => { setState((s) => ({ ...s, consent: false })); setStep("chat"); }}>
                 Conversation éphémère
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between border-b border-border px-5 py-2 text-xs">
-              <span className="text-muted-foreground">{consent ? "Transcription conservée" : "Éphémère — rien n'est stocké"}</span>
+              <span className="text-muted-foreground">Échange temporaire · non archivé</span>
               <div role="radiogroup" aria-label="Mode" className="flex gap-1">
                 {(["texte", "voix"] as const).map((m) => (
                   <button

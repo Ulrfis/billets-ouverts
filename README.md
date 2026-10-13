@@ -17,7 +17,7 @@
 | Version documentée | État du code relu le 2026-10-13 ; `c0c31ea` est une référence historique, pas la version actuelle ; aucun tag vérifié |
 | Début du développement spécifique | 2026-10-11, d’après l’historique Git ; template antérieur du 2026-10-07 |
 | Date de lancement public | Aucun lancement public constaté |
-| Dernière vérification documentaire | 2026-10-13 ; 36 tests réussis dans 7 fichiers |
+| Dernière vérification documentaire | 2026-10-13 ; 40 tests réussis dans 8 fichiers |
 
 ## 2. Vue d’ensemble produit
 
@@ -136,7 +136,7 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 | Organique IA | Branchée | `reve.nuit`, `dialogue.passage` ; réglages validés serveur, valeurs actuelles en secours |
 | Marginalia | Partiel | Notes fictives ; pas de chargement de la base Marginalia Notion |
 | Formats journalistiques | Retirés de l’expérience | Données historiques conservées ; aucun sélecteur de brève, grand format, relecture, variation ou remix |
-| Dialogue | Partiel | Texte/STT/TTS présents ; rétention annoncée mais non réalisée ; jauge simulée |
+| Dialogue | Partiel | Texte/STT/TTS présents ; échanges temporaires annoncés ; jauge simulée |
 | Généalogie | Partiel | Arbre fictif + tangentes locales approuvées ; pas de reconstruction depuis les relations Notion |
 | Contribution | Implémenté localement | Quatre types, nom requis, licence/modération acceptées ; e-mail saisi mais non enregistré |
 | Modération | Partiel | File locale utilisable ; tableau des avis basé sur le texte fictif, pas le billet Notion ; aucune authentification |
@@ -312,7 +312,7 @@ Lire `index.tsx` pour l’assemblage et les limites des variantes, `api.function
 
 **Organique IA : branchée et relue en serveur.** Base : https://app.notion.com/p/00558b658e6f49f69a5049c0602d643e ; data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`. Champs : Clé (titre), Usage, Actif, Modèle, Modèle de secours, Prompt système, Température, Jetons max, Mots min/max, Traces max, Usages par jour, Voix, Version, Notes. Les usages `reve.nuit` et `dialogue.passage` sont chargés à chaque génération et demande vocale ; `Actif=false` bloque l’appel du prestataire. Modèle secours distinct essayé si le principal échoue. Notion indisponible (délai 5 secondes), ligne absente/ambiguë : valeurs actuelles en dur ; champ invalide : repli individuel. Limites du rêve exposées sans prompt via `getDreamSettings`, actualisées à l’ouverture/retour de focus et relues au lancement ; traces également revalidées serveur (maximum dur 5). Quota quotidien uniquement local UTC, pas de nouveau quota dialogue. Voix : Notion puis variable serveur puis défaut. Version/Notes restent documentaires. Contrat détaillé : [NOTION-IA-BASE.md](NOTION-IA-BASE.md).
 
-**Anomalie éditoriale et suites :** la cellule Prompt système du rêve contient des métadonnées concaténées, pas une consigne ; elle est rejetée au profit de `DREAM_AI` sans modification de Notion. Les autres champs valides et le prompt dialogue sont lus normalement. Remplacer cette cellule dans Notion pour piloter aussi la consigne du rêve. Mutualisation éventuelle des seules lignes Réglages utiles et contrôles serveur des coûts restent à décider. Les trois repères Distribution / Réglementation / Expérience restent volontairement différés.
+**Consigne corrigée et suites :** sur accord explicite, seule la cellule Prompt système du rêve a été remplacée par la consigne actuelle `DREAM_AI` puis relue à l’identique (405 caractères). Les deux usages ont désormais une consigne valide dans Notion. Les protections de repli restent actives. Mutualisation éventuelle des seules lignes Réglages utiles et contrôles serveur des coûts restent à décider. Les trois repères Distribution / Réglementation / Expérience restent volontairement différés.
 
 **Coolify / self-hosting : objectif, pas livraison.** Le dépôt reste TanStack Start, avec configuration de build cible Cloudflare dans `vite.config.ts` ; aucun Dockerfile, recette Coolify, serveur Node de production ni déploiement Coolify vérifiés. `bun run dev` est une commande de développement, pas une recette d’exploitation. Avant transfert : choisir et valider un adaptateur de production compatible Coolify, tester SSR et fonctions serveur, servir les médias pointés par les `.asset.json`, injecter les secrets hors Git, fixer quotas serveur, rétention, sécurité et sauvegardes. Ne pas remplacer le routage TanStack pour transporter le projet.
 
@@ -353,7 +353,7 @@ Le sandbox Lovable sert actuellement l’application sur `http://localhost:8080`
 |---|---|---|
 | Développement | `bun run dev` | Serveur déjà géré par Lovable ; non redémarré |
 | Lint | `bun run lint` | Échec historique, non rejoué le 2026-10-13 |
-| Tests | `bunx vitest run` ou `bun run test` | 36 tests réussis dans 7 fichiers le 2026-10-13 |
+| Tests | `bunx vitest run` ou `bun run test` | 40 tests réussis dans 8 fichiers le 2026-10-13 |
 | Typecheck | Pas de script dédié | Non exécuté ; contrôles gérés par Lovable |
 | Build | `bun run build` | Script présent, non exécuté manuellement |
 | Preview de build | `bun run preview` | Non exécuté |
@@ -367,10 +367,10 @@ Tests ciblés : couvertures URL/fichiers/GIF, consentement des crédits, route d
 
 ### 9.2 Vérifications actuelles — 2026-10-13
 
-- Lecture réelle de la base Organique IA : prompt dialogue valide, prompt rêve malformé rejeté avec secours individuel ; aucune écriture Notion ni publication.
-- `bunx vitest run` : **36 tests réussis, 7 fichiers** le 2026-10-13 à 09:53 UTC, dont 9 nouveaux tests de réglages IA.
+- Consigne rêve corrigée dans Notion sur accord explicite puis relue ; aucun autre champ/base modifié ni publication.
+- `bunx vitest run` : **40 tests réussis, 8 fichiers**, dont 9 de réglages IA et 4 du compteur quotidien local.
 - Aucun lint, build ou typecheck exécuté manuellement ; build automatique réussi après correction TypeScript. Chiffres ESLint ci-dessous historiques.
-- Rêve puis dialogue réellement générés sur `/` dans le navigateur, captures confirmées, 108 passages rendus et aucune erreur React ; écoute proposée, parcours audio complet non testé.
+- Sur `/` : passage réel gardé/choisi, rêve généré, panne d’écoute hors ligne récupérée, audio Gradium démarré puis arrêté, refus local avec compteur fixé à trois et retour exact (0 px) ; aucune erreur React. Dialogue texte réel vérifié lors du branchement. Qualité sonore humaine et transcription microphone restent à tester.
 
 ### Vérifications historiques de la première rédaction — 2026-10-12
 
@@ -422,11 +422,11 @@ Aucune publication déclenchée pendant cette mise à jour ; publication via Lov
 
 ### 11.1 Stable dans le code actuel
 
-Article Notion structuré avec secours, couverture GIF, panneaux liés, avis et file locale, cadre jour/nuit et actions minimales ; fil personnel avec recherche/suppression/retour/sélection. Callout à retournement et deux portes ; glaçons d’exemple en HTML/CSS et rêve OpenRouter avec écoute Gradium implémentée. Formats journalistiques retirés, original conservé. Organique IA branchée avec validation et secours ; prompt rêve malformé en repli.
+Article Notion structuré avec secours, couverture GIF, panneaux liés, avis et file locale, cadre jour/nuit et actions minimales ; fil personnel avec recherche/suppression/retour/sélection. Callout à retournement et deux portes ; glaçons d’exemple en HTML/CSS et rêve OpenRouter avec écoute Gradium implémentée. Formats journalistiques retirés, original conservé. Organique IA branchée avec validation et secours ; prompt rêve désormais corrigé dans Notion.
 
 ### 11.2 Partiel
 
-Conservation des dialogues, variantes éditoriales, marginalia Notion, contexte des résonances Notion et modération du texte réel. Les relations Résonances et Contributions étaient vides lors de la vérification précédente ; leur état distant n’a pas été relu aujourd’hui.
+Archivage des dialogues hors périmètre ; variantes éditoriales, marginalia Notion, contexte des résonances Notion et modération du texte réel. Les relations Résonances et Contributions étaient vides lors de la vérification précédente ; leur état distant n’a pas été relu aujourd’hui.
 
 ### 11.3 Bugs et dette connus
 
@@ -436,12 +436,12 @@ Conservation des dialogues, variantes éditoriales, marginalia Notion, contexte 
 | Lint en échec | Qualité / automatisation | Session de correction distincte, pas de changement de code ici |
 | Anciens avis positionnels | Les avis antérieurs en pN ne sont pas remappés arbitrairement | Les nouveaux avis Notion utilisent les IDs stables des blocs ; secours et modération restent positionnels |
 | Notes Notion et fragments | Commentaires refusés ; repli sans lignes actuelles | Trois repères approuvés, activation reportée ; notes de secours non affichées sur le billet Notion |
-| Appels réseau du dialogue | Certains rejets peuvent laisser un état occupé | Tester les exceptions et les limites Zod |
-| Consentement annoncé / non réalisé | Attente trompeuse sur la conservation | Clarifier le texte ou implémenter le choix dans une future demande |
+| Appels réseau du dialogue | Erreurs désormais récupérées et état occupé libéré | Vérifier avec les testeurs les conditions réseau et microphone |
+| Conservation du dialogue | Option trompeuse retirée, échange temporaire explicitement annoncé | Archivage partagé hors périmètre |
 
 ### 11.4 Prochaines étapes / arbitrages actuels
 
-Lots 1–3 réalisés ; callout lié et deuxième séparateur ajoutés par Ulrich puis testés, mondes jour/nuit et activation du rêve réalisés. Ne pas reprendre les anciennes attentes des lots 2/3 comme des blocages actuels. Organique IA est créée et branchée ; sa cellule Prompt système du rêve reste à corriger éditorialement. Les usages des trois repères restent différés. La suite nécessite validation de l’expérience actuelle, vérification IA/voix/quota et arbitrage sécurité/coûts ; lot 6 et Coolify ne sont pas réalisés. Branchement réalisé en lecture seule, sans ajout Notion ni déploiement.
+Lots 1–3 réalisés ; callout lié et deuxième séparateur ajoutés par Ulrich puis testés, mondes jour/nuit et activation du rêve réalisés. Ne pas reprendre les anciennes attentes des lots 2/3 comme des blocages actuels. Organique IA est créée et branchée ; sa cellule Prompt système du rêve est corrigée sur accord. Les usages des trois repères restent différés. La suite nécessite validation de l’expérience actuelle, vérification IA/voix/quota et arbitrage sécurité/coûts ; lot 6 et Coolify ne sont pas réalisés. Consigne rêve corrigée sur accord distinct ; aucun autre ajout Notion ni déploiement. Premiers essais accompagnés : voir [TEST-LECTURE.md](TEST-LECTURE.md).
 
 ### 11.5 Questions ouvertes
 
@@ -465,7 +465,7 @@ Connexion Notion initiale remplacée par l’accès direct ; erreur React minifi
 | Métrique | Valeur / définition | Source / date |
 |---|---|---|
 | Routes de contenu | 2 | Code relu le 2026-10-12 |
-| Tests | 36 réussis dans 7 fichiers | Vitest, 2026-10-13 à 09:53 UTC |
+| Tests | 40 réussis dans 8 fichiers | Vitest, 2026-10-13, préparation des essais |
 | Lint | 189 erreurs, 6 avertissements | ESLint, 2026-10-12 |
 | Passages Notion | 108 éléments de passage rendus | Navigateur, 2026-10-13 |
 | Budget | Initial 4,20 $, jauge 30 $ ; aucune dépense réelle déduite | `store.ts`, `Dialogue.tsx` |
@@ -501,14 +501,14 @@ INTERACTIONS CONSERVÉES
 4. Digressions fermées par défaut : annotations séparées sur extrait exact unique pour Notion ; marqueurs [[id|fragment]] seulement dans le secours historique.
 5. Marginalia de démonstration : écho, contrepoint, prolongement, source/auteur/année/langue, marge desktop et panneau mobile. Ne pas prétendre importer des marginalia Notion non intégrées.
 6. Texte original uniquement ; aucun format journalistique ou sélecteur de variantes.
-7. Dialogue depuis les passages/sections, choix de consentement, texte ou voix, repli textuel. Dans cet instantané, seul le choix est persisté, aucun transcript : documenter l’écart et ne pas présenter la conservation comme réalisée. Jauge illustrative 4,20 $ initial / 30 $, pas de plafond réel ni reset mensuel.
+7. Dialogue depuis les passages/sections, choix de consentement, texte ou voix, repli textuel. Échange temporaire annoncé, aucune option de conservation ni transcript sauvegardé. Jauge explicitement illustrative 4,20 $ initial / 30 $, pas de plafond réel ni reset mensuel. Erreurs récupérables et audio/microphone arrêtés à la fermeture.
 8. Généalogie de démonstration + tangentes locales approuvées.
 9. Formulaire note/commentaire/résonance/tangente ; texte, nom/pseudonyme, URL requise pour résonance, e-mail facultatif non persisté dans cet instantané, acceptation licence et modération. Licence CC BY-NC-SA 4.0.
 10. /moderation permet d’approuver/rejeter la file du même navigateur, sans rôle admin. Tableau d’avis fictif dans cet instantané : ne pas le présenter comme modération complète du texte Notion.
 
 MONDES ET IA, ÉTAT ACTUEL
 Jour : 15 phrases-glaçons sans attribution, dérive CSS et récolte en citation ; aucune base Citations lue, aucune 3D. Nuit : choisir explicitement 1 à 5 traces puis lancer le dé ; transmettre seulement leurs textes, 1 200 caractères max chacun. generateDream valide 1–5 textes et la limite Notion côté serveur. Valeurs de secours DREAM_AI (ai-config.ts) : openai/gpt-4o-mini, température 0.9, max_tokens 700. Prompt de secours exact : « À partir des traces sélectionnées, écris en français un rêve bref, sensoriel et délicatement absurde. Métamorphose les idées plutôt que les résumer. Une comète rencontre la Terre et fait naître un arbre. Traverse une branche comme un sillon de lumière. Ne présente aucune invention comme une citation authentique. Écris entre 150 et 250 mots, en prose, sans titre, sans liste, sans guillemets de citation. » Mots min/max Notion ajoutés au prompt, objectif non vérifié à la sortie. Compter seulement les succès via billets-ouverts-dreams {day UTC,n}, plafond local Notion (secours 3/jour/appareil), contournable et non serveur. Rêve non sauvegardé, écoute Gradium après geste, arrêt audio à la fermeture ; erreurs/clé absente visibles.
-Organique IA pilote reve.nuit et dialogue.passage côté serveur (ai-settings.ts) : Clé exacte unique, Actif, modèle/secours, prompt, température, jetons et voix ; mots/traces/usages par jour pour le rêve. Actif=false coupe génération et voix. Secours complet si Notion ne répond pas en 5 secondes, ligne absente ou ambiguë ; champs vides/invalides : valeurs individuelles actuelles DREAM_AI/DIALOGUE_AI. Modèle secours distinct essayé si le principal échoue. Prompt rêve actuel malformé (métadonnées concaténées) rejeté sans éditer Notion. Réglages rêve publics sans prompt via query ; relecture serveur au lancement. Ne jamais stocker les clés dans Notion. Aucun nouveau quota quotidien dialogue.
+Organique IA pilote reve.nuit et dialogue.passage côté serveur (ai-settings.ts) : Clé exacte unique, Actif, modèle/secours, prompt, température, jetons et voix ; mots/traces/usages par jour pour le rêve. Actif=false coupe génération et voix. Secours complet si Notion ne répond pas en 5 secondes, ligne absente ou ambiguë ; champs vides/invalides : valeurs individuelles actuelles DREAM_AI/DIALOGUE_AI. Modèle secours distinct essayé si le principal échoue. Prompt rêve corrigé sur accord ; conserver le rejet des métadonnées concaténées comme protection. Réglages rêve publics sans prompt via query ; relecture serveur au lancement. Ne jamais stocker les clés dans Notion. Aucun nouveau quota quotidien dialogue.
 
 DONNÉES
 Fournir un essai français de secours d’environ 1 200 mots en cinq sections, passages identifiés, quatre digressions, environ six notes et des variantes de démonstration. localStorage billets-ouverts-v1 : myAvis (passage→réaction), queue (id UUID de contribution, kind, passageId?, text, url?, name?, status pending/approved/rejected, createdAt), consent boolean/null, spent nombre, traces (id, kind passage/mot-clé/citation, passageId, text, excerpt, createdAt, selected?), tracesVersion 2. Fil initial vide, compatibilité legacy sans sélection automatique, recherche sans accents/casse, dédoublonnage par kind/passage/texte normalisé, suppression et retour au bloc ; citations glaçons sans bloc original. Pas d’expiration, d’export ou de synchronisation. Messages React en mémoire. Nouveaux avis/retours Notion sur IDs stables ; signaler le risque des anciens IDs positionnels du secours et ne pas remapper au hasard.
@@ -542,13 +542,13 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 
 ```yaml
 "Titre de l'app": "Billets ouverts"
-"Description": "Lire, garder, rêver : sidebar jour/nuit, traces personnelles locales, callout retourné et page liée entière, deux portes, glaçons d’exemple HTML/CSS, rêve OpenRouter et écoute Gradium implémentés. Organique IA créée, non branchée. Trois repères validés, activation différée. Connexion simulée, pas de 3D. Ce brouillon n’a pas été envoyé."
+"Description": "Lire, garder, rêver : sidebar jour/nuit, traces personnelles locales, callout retourné et page liée entière, deux portes, glaçons d’exemple HTML/CSS, rêve OpenRouter et écoute Gradium implémentés. Organique IA branchée, consigne rêve corrigée sur accord. Trois repères validés, activation différée. Connexion simulée, pas de 3D. Ce brouillon n’a pas été envoyé."
 "Type": "Prototype expérimental"
 "État": "En cours de construction"
 "Metrics clés": |-
-  2026-10-13 : 2 routes de contenu ; 27 tests réussis dans 6 fichiers.
-  Génération réelle rapportée dans la session précédente, voix complète et quota non revalidés.
-  Organique IA : deux lignes créées, aucune lecture de réglages active.
+  2026-10-13 : 2 routes de contenu ; 40 tests réussis dans 8 fichiers.
+  Rêve et écoute Gradium réels vérifiés ; arrêt et retour exact, erreur hors ligne récupérée, refus quota avec compteur fixé.
+  Organique IA : deux usages lus côté serveur ; consigne rêve corrigée puis relue sur accord.
   Preuve historique lot 2 : 106 blocs textuels non vides identiques à Notion ; sidebar blanc/noir, porte, reload et mobile vérifiés sans erreur.
   Lint historique : 189 erreurs, 6 avertissements, non rejoué. Usage, coûts et temps non mesurés.
 "Learnings": |-
@@ -569,6 +569,13 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 **Référence de configuration à joindre, pas une relation déjà synchronisée :** Organique IA, data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, lignes `reve.nuit` et `dialogue.passage` ; base branchée avec validation et valeurs actuelles en secours. Voir [NOTION-IA-BASE.md](NOTION-IA-BASE.md). Ce brouillon de fiche Applications générées n’a pas été envoyé ; la création antérieure d’Organique IA est une opération distincte.
 
 ## 15. Journal des évolutions de la mémoire
+
+### 2026-10-13 — Premiers essais accompagnés
+
+- Consigne rêve corrigée sur accord dans Notion, relue à l’identique ; pas d’autre écriture.
+- Erreurs audio/dialogue récupérables, nettoyage à la fermeture, pas de délai artificiel de génération.
+- Promesses locales/temporaires/simulées clarifiées, guide TEST-LECTURE.md ajouté.
+- 40 tests passent ; rêve et voix réels, panne d’écoute, quota local simulé et retour exact vérifiés.
 
 ### 2026-10-13 — Branchement Organique IA
 
