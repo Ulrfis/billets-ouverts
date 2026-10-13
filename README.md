@@ -35,7 +35,7 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 
 ### 2.3 Périmètre actuel
 
-**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF avec pause et dosages. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil et les mondes restent des exemples ; callout lié et fragments réels du pilote attendent les ajouts Notion approuvés. Les formats journalistiques ne sont plus accessibles.
+**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF pleine largeur depuis le haut, sans bouton Pause, et deux dosages. Bouton « Information » dans le menu ; poésie au survol/focus de l’animation. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil est personnel et local ; les mondes restent des exemples. Callout lié et fragments réels du pilote attendent les ajouts Notion approuvés. Les formats journalistiques ne sont plus accessibles.
 
 **Hors périmètre :** comptes, Lovable Cloud, base partagée, publication automatique des contributions dans Notion, véritable administration sécurisée, paiement et suivi budgétaire comptable.
 
@@ -101,8 +101,8 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 ### 4.5 Contrat UX et visuel
 
 - Lieu de lecture : sidebar gauche (25 % puis largeur bornée), colonne originale à droite ; tiroir superposé sur mobile et tablette.
-- Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Sidebar blanc pur (#FFFFFF) / noir pur (#000000), sans teinte. Pause et images fixes ; médias cachés démontés.
-- Deux dosages persistés : sans distraction et interactif. Sans distraction retire les commandes et ajouts applicatifs entre paragraphes, tout en conservant les blocs et annotations éditoriales Notion et les séparateurs-portes. Le mode interactif conserve avis, Garder et mots-clés. Fil personnel local avec recherche, suppression et retour au passage.
+- Jour par défaut, passage volontaire nuit/jour, GIF nuage/vagues et comète/arbre fournis. Sidebar blanc pur (#FFFFFF) / noir pur (#000000), sans teinte. GIF pleine largeur depuis le bord supérieur, sans Pause ; image fixe en réduction des animations et médias cachés démontés. Slogans absents sous l’image, poésie seulement au survol/focus ; « Information » tout à droite du menu présente le projet.
+- Deux dosages persistés : sans distraction et interactif. Sans distraction retire les commandes et ajouts applicatifs entre paragraphes, tout en conservant les blocs et annotations éditoriales Notion et les séparateurs-portes. En interactif, un petit signe + déplie les icônes Réagir, Garder et Mot-clé ; aucun développement automatique après enregistrement ou réaction. Fil personnel local avec recherche, suppression et retour au passage.
 - Le billet réel rend son callout existant et son séparateur ; aucune insertion fictive dans le billet Notion. Les dividers ouvrent le monde de démonstration avec retour exact. Le secours conserve les inserts préparés du lot 1.
 - Playfair Display pour les titres, Roboto pour le corps, Oswald pour les petits labels ; couleurs et états dans `src/styles.css`.
 - En-tête : « Billet ouvert - une expérimentation de lecture immersive », persistant en haut pendant le défilement.
@@ -424,7 +424,7 @@ INTERFACE
 En-tête exact « Billet ouvert - une expérimentation de lecture immersive ». Titre « Et si… le cinéma embrassait le web ? », couverture Notion sous le titre sans convertir le GIF. Playfair Display / Roboto / Oswald. Bleu #1e73be, accents #e06f0d / #dd9933 / #d3347b définis en tokens, fonds clairs et gris. Colonne de lecture et marge desktop, panneau inférieur pour les notes mobiles. Ne pas remettre le surtitre orange, la capsule Notion, la généalogie/modération ni les versions dans le menu du haut. Bouton « Autour du billet » ouvrant Carnet, Contributeurs, Digressions, Résonances ; généalogie et modération en pied de page. Respecter navigation clavier, libellés accessibles, aria-expanded et réduction des animations.
 
 LOT 1 LIRE/GARDER/RÊVER
-Cadre partagé autour des routes : sidebar gauche 25 % avec largeur bornée, tiroir mobile ; GIF cloud-vagues le jour, comet-arbre la nuit. Pause remplace le GIF par une image fixe extraite, reduced-motion fixe par défaut, médias cachés démontés. Jour par défaut, bascule volontaire, jamais selon heure ou thème système. Dosages quiet/interactive, connexion explicitement simulée ; préférences en localStorage billets-ouverts-reader-v1 après hydration. Quatre traces d’exemple identifiées, un callout préparé et deux portes en mâchoire verticales, pas encore de 3D/collecte/IA/voix. Retour position exacte et focus au déclencheur. Ne pas modifier Notion ou les paragraphes ; valider lot 1 avant lot 2.
+Cadre partagé autour des routes : sidebar gauche 25 % avec largeur bornée, tiroir mobile ; GIF cloud-vagues le jour, comet-arbre la nuit, pleine largeur depuis le haut sans marges ni bouton Pause. Reduced-motion remplace l’animation par une image fixe extraite ; médias cachés démontés. Aucun slogan permanent sous le GIF ; poésie au survol/focus. Bouton Information à droite du menu persistant avec présentation du projet. Jour par défaut, bascule volontaire, jamais selon heure ou thème système. Dosages quiet/interactive, connexion explicitement simulée ; préférences en localStorage billets-ouverts-reader-v1 après hydration. Fil personnel sans traces d’exemple, passages et mots-clés locaux avec recherche/suppression/retour. En interactif seulement, petit signe + pour déplier les actions sous un passage ; icônes nommées et formulaires à la demande. Un callout préparé et deux portes en mâchoire verticales dans le secours, pas encore de 3D/rêves IA. Retour position exacte et focus au déclencheur. Ne pas modifier Notion ou les paragraphes ; lots suivants soumis à validation.
 
 LOT 2, ÉTAT ACTUEL
 Sidebar fond blanc pur #FFFFFF le jour et noir pur #000000 la nuit, aucune teinte. Rendre Notion dès le HTML initial avec modèle browser-safe : blocs stables, spans, liens sûrs, annotations typographiques, citations, listes, images, enfants. Pagination, récursion bornée (8 niveaux, 800 blocs), original jamais modifié par insertion de marqueurs. Dividers deviennent portes ; mondes restent maquettes. Charger le corps d'une page liée au callout après geste : revalider côté serveur le bloc dans le pilote et sa cible explicite, refuser cible arbitraire ou billet lui-même ; callouts imbriqués inertes. Fragments : seul préfixe billet-fragment: suivi de JSON extrait/motCle/lien est public, aucune identité ; extrait exact unique requis. Commentaires 403 sur le pilote actuel ; repli relation Repères éditoriaux avec Bloc, Extrait exact, Mot-clé, Lien. Données et deuxième séparateur non créés ; proposition séparée à approuver avant toute écriture Notion. Avis Notion utilisent IDs des blocs ; ne remapper aucun ancien avis positionnel au hasard. Lots suivants soumis à validation.
@@ -511,6 +511,14 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 - Traces et portes explicitement préparées ; Notion et paragraphes inchangés.
 - Dix tests et parcours navigateur vérifiés ; lots suivants en attente de validation.
 - Prompt et brouillon Notion actualisés ; aucun envoi externe.
+
+### 2026-10-13 — Lecture et sidebar épurées
+
+- GIF vérifiés chargés, pleine largeur au bord supérieur ; aucun bouton Pause. Réduction des animations conservée.
+- Poésie au survol/focus et fenêtre Information à droite du menu ; texte de présentation initial proposé à partir du projet.
+- Actions des passages repliées derrière + en interactif, absentes en lecture calme ; blocs Notion inchangés.
+- Parcours réel : garder, mot-clé, réaction, replier, recherche sans accents, retour et suppression ; aucun pageerror. Onze tests ciblés réussis, build automatique OK.
+- Aucune écriture Notion, implémentation de surlignages contextuels ou publication.
 
 ### 2026-10-12 — Référence `c0c31ea`
 
