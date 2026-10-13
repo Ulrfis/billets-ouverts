@@ -185,6 +185,18 @@ Les changements applicatifs visibles dans Git sont datés du 2026-10-11. Les ét
 
 ## Pivots & Breakages
 
+### 2026-10-13 — Préparer les premiers essais accompagnés
+
+**Intent** : terminer le parcours rêve/écoute/retour et rendre les limites du prototype compréhensibles.
+
+**Outcome** : après accord distinct, seule la consigne du rêve corrigée dans Notion puis relue à l’identique. Gestion des erreurs et nettoyage audio/microphone renforcés, résultats d’un panneau fermé ignorés. Délai artificiel de génération supprimé. Dialogue temporaire sans fausse option de conservation ; budget, contributions et modération explicitement locaux ou illustratifs. Guide d’essai TEST-LECTURE.md ajouté.
+
+**Verification** : 40 tests dans 8 fichiers. Passage réel enregistré et choisi, rêve généré, panne d’écoute hors ligne récupérée, audio Gradium démarré puis arrêté, refus local avec compteur fixé à trois, retour exact (0 px) et aucune erreur React. Pas de trois générations consécutives ni d’évaluation humaine de la qualité audio. Transcription microphone à tester.
+
+**Limits / next** : premiers essais accompagnés possibles ; citations toujours d’exemple, contrôle serveur des coûts et production non réalisés. Repères différés et Coolify attendent une décision. Aucun autre changement Notion ni publication.
+
+**Tool** : Lovable, Notion, OpenRouter, Gradium, Vitest et Playwright. **Time** : non mesuré.
+
 ### 2026-10-13 — Organique IA devient le pilotage effectif
 
 **Intent** : brancher la base sur le rêve et le dialogue en conservant leurs valeurs actuelles comme secours.
@@ -383,7 +395,7 @@ Utiliser seulement les citations attestées. Ne pas inventer temps, coûts, émo
 | 2026-10-12 | Modération locale publique, tableau d’avis fictif | Haut avant publication | Choisir la portée du service ; ne pas assimiler à une administration |
 | 2026-10-12 | Budget simulé sans contrôle serveur ni reset | Haut avant publication IA | Décision spécifique sur quotas et coûts |
 | 2026-10-13 | Rêve : trois succès/jour contrôlés uniquement sur l’appareil | Haut avant exposition publique | Définir quotas serveur et coût réel ; localStorage n’est pas une protection |
-| 2026-10-13 | Organique IA branchée ; prompt rêve malformé | Consigne du rêve reste en secours, autres champs valides actifs | Corriger éditorialement la cellule Prompt système dans Notion ; lecture validée et repli implémentés |
+| 2026-10-13 | Organique IA branchée ; prompt rêve corrigé sur accord | Ancien blocage de consigne levé | Valeur corrigée relue ; protections de repli conservées |
 | 2026-10-13 | Rêves temporaires, voix/erreurs/quota non vérifiés entièrement | Moyen | Arbitrer conservation puis tests dédiés ; ne pas annoncer une archive de rêves |
 | 2026-10-13 | Coolify envisagé, aucune recette de production validée | Bloque une livraison auto-hébergée prête à lancer | Choisir/valider adaptateur, médias, secrets et garde-fous ; voir README 7.7 |
 | 2026-10-12 | E-mail saisi non enregistré ; acceptation non tracée par contribution | Moyen | Clarifier l’usage ou adapter la collecte sur demande |
@@ -400,7 +412,13 @@ Ces sujets sont documentés, **pas ajoutés implicitement au périmètre de la p
 
 ## Contrats de session (DBC)
 
-### Dernière session — 2026-10-13, branchement Organique IA
+### Dernière session — 2026-10-13, premiers essais
+
+**Préconditions** : accord de préparation et autorisation distincte de corriger la consigne Notion.
+
+**Postconditions** : consigne corrigée et relue, rêve/écoute/arrêt/erreur/retour vérifiés ; 40 tests réussis, compteur local exercé sans dépenses répétées. Messages temporaires et simulations clarifiés, guide de test et documents actualisés. Pas de publication, quotas serveur, corpus réel ou validation humaine audio/microphone.
+
+### Session historique — 2026-10-13, branchement Organique IA
 
 **Préconditions** : accord de branchement, base existante lue côté serveur ; valeurs actuelles conservées comme secours et clés disponibles sans exposition.
 
