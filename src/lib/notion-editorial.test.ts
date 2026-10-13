@@ -29,4 +29,10 @@ describe("Notion editorial grammar", () => {
     expect(safeEditorialUrl("javascript:alert(1)")).toBeNull();
     expect(safeEditorialUrl("https://example.org/image.gif")).toBe("https://example.org/image.gif");
   });
+});describe("Callout link in a child line", () => {
+  it("detects a page mention placed at the bottom of the callout", () => {
+    const child = parseEditorialBlock({ id: "c", type: "paragraph", paragraph: { rich_text: [{ plain_text: "Comment faire", mention: { page: { id: "3f651168-2fc3-8159-be82-e5063b73087f" } } }] } });
+    const box = parseEditorialBlock({ id: "box", type: "callout", callout: { rich_text: [{ plain_text: "Statique." }] } }, [child]);
+    expect(box.targetPageId).toBe("3f6511682fc38159be82e5063b73087f");
+  });
 });

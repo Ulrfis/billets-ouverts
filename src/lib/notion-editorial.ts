@@ -54,7 +54,9 @@ export function parseEditorialBlock(raw: Raw, children: EditorialBlock[] = []): 
   const spans = editorialSpans(body['rich_text']);
   const file = record(body[typeof body['type'] === "string" ? body['type'] : "external"]);
   const url = safeEditorialUrl(body['url'] ?? file['url']);
-  const targetPageId = type === "callout" ? spans.map((span) => span.pageId ?? notionPageId(span.href)).find((id) => id !== null) ?? null : null;
+  // A callout links through its own text or a direct child line (e.g. a page mention at the bottom of the box).
+  const linkSpans = [...spans, ...children.filter((child) => child.type === "paragraph").flatMap((child) => child.spans)];
+  const targetPageId = type === "callout" ? linkSpans.map((span) => span.pageId ?? notionPageId(span.href)).find((id) => id !== null) ?? null : null;
   return { id: typeof raw['id'] === "string" ? raw['id'] : "", type, spans, children, url,
     caption: editorialSpans(body['caption']), targetPageId, checked: body['checked'] === true };
 }

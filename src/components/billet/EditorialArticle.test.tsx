@@ -12,11 +12,11 @@ describe("Linked editorial reading", () => {
     mocks.load.mockResolvedValue({ ok: true, title: "Destination", blocks: [parseEditorialBlock({ id: "paragraph", type: "paragraph", paragraph: { rich_text: [{ plain_text: "Le contenu original de la page liée." }] } })] });
     render(<EditorialArticle blocks={[callout]} />);
     expect(mocks.load).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Page publique" }));
+    fireEvent.click(screen.getByRole("button", { name: /Page publique/ }));
     await waitFor(() => expect(screen.getByText("Le contenu original de la page liée.")).toBeTruthy());
     expect(mocks.load).toHaveBeenCalledWith({ data: { blockId: callout.id } });
-    fireEvent.click(screen.getByRole("button", { name: "Replier" }));
-    fireEvent.click(screen.getByRole("button", { name: "Page publique" }));
+    fireEvent.click(screen.getByRole("button", { name: "Revenir au texte" }));
+    fireEvent.click(screen.getByRole("button", { name: /Page publique/ }));
     expect(mocks.load).toHaveBeenCalledTimes(1);
   });
 });
