@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import type { ReactionId } from "@/data/billet";
-import { addTrace, normalizeTraces, removeTrace, TRACES_VERSION, type Trace } from "@/lib/traces";
+import { addTrace, normalizeTraces, removeTrace, toggleTraceSelection, TRACES_VERSION, type Trace } from "@/lib/traces";
 
 export type QueueItem = {
   id: string;
@@ -95,4 +95,8 @@ export function keepTrace(input: Omit<Trace, "id" | "createdAt">) {
 
 export function forgetTrace(id: string) {
   setState((s) => ({ ...s, traces: removeTrace(s.traces, id) }));
+}
+
+export function selectTrace(id: string) {
+  setState((s) => ({ ...s, traces: toggleTraceSelection(s.traces, id) }));
 }
