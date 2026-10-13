@@ -75,7 +75,7 @@ async function editorialFragments(blocks: EditorialBlock[], props: Record<string
   try {
     // Probe once; a missing comments capability must not make the article fail.
     await notionGet(`/comments?block_id=${BILLET_PAGE_ID}&page_size=100`, key);
-    for (const block of flat.filter((item) => item.spans.length > 0)) {
+    await mapLimit(flat.filter((item) => item.spans.length > 0), 6, async (block) => {
       let cursor: string | undefined;
       do {
         const data = await notionGet(`/comments?block_id=${block.id}&page_size=100${cursor ? `&start_cursor=${encodeURIComponent(cursor)}` : ""}`, key);
@@ -86,7 +86,7 @@ async function editorialFragments(blocks: EditorialBlock[], props: Record<string
         }
         cursor = data['has_more'] ? data['next_cursor'] as string : undefined;
       } while (cursor);
-    }
+    });
   } catch { comments = "unavailable"; }
   // Explicitly related fallback rows only; no general database search or private comments returned.
   for (const id of propRel(props['Repères éditoriaux'])) {
