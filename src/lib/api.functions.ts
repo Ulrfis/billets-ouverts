@@ -22,11 +22,26 @@ type NotionBlock = { type: string; [k: string]: unknown };
 type NotionProp = { type: string; [k: string]: unknown };
 
 async function notionGet(path: string, key: string) {
-  const res = await fetch(`https://api.notion.com/v1${path}`, {
-    headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION },
-  });
-  if (!res.ok) throw new Error(`Notion ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  return res.json() as Promise<Record<string, unknown>>;
+  // Retry rate limits and transient errors so one hiccup does not drop the whole billet.
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.notion.com/v1${path}`, {
+      headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION },
+    });
+    if (res.ok) return res.json() as Promise<Record<string, unknown>>;
+    const retryable = res.status === 429 || res.status >= 500;
+    if (!retryable || attempt >= 3) throw new Error(`Notion ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const wait = Number(res.headers.get("retry-after")) * 1000 || 400 * 2 ** attempt;
+    await new Promise((r) => setTimeout(r, Math.min(wait, 3000)));
+  }
+}
+
+async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) { const i = next++; out[i] = await fn(items[i] as T); }
+  }));
+  return out;
 }
 
 async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
@@ -41,18 +56,16 @@ async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
   return out;
 }
 
-async function editorialTree(pageId: string, key: string, depth = 0, budget = { remaining: 800 }): Promise<EditorialBlock[]> {
+async function editorialTree(pageId: string, key: string, depth = 0, budget = { remaining: 800 }, top?: NotionBlock[]): Promise<EditorialBlock[]> {
   if (depth > 8 || budget.remaining <= 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
-  const blocks = await allBlocks(pageId, key);
+  const blocks = top ?? await allBlocks(pageId, key);
   budget.remaining -= blocks.length;
   if (budget.remaining < 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
-  const output: EditorialBlock[] = [];
-  for (const block of blocks) {
+  return mapLimit(blocks, 6, async (block) => {
     const children = block['has_children'] === true && typeof block['id'] === "string"
       ? await editorialTree(block['id'], key, depth + 1, budget) : [];
-    output.push(parseEditorialBlock(block, children));
-  }
-  return output;
+    return parseEditorialBlock(block, children);
+  });
 }
 
 async function editorialFragments(blocks: EditorialBlock[], props: Record<string, NotionProp>, key: string) {
@@ -62,7 +75,7 @@ async function editorialFragments(blocks: EditorialBlock[], props: Record<string
   try {
     // Probe once; a missing comments capability must not make the article fail.
     await notionGet(`/comments?block_id=${BILLET_PAGE_ID}&page_size=100`, key);
-    for (const block of flat.filter((item) => item.spans.length > 0)) {
+    await mapLimit(flat.filter((item) => item.spans.length > 0), 6, async (block) => {
       let cursor: string | undefined;
       do {
         const data = await notionGet(`/comments?block_id=${block.id}&page_size=100${cursor ? `&start_cursor=${encodeURIComponent(cursor)}` : ""}`, key);
@@ -73,7 +86,7 @@ async function editorialFragments(blocks: EditorialBlock[], props: Record<string
         }
         cursor = data['has_more'] ? data['next_cursor'] as string : undefined;
       } while (cursor);
-    }
+    });
   } catch { comments = "unavailable"; }
   // Explicitly related fallback rows only; no general database search or private comments returned.
   for (const id of propRel(props['Repères éditoriaux'])) {
@@ -157,9 +170,32 @@ export const getIceQuotes = createServerFn({ method: "GET" }).handler(async () =
   }
 });
 
+// Last good billet per server instance: fresh for 5 min, then refreshed in the background;
+// a failed refresh keeps serving the last good copy instead of the demo text.
+let notionCache: { at: number; value: Awaited<ReturnType<typeof loadNotionContent>> } | null = null;
+let notionInflight: ReturnType<typeof loadNotionContent> | null = null;
+const NOTION_FRESH_MS = 5 * 60_000;
+
+function refreshNotion(key: string) {
+  notionInflight ??= loadNotionContent(key).then((value) => {
+    if (value.ok) notionCache = { at: Date.now(), value };
+    else console.error("Notion billet unavailable", value.reason);
+    return value;
+  }).finally(() => { notionInflight = null; });
+  return notionInflight;
+}
+
 export const getNotionContent = createServerFn({ method: "GET" }).handler(async () => {
   const key = process.env["NOTION_API_KEY"];
   if (!key) return { ok: false as const, reason: "non configuré" };
+  if (notionCache) {
+    if (Date.now() - notionCache.at > NOTION_FRESH_MS) void refreshNotion(key).catch(() => {});
+    return notionCache.value;
+  }
+  return refreshNotion(key);
+});
+
+async function loadNotionContent(key: string) {
   try {
     const page = await notionGet(`/pages/${BILLET_PAGE_ID}`, key);
     const props = page["properties"] as Record<string, NotionProp>;
@@ -169,9 +205,9 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
     const cover = coverUrl(imageProperty);
 
     // Corps du billet -> sections / passages
-    const editorialBlocks = await editorialTree(BILLET_PAGE_ID, key);
-    const editorial = await editorialFragments(editorialBlocks, props, key);
     const blocks = await allBlocks(BILLET_PAGE_ID, key);
+    const editorialBlocks = await editorialTree(BILLET_PAGE_ID, key, 0, { remaining: 800 }, blocks);
+    const editorial = await editorialFragments(editorialBlocks, props, key);
     const sections: { title: string; paragraphs: string[] }[] = [];
     for (const b of blocks) {
       const text = blockText(b);
@@ -258,7 +294,7 @@ export const getNotionContent = createServerFn({ method: "GET" }).handler(async 
   } catch (e) {
     return { ok: false as const, reason: String(e) };
   }
-});
+}
 
 export const getNotionCallout = createServerFn({ method: "GET" })
   .inputValidator((input) => z.object({ blockId: z.string().uuid() }).parse(input))

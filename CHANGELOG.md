@@ -207,3 +207,7 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 - `bunx vitest run` le 2026-10-13 à 09:33 UTC : **27 tests réussis, 6 fichiers**. Contrôles de sources séparés des essais navigateur/IA historiques.
 - Aucun changement de fonctionnalité, nouvel appel payant IA/audio, écriture Notion, transfert Cursor ni publication pendant cette actualisation. Aucun lint, build ou typecheck manuel ; aucun résultat actuel de déploiement revendiqué.
 - L’URL publiée fournie par le projet n’atteste pas de la parité avec le code actuel. Les services vocaux, erreurs réseau et refus après trois rêves restent à tester spécifiquement.
+
+## 2026-10-13 — Chargement Notion fiabilisé
+- Le billet Notion était relu en entier (des centaines d'appels un par un, ~35 s) à chaque visite ; un seul refus ou ralentissement de Notion faisait apparaître le texte de démonstration.
+- Appels Notion relancés automatiquement en cas de limite ou d'erreur passagère, lectures en parallèle, dernière version valide gardée en mémoire 5 min puis rafraîchie en arrière-plan ; un échec de rafraîchissement ne remplace plus le billet par le texte de démonstration.
