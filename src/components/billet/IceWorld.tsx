@@ -72,14 +72,14 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
   });
   return <group ref={group} position={[cubeX(index), .7, -index * SPACING]}>
     <RoundedBox args={[8.4, 7.8, 4.6]} radius={.65} smoothness={4} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
-      <MeshTransmissionMaterial transmissionSampler samples={4} transmission={1} thickness={3.2} roughness={.065}
-        ior={1.31} chromaticAberration={.085} anisotropicBlur={.055} distortion={.08} distortionScale={.23}
+      <MeshTransmissionMaterial transmissionSampler samples={4} transmission={1} thickness={3.2} roughness={.065} depthWrite={false}
+        ior={1.31} chromaticAberration={.025} anisotropicBlur={.025} distortion={.035} distortionScale={.23}
         temporalDistortion={reduced ? 0 : .035} color={palette.ice} attenuationColor={palette.edge} attenuationDistance={15}
         clearcoat={1} clearcoatRoughness={.08} />
     </RoundedBox>
-    <mesh position={[0, .15, .35]} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
+    <mesh position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
       <planeGeometry args={[6.7, 6.7]} />
-      <meshBasicMaterial map={texture} alphaTest={.05} toneMapped={false} side={THREE.DoubleSide} />
+      <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
     </mesh>
     {/* Inner seams establish real depth rather than a flat glass panel. */}
     <RoundedBox args={[7.8, 7.2, 4.05]} radius={.5} smoothness={2}>
