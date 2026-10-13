@@ -350,8 +350,8 @@ Le sandbox Lovable sert actuellement l’application sur `http://localhost:8080`
 | Action | Commande existante | État de cette session |
 |---|---|---|
 | Développement | `bun run dev` | Serveur déjà géré par Lovable ; non redémarré |
-| Lint | `bun run lint` | Exécuté, échec existant |
-| Tests | `bunx vitest run` ou `bun run test` | Lot 2 : 16 tests réussis dans 5 fichiers |
+| Lint | `bun run lint` | Échec historique, non rejoué le 2026-10-13 |
+| Tests | `bunx vitest run` ou `bun run test` | 27 tests réussis dans 6 fichiers le 2026-10-13 |
 | Typecheck | Pas de script dédié | Non exécuté ; contrôles gérés par Lovable |
 | Build | `bun run build` | Script présent, non exécuté manuellement |
 | Preview de build | `bun run preview` | Non exécuté |
@@ -547,8 +547,8 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
   2026-10-13 : 2 routes de contenu ; 27 tests réussis dans 6 fichiers.
   Génération réelle rapportée dans la session précédente, voix complète et quota non revalidés.
   Organique IA : deux lignes créées, aucune lecture de réglages active.
-  106 blocs textuels non vides identiques à Notion ; sidebar blanc/noir, porte, reload et mobile vérifiés sans erreur.
-  Lint : 189 erreurs, 6 avertissements. Usage, coûts et temps non mesurés.
+  Preuve historique lot 2 : 106 blocs textuels non vides identiques à Notion ; sidebar blanc/noir, porte, reload et mobile vérifiés sans erreur.
+  Lint historique : 189 erreurs, 6 avertissements, non rejoué. Usage, coûts et temps non mesurés.
 "Learnings": |-
   Préserver l’URL GIF originale ; suivre les relations explicites Notion.
   Une décision de consentement ne prouve pas la conservation d’un transcript.
@@ -563,6 +563,8 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 **Champs retenus hors payload :** Lien principal (preview section 3, accès externe à vérifier), Repo Github, Date de lancement, Versions alternatives déployées, Temps de développement (h), Coût en token, Responsable, Développeurs, Outils de création, PRDs pour applications et démonstrateurs, Tâches liées et Meetings liés. Les personnes/outils connus ne valent pas des relations Notion résolues. Aucun clone alternatif déployé vérifié.
 
 **Corps recommandé de la fiche :** sections 1–2 pour le produit, 3 pour les liens, 4–6 pour les parcours/données, 7–10 pour la réalisation, 11–12 pour les limites/learnings, 13 pour la régénération ; ajouter les liens STORY et CHANGELOG.
+
+**Référence de configuration à joindre, pas une relation déjà synchronisée :** Organique IA, data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, lignes `reve.nuit` et `dialogue.passage` ; base créée, aucun flux de réglages applicatif actif. Voir [NOTION-IA-BASE.md](NOTION-IA-BASE.md). Ce brouillon de fiche Applications générées n’a pas été envoyé ; la création antérieure d’Organique IA est une opération distincte.
 
 ## 15. Journal des évolutions de la mémoire
 

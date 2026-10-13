@@ -390,7 +390,7 @@ Ces sujets sont documentés, **pas ajoutés implicitement au périmètre de la p
 
 **Préconditions** : décisions récentes, documents et code relus ; audit complémentaire de l’implémentation ; base Organique IA connue comme créée, non branchée. Pas de nouvelle vérification du déploiement externe.
 
-**Postconditions** : README, STORY et CHANGELOG actualisés ; intentions, fichiers de reprise, schéma Notion, limites de persistance/quota et statut Coolify explicités. 27 tests réussis dans 6 fichiers. Aucun changement fonctionnel, coût de test IA/audio, nouvelle écriture Notion ou publication. Contrôle de liens et cohérence documentaire à consigner uniquement après son exécution ; build/typecheck manuels et lint non rejoués.
+**Postconditions** : README, STORY et CHANGELOG actualisés ; intentions, fichiers de reprise, schéma Notion, limites de persistance/quota et statut Coolify explicités. 27 tests réussis dans 6 fichiers. Liens locaux des trois documents résolus, blocs Markdown équilibrés et seize rubriques README contrôlés. Aucun changement fonctionnel, coût de test IA/audio, nouvelle écriture Notion ou publication ; build/typecheck manuels et lint non rejoués.
 
 ### Session historique — 2026-10-12, adaptation documentaire
 
