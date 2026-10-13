@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { ArrowUp, ChevronDown, ArrowUpRight, Cloud, TreePine } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useReader } from "./ReaderContext";
+import { WorldOverlay } from "./Worlds";
 
 export function PrototypeCallout() {
   const [open, setOpen] = useState(false);
@@ -19,11 +20,15 @@ export function PrototypeCallout() {
   </aside>;
 }
 
+/**
+ * Séparateur-mâchoire : deux plans qui s’écartent, puis le monde du jour
+ * (glaçons) ou de la nuit (rêve) s’ouvre par-dessus. Au retour, le lecteur
+ * retrouve le séparateur, sa position de lecture et le focus.
+ */
 export function PrototypeDoor({ number }: { number: number | string }) {
   const { universe, dose } = useReader();
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
-  const returnButton = useRef<HTMLButtonElement>(null);
   const position = useRef(0);
   const day = universe === "day";
   const close = () => {
@@ -33,33 +38,17 @@ export function PrototypeDoor({ number }: { number: number | string }) {
       window.scrollTo({ top: position.current, behavior: "instant" });
     });
   };
-  return <div className="prototype-door my-10" data-open={open} onKeyDown={(event) => { if (open && event.key === "Escape") { event.preventDefault(); close(); } }}>
+  return <div className="prototype-door my-10" data-open={open}>
     <div className="door-jaw door-jaw-top" />
     <Button ref={trigger} variant="ghost" className="door-trigger w-full text-muted-foreground" aria-expanded={open} aria-controls={`world-${number}`} aria-label={`Ouvrir la porte ${number} · ${day ? "jour" : "nuit"}`} onClick={() => {
       if (open) { close(); return; }
       position.current = window.scrollY;
       setOpen(true);
-      requestAnimationFrame(() => returnButton.current?.focus({ preventScroll: true }));
     }}>
       <span className="door-line" /><ChevronDown aria-hidden className={open ? "rotate-180" : ""} />
       {dose === "interactive" && <span className="text-xs">Une porte · {day ? "jour" : "nuit"}</span>}<span className="door-line" />
     </Button>
-    {open && <section id={`world-${number}`} aria-label={`Monde de ${day ? "jour" : "nuit"} · maquette`} className="prototype-world animate-fade-rise">
-      <div className="flex flex-wrap items-center justify-between gap-3"><span className="text-xs text-muted-foreground">Maquette · porte {number}</span><Button ref={returnButton} variant="ghost" size="sm" onClick={close}><ArrowUp aria-hidden />Revenir au texte</Button></div>
-      <div className="py-10 md:py-16">
-        {day ? <Cloud className="mb-5 size-8 text-primary" aria-hidden /> : <TreePine className="mb-5 size-8 text-primary" aria-hidden />}
-        <h3 className="font-display text-3xl">{day ? "Les idées en suspension" : "La branche et l’écran"}</h3>
-        {day ? <div className="mt-8 space-y-6 text-lg leading-relaxed text-muted-foreground">
-          <blockquote className="border-l border-primary pl-5">« Une image peut devenir un chemin. »</blockquote>
-          <blockquote className="border-l border-gold pl-5">« Ce que l’on garde continue de bouger. »</blockquote>
-          <p className="text-xs">Phrases d’exemple préparées · pas encore de glaçons 3D ni de récolte.</p>
-        </div> : <div className="dream-path mt-8 space-y-6 pl-6 text-lg leading-relaxed text-muted-foreground">
-          <p>Une comète traverse l’écran. Là où elle touche la terre, un arbre se met à pousser.</p>
-          <p>Chaque branche porte une image. Elles se tournent vers le vent, et le vent devient une voix silencieuse.</p>
-          <p className="text-xs">Rêve préparé pour la maquette · aucune génération IA ni voix lancée.</p>
-        </div>}
-      </div>
-    </section>}
+    <WorldOverlay open={open} onClose={close} />
     <div className="door-jaw door-jaw-bottom" />
   </div>;
 }

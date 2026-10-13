@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { forgetTrace, useStore } from "@/lib/store";
-import { searchTraces } from "@/lib/traces";
-import { Cloud, TreePine, Info, PanelLeft, UserRound, Bookmark, Hash, Search, Trash2, CornerDownLeft } from "lucide-react";
+import { forgetTrace, selectTrace, useStore } from "@/lib/store";
+import { searchTraces, selectedTraces } from "@/lib/traces";
+import { Cloud, TreePine, Info, PanelLeft, UserRound, Bookmark, Hash, Quote, Search, Trash2, CornerDownLeft, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
