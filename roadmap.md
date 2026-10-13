@@ -29,5 +29,10 @@
 # Lire, garder, rêver — lot 3 autorisé (avant les ajouts Notion)
 - [x] Garder passages et mots-clés, recherche, suppression, sans doublon, retour au passage ; conservation locale.
 
+# Lire, garder, rêver — lot 5 (version calme, sans IA)
+- [x] Mondes jour/nuit derrière les portes : glaçons de citations récoltables, chemin du rêve avec traces choisies (≤ 5), retour exact au texte.
+- [x] Tests traces (10) et vérification navigateur des deux mondes ; documentation actualisée.
+
 # Lots suivants
-- [ ] Lots 4 à 6 — attendent la validation du lot 3.- [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
+- [ ] Lot 5 IA : rêve réellement généré et lu à voix haute — attend la validation des services IA.
+- [ ] Lot 6 — attend la validation du lot 5.- [x] État des lieux Notion des ajouts Cursor (NOTION-CURSOR-AUDIT.md).
