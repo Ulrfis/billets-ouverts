@@ -17,7 +17,7 @@
 | Version documentée | État du code relu le 2026-10-13 ; `c0c31ea` est une référence historique, pas la version actuelle ; aucun tag vérifié |
 | Début du développement spécifique | 2026-10-11, d’après l’historique Git ; template antérieur du 2026-10-07 |
 | Date de lancement public | Aucun lancement public constaté |
-| Dernière vérification documentaire | 2026-10-13 ; 27 tests réussis dans 6 fichiers |
+| Dernière vérification documentaire | 2026-10-13 ; 36 tests réussis dans 7 fichiers |
 
 ## 2. Vue d’ensemble produit
 
@@ -35,7 +35,7 @@ L’application ouvre l’essai « Et si… le cinéma embrassait le web ? » à
 
 ### 2.3 Périmètre actuel
 
-**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF pleine largeur depuis le haut, sans bouton Pause, et deux dosages. Bouton « Information » dans le menu ; poésie au survol/focus de l’animation. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil est personnel et local. Derrière chaque porte : le jour, quinze citations-glaçons d'exemple dérivent et se gardent dans le fil ; la nuit, « La branche et l’écran » génère un rêve OpenRouter après sélection explicite de 1 à 5 traces, puis propose une lecture Gradium après un second geste. Les réglages restent en dur ; la base Notion « Organique IA » est créée mais pas encore lue. Le callout lié du pilote affiche sa page entière après retournement ; les deux séparateurs ouvrent la même expérience selon l’univers. Trois repères sont validés, leur activation est reportée. Les formats journalistiques ne sont plus accessibles.
+**Inclus :** article, couverture GIF, avis, commentaires, tangentes, digressions, dialogue, contribution, modération locale et panneau « Autour du billet » ; cadre jour/nuit, sidebar persistante, tiroir mobile, GIF pleine largeur depuis le haut, sans bouton Pause, et deux dosages. Bouton « Information » dans le menu ; poésie au survol/focus de l’animation. Blocs Notion structurés, enfants, citations, listes, liens et images ; séparateurs-portes et lecteur de callouts liés autorisés. Le fil est personnel et local. Derrière chaque porte : le jour, quinze citations-glaçons d'exemple dérivent et se gardent dans le fil ; la nuit, « La branche et l’écran » génère un rêve OpenRouter après sélection explicite de 1 à 5 traces, puis propose une lecture Gradium après un second geste. Les réglages rêve/dialogue sont lus dans la base Notion « Organique IA », avec les valeurs actuelles en secours. Le callout lié du pilote affiche sa page entière après retournement ; les deux séparateurs ouvrent la même expérience selon l’univers. Trois repères sont validés, leur activation est reportée. Les formats journalistiques ne sont plus accessibles.
 
 **Hors périmètre :** comptes, Lovable Cloud, base partagée, publication automatique des contributions dans Notion, véritable administration sécurisée, paiement et suivi budgétaire comptable.
 
@@ -57,7 +57,7 @@ Le brief demandait une page française avec dix interactions, sans comptes, avec
 | Fiche « Applications générées » | À confirmer — fiche non identifiée | Aucune synchronisation effectuée par cette mise à jour |
 | Vérifications | Section 9 | Résultats datés, sans secrets |
 | Reprise Cursor | Section 7.7 | Contrat actuel, fichiers à lire, priorités et limites Coolify |
-| Organique IA | [NOTION-IA-BASE.md](NOTION-IA-BASE.md) | Base créée, deux lignes ; branchement non implémenté |
+| Organique IA | [NOTION-IA-BASE.md](NOTION-IA-BASE.md) | Base branchée, deux usages ; validation et secours documentés |
 | Audit Cursor / Notion | [NOTION-CURSOR-AUDIT.md](NOTION-CURSOR-AUDIT.md) | Instantané en lecture seule du 2026-10-13, pas une direction produit |
 
 **Hiérarchie locale :** tests et application exécutée, puis code actuel, historique Git, brief et récit. Le code direct Notion prévaut sur la mention du connecteur dans le plan initial. Les relations vides ne prouvent pas une fonctionnalité absente ; elles ne doivent pas être remplacées par des données inventées.
@@ -133,7 +133,7 @@ Chaque route possède ses propres métadonnées françaises. La couverture HTTPS
 | Fil personnel | Implémenté | Passages, mots-clés, citations ; recherche sans accents/casse, dédoublonnage, suppression, sélection persistée ; aucun rêve sauvegardé |
 | Monde de jour | Implémenté en HTML/CSS | 15 phrases d’exemple sans attribution ; pas de corpus Citations Notion ni de 3D |
 | Rêve de nuit | Génération réelle implémentée | OpenRouter, voix Gradium facultative ; 3 succès/jour/appareil en local, pas un quota serveur |
-| Organique IA | Base Notion créée | `reve.nuit`, `dialogue.passage` ; aucun réglage distant lu par l’application |
+| Organique IA | Branchée | `reve.nuit`, `dialogue.passage` ; réglages validés serveur, valeurs actuelles en secours |
 | Marginalia | Partiel | Notes fictives ; pas de chargement de la base Marginalia Notion |
 | Formats journalistiques | Retirés de l’expérience | Données historiques conservées ; aucun sélecteur de brève, grand format, relecture, variation ou remix |
 | Dialogue | Partiel | Texte/STT/TTS présents ; rétention annoncée mais non réalisée ; jauge simulée |
@@ -170,7 +170,7 @@ Il n’existe ni compte ni rôle applicatif. Tout visiteur peut lire et modifier
 | `traces` / `tracesVersion` | `id`, `kind` passage/mot-clé/citation, `passageId`, `text`, `excerpt`, `createdAt`, `selected?` ; version 2 | Store local ; liste initiale vide | Fragments choisis par le lecteur |
 | Compteur rêves | `{day, n}`, date UTC ; seuls les succès comptent | localStorage `billets-ouverts-dreams` | Compteur modifiable/effaçable, pas une protection serveur |
 | Rêve produit / audio | État React et lecteur audio temporaire ; non sauvegardés dans le fil | `Worlds.tsx` | Texte généré / audio traité par prestataire |
-| Organique IA | Deux usages documentés ; champs de modèles, prompts, limites et versions | Notion ; pas de lecture applicative | Configuration éditoriale, jamais clés API |
+| Organique IA | Deux usages documentés ; champs de modèles, prompts, limites et versions | Notion ; lecture serveur par usage | Configuration éditoriale, jamais clés API |
 | Messages / audio | Historique en mémoire React, enregistrement envoyé pour transcription | Navigateur et prestataires | Contenu de conversation / voix |
 
 Pas de schéma SQL, migration ou base partagée. Clé locale : `billets-ouverts-v1`. Les choix universe/day/night, dose/quiet/interactive, paused et connected (simulation uniquement) sont enregistrés séparément dans `billets-ouverts-reader-v1`. Le fil démarre vide et devient personnel par récolte explicite ; les 15 phrases des glaçons sont des exemples. `paused` subsiste dans les préférences historiques, mais aucun bouton Pause n’est affiché.
@@ -241,7 +241,7 @@ Lecteur → garder/chercher/supprimer/choisir → traces locales
 Séparateur → monde jour : corpus exemple → garder citation
            └→ monde nuit → textes sélectionnés → generateDream → OpenRouter
                          └→ geste Écouter → speak → Gradium
-Notion Organique IA → documentation uniquement (aucun flux de configuration actif)
+Notion Organique IA → loadAiSettings → validation/secours → génération et voix
 ```
 
 ### 7.3 Structure du dépôt
@@ -254,11 +254,13 @@ src/data/billet.ts          # Texte et données fictives de secours
 src/lib/api.functions.ts    # Appels externes côté serveur
 src/lib/store.ts            # État local du lecteur
 src/lib/traces.ts           # Traces version 2, recherche, dédoublonnage, sélection
-src/lib/ai-config.ts        # Réglages exécutés du rêve (pas ceux du dialogue)
+src/lib/ai-config.ts        # Valeurs de secours du rêve et du dialogue
+src/lib/ai-settings.ts      # Lecture/validation Notion et appel OpenRouter
+src/lib/ai-settings-query.ts # Contrôles publics du rêve
 src/data/quotes.ts          # 15 phrases d’exemple et limites UI du rêve
 src/components/billet/Worlds.tsx # Mondes, génération, audio, compteur local
 src/lib/notion-editorial*   # Blocs structurés, liens autorisés, tests
-NOTION-IA-BASE.md           # Schéma Organique IA créé, non branché
+NOTION-IA-BASE.md           # Schéma et contrat Organique IA branché
 NOTION-CURSOR-AUDIT.md      # Audit des ajouts Cursor, non importés
 src/lib/notion-properties*  # Extraction couverture / consentement et tests
 src/test/                   # Test de routage et setup
@@ -351,7 +353,7 @@ Le sandbox Lovable sert actuellement l’application sur `http://localhost:8080`
 |---|---|---|
 | Développement | `bun run dev` | Serveur déjà géré par Lovable ; non redémarré |
 | Lint | `bun run lint` | Échec historique, non rejoué le 2026-10-13 |
-| Tests | `bunx vitest run` ou `bun run test` | 27 tests réussis dans 6 fichiers le 2026-10-13 |
+| Tests | `bunx vitest run` ou `bun run test` | 36 tests réussis dans 7 fichiers le 2026-10-13 |
 | Typecheck | Pas de script dédié | Non exécuté ; contrôles gérés par Lovable |
 | Build | `bun run build` | Script présent, non exécuté manuellement |
 | Preview de build | `bun run preview` | Non exécuté |
@@ -365,10 +367,10 @@ Tests ciblés : couvertures URL/fichiers/GIF, consentement des crédits, route d
 
 ### 9.2 Vérifications actuelles — 2026-10-13
 
-- Relecture du code actuel, du schéma décrit Organique IA et de l’audit Cursor ; aucune écriture Notion, aucune dépense IA/audio ni publication.
-- `bunx vitest run` : **27 tests réussis, 6 fichiers** le 2026-10-13 à 09:33 UTC (propriétés 5, éditorial 6, préférences 4, traces 10, routage 1, article 1).
-- Aucun lint, build ou typecheck exécuté manuellement ; les chiffres ESLint ci-dessous restent historiques. Journaux d’observabilité indisponibles lors de la lecture initiale : aucun nouveau succès de build revendiqué.
-- Parcours visuels et services réels non rejoués pour cette tâche documentaire ; preuves antérieures explicitement séparées ci-dessous.
+- Lecture réelle de la base Organique IA : prompt dialogue valide, prompt rêve malformé rejeté avec secours individuel ; aucune écriture Notion ni publication.
+- `bunx vitest run` : **36 tests réussis, 7 fichiers** le 2026-10-13 à 09:53 UTC, dont 9 nouveaux tests de réglages IA.
+- Aucun lint, build ou typecheck exécuté manuellement ; build automatique réussi après correction TypeScript. Chiffres ESLint ci-dessous historiques.
+- Rêve puis dialogue réellement générés sur `/` dans le navigateur, captures confirmées, 108 passages rendus et aucune erreur React ; écoute proposée, parcours audio complet non testé.
 
 ### Vérifications historiques de la première rédaction — 2026-10-12
 
@@ -386,7 +388,7 @@ Monde jour : 15 glaçons rendus, récolte d'une citation dans le fil, fermeture 
 
 ### Activation IA et Notion — 2026-10-13 (preuve antérieure rapportée)
 
-Clé OpenRouter enregistrée via saisie sécurisée, génération réelle avec le compte de l’utilisateur rapportée comme réussie. Lecture Gradium présente dans le code ; aucune preuve conservée d’un parcours vocal complet, de trois succès puis refus, ou des exceptions réseau. Un modèle initial refusé/retiré a conduit au modèle déjà utilisé par le dialogue (`openai/gpt-4o-mini`) : ce remplacement n’est pas un mécanisme automatique de secours. Création Notion d’Organique IA et de deux lignes confirmée dans la conversation ; aucun branchement actif. Callout réel, deux portes, récolte, sélection et retour essayés dans les sessions précédentes, pas rejoués ici.
+Clé OpenRouter enregistrée via saisie sécurisée, génération réelle avec le compte de l’utilisateur rapportée comme réussie. Lecture Gradium présente dans le code ; aucune preuve conservée d’un parcours vocal complet, de trois succès puis refus, ou des exceptions réseau. Un modèle initial refusé/retiré a conduit au modèle déjà utilisé par le dialogue (`openai/gpt-4o-mini`) : ce remplacement n’est pas un mécanisme automatique de secours. À cette étape historique, Organique IA venait d’être créée sans branchement ; le branchement actuel est décrit en 7.7 et 9.2. Callout réel, deux portes, récolte, sélection et retour essayés dans les sessions précédentes, pas rejoués ici.
 
 ### Vérification lot 1 — 2026-10-12
 
@@ -420,7 +422,7 @@ Aucune publication déclenchée pendant cette mise à jour ; publication via Lov
 
 ### 11.1 Stable dans le code actuel
 
-Article Notion structuré avec secours, couverture GIF, panneaux liés, avis et file locale, cadre jour/nuit et actions minimales ; fil personnel avec recherche/suppression/retour/sélection. Callout à retournement et deux portes ; glaçons d’exemple en HTML/CSS et rêve OpenRouter avec écoute Gradium implémentée. Formats journalistiques retirés, original conservé. Organique IA créée, mais aucun réglage Notion exécuté.
+Article Notion structuré avec secours, couverture GIF, panneaux liés, avis et file locale, cadre jour/nuit et actions minimales ; fil personnel avec recherche/suppression/retour/sélection. Callout à retournement et deux portes ; glaçons d’exemple en HTML/CSS et rêve OpenRouter avec écoute Gradium implémentée. Formats journalistiques retirés, original conservé. Organique IA branchée avec validation et secours ; prompt rêve malformé en repli.
 
 ### 11.2 Partiel
 
@@ -439,7 +441,7 @@ Conservation des dialogues, variantes éditoriales, marginalia Notion, contexte 
 
 ### 11.4 Prochaines étapes / arbitrages actuels
 
-Lots 1–3 réalisés ; callout lié et deuxième séparateur ajoutés par Ulrich puis testés, mondes jour/nuit et activation du rêve réalisés. Ne pas reprendre les anciennes attentes des lots 2/3 comme des blocages actuels. Organique IA a été créée sur demande explicite ; son branchement reste à demander/valider. Les usages des trois repères restent différés. La suite nécessite validation de l’expérience actuelle, vérification IA/voix/quota et arbitrage sécurité/coûts ; lot 6 et Coolify ne sont pas réalisés. Pas de nouvel ajout Notion, de branchement ou de déploiement pendant cette tâche.
+Lots 1–3 réalisés ; callout lié et deuxième séparateur ajoutés par Ulrich puis testés, mondes jour/nuit et activation du rêve réalisés. Ne pas reprendre les anciennes attentes des lots 2/3 comme des blocages actuels. Organique IA est créée et branchée ; sa cellule Prompt système du rêve reste à corriger éditorialement. Les usages des trois repères restent différés. La suite nécessite validation de l’expérience actuelle, vérification IA/voix/quota et arbitrage sécurité/coûts ; lot 6 et Coolify ne sont pas réalisés. Branchement réalisé en lecture seule, sans ajout Notion ni déploiement.
 
 ### 11.5 Questions ouvertes
 
@@ -463,9 +465,9 @@ Connexion Notion initiale remplacée par l’accès direct ; erreur React minifi
 | Métrique | Valeur / définition | Source / date |
 |---|---|---|
 | Routes de contenu | 2 | Code relu le 2026-10-12 |
-| Tests | 27 réussis dans 6 fichiers | Vitest, 2026-10-13 à 09:33 UTC |
+| Tests | 36 réussis dans 7 fichiers | Vitest, 2026-10-13 à 09:53 UTC |
 | Lint | 189 erreurs, 6 avertissements | ESLint, 2026-10-12 |
-| Passages Notion | 105 observés lors de la précédente session ; non recomptés aujourd’hui | Vérification rapportée du 2026-10-11 |
+| Passages Notion | 108 éléments de passage rendus | Navigateur, 2026-10-13 |
 | Budget | Initial 4,20 $, jauge 30 $ ; aucune dépense réelle déduite | `store.ts`, `Dialogue.tsx` |
 | Usage, coût réel, durée de développement | Non mesurés / à confirmer | Aucun rapport vérifié |
 
@@ -564,9 +566,16 @@ L’article s’ouvre sans clé ; GIF d’origine conservé ; avis remplaçable 
 
 **Corps recommandé de la fiche :** sections 1–2 pour le produit, 3 pour les liens, 4–6 pour les parcours/données, 7–10 pour la réalisation, 11–12 pour les limites/learnings, 13 pour la régénération ; ajouter les liens STORY et CHANGELOG.
 
-**Référence de configuration à joindre, pas une relation déjà synchronisée :** Organique IA, data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, lignes `reve.nuit` et `dialogue.passage` ; base créée, aucun flux de réglages applicatif actif. Voir [NOTION-IA-BASE.md](NOTION-IA-BASE.md). Ce brouillon de fiche Applications générées n’a pas été envoyé ; la création antérieure d’Organique IA est une opération distincte.
+**Référence de configuration à joindre, pas une relation déjà synchronisée :** Organique IA, data source `c66462b5-fbf0-404d-9527-1a96b864bdf5`, lignes `reve.nuit` et `dialogue.passage` ; base branchée avec validation et valeurs actuelles en secours. Voir [NOTION-IA-BASE.md](NOTION-IA-BASE.md). Ce brouillon de fiche Applications générées n’a pas été envoyé ; la création antérieure d’Organique IA est une opération distincte.
 
 ## 15. Journal des évolutions de la mémoire
+
+### 2026-10-13 — Branchement Organique IA
+
+- Configuration rêve/dialogue et voix lue côté serveur, validation, activation et modèles de secours.
+- Prompt rêve Notion malformé rejeté sans écriture ; autres champs valides lus.
+- 36 tests réussis ; rêve et dialogue réels vérifiés sans erreur React. Audio complet et quota public restent à valider.
+- Contrat de reprise Cursor, prompt de régénération et documentation de la base actualisés.
 
 ### 2026-10-13 — Consolidation et reprise Cursor
 
