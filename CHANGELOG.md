@@ -155,3 +155,7 @@ Détails actuels : [README.md](README.md). Contexte et décisions : [STORY.md](S
 #### Vérifié
 - Parcours navigateur sur le billet réel : garder, mot-clé, réaction, replier, recherche sans accents, retour et suppression ; GIF jour/nuit chargés, poésie et Information visibles. Aucun pageerror ; onze tests ciblés réussis et build automatique OK.
 - Blocs Notion et mode sans distraction conservés ; aucune écriture Notion, surlignage contextuel nouveau ou publication.
+
+## 2026-10-13 — Rêve réel
+- Le dé de la nuit génère un vrai rêve (OpenRouter, réglages en dur dans src/lib/ai-config.ts) et peut le lire à voix haute (Gradium) ; 3 rêves par jour par appareil.
+- Proposition de base Notion « Organique IA » : NOTION-IA-BASE.md (non créée).
