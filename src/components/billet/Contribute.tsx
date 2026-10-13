@@ -22,7 +22,7 @@ export function ContributeDialog({ open, onOpenChange, passageId }: { open: bool
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="font-display">Contribuer</DialogTitle>
-          <DialogDescription>{passageId ? `À propos du passage ${passageId.slice(1)}` : "À propos du billet entier"}</DialogDescription>
+          <DialogDescription>{passageId ? "À propos de ce passage" : "À propos du billet entier"} · essai local, non transmis à l’auteur.</DialogDescription>
         </DialogHeader>
         {done ? (
           <p role="status" className="py-6 text-center text-primary">{CONFIRM}</p>
@@ -62,13 +62,13 @@ export function ContributeDialog({ open, onOpenChange, passageId }: { open: bool
                 <input id="c-name" required value={name} onChange={(e) => setName(e.target.value)} className={field} />
               </div>
               <div>
-                <label htmlFor="c-mail" className="text-sm font-medium text-ink">E-mail <span className="font-normal text-muted-foreground">(facultatif, jamais affiché)</span></label>
+                <label htmlFor="c-mail" className="text-sm font-medium text-ink">E-mail <span className="font-normal text-muted-foreground">(facultatif, non enregistré dans cet essai)</span></label>
                 <input id="c-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} />
               </div>
             </div>
             <label className="flex items-start gap-2 text-sm text-muted-foreground">
               <input type="checkbox" required checked={ok} onChange={(e) => setOk(e.target.checked)} className="mt-1" />
-              J'accepte la publication sous licence CC BY-NC-SA 4.0 et la modération préalable.
+              J'accepte le principe de publication sous licence CC BY-NC-SA 4.0 et de modération préalable — simulées ici, sans mise en ligne.
             </label>
             <button type="submit" className="w-full rounded-md bg-primary py-2 text-primary-foreground">Envoyer</button>
           </form>

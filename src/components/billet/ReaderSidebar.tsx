@@ -128,6 +128,7 @@ export function ReaderFrame({ children }: { children: React.ReactNode }) {
           <p>Un texte original, des chemins de traverse et ce qui reste après la lecture. Billet ouvert explore une lecture personnelle, sensible et ouverte aux résonances.</p>
           <p>Les idées ne nous appartiennent pas, elles nous traversent.</p>
           <p>Ce prototype propose deux univers, jour et nuit, et deux rythmes de lecture : sans distraction ou interactif. Vos passages et mots-clés restent sur cet appareil. La connexion est simulée.</p>
+          <p>Les contributions et leur modération restent également sur cet appareil : rien n’est publié ni envoyé à l’auteur. Les dialogues et rêves sont temporaires. Les services IA reçoivent les textes choisis et, pour la voix, l’audio nécessaire au traitement. Les limites et le budget sont indicatifs, pas une protection des dépenses.</p>
         </div>
       </DialogContent>
     </Dialog>
