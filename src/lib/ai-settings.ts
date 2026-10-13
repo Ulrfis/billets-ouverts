@@ -74,7 +74,6 @@ export async function completeAi(settings: AiSettings, key: string, messages: { 
       const res = await request("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model: selected, temperature: settings.temperature, max_tokens: settings.maxTokens, messages }),
-        signal: AbortSignal.timeout(45000),
       });
       if (!res.ok) { console.error("OpenRouter completion failed", res.status); continue; }
       const body = await res.json() as { choices?: { message?: { content?: string } }[]; usage?: { total_tokens?: number } };

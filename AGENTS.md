@@ -21,4 +21,6 @@
 - Only explicit editorial fragment comments or explicitly related fallback rows may become public annotations; ordinary comments and author data stay private, and missing comment permissions must not interrupt reading.
 - Uploaded sidebar media uses asset pointers plus fixed-frame derivatives; render only visible media and honor reduced-motion before animation begins.
 - Dream and dialogue configuration is resolved from the explicit Organique IA usage row through the existing server API boundary; browser-safe defaults and field validation preserve current behavior when Notion fails, with only public dream control limits exposed to the browser.
+- AI generation is awaited without artificial request deadlines; audio and microphone resources stop when their reading panel closes, and async results from closed panels are ignored to prevent surprise playback.
+- The dream allowance parser is browser-safe and validates local counters; daily allowances remain prototype-only, never a server spending guarantee.
 - Trace transformations stay in the browser-safe pure traces module and are persisted through the existing reader store, keeping compatibility and selection behavior independently testable.

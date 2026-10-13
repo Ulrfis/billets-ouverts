@@ -1,7 +1,6 @@
 /**
- * Réglages IA « en dur », un seul endroit. Chaque entrée correspond à une
- * future ligne de la base Notion « Organique IA » (clé, usage, modèle,
- * prompt, limites) : le jour où la base existe, seule la lecture change.
+ * Valeurs de secours IA. Chaque entrée correspond à une ligne de la base
+ * Notion « Organique IA », désormais lue et validée côté serveur.
  */
 export type AiUsage = {
   key: string;
