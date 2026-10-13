@@ -22,11 +22,26 @@ type NotionBlock = { type: string; [k: string]: unknown };
 type NotionProp = { type: string; [k: string]: unknown };
 
 async function notionGet(path: string, key: string) {
-  const res = await fetch(`https://api.notion.com/v1${path}`, {
-    headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION },
-  });
-  if (!res.ok) throw new Error(`Notion ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  return res.json() as Promise<Record<string, unknown>>;
+  // Retry rate limits and transient errors so one hiccup does not drop the whole billet.
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`https://api.notion.com/v1${path}`, {
+      headers: { Authorization: `Bearer ${key}`, "Notion-Version": NOTION_VERSION },
+    });
+    if (res.ok) return res.json() as Promise<Record<string, unknown>>;
+    const retryable = res.status === 429 || res.status >= 500;
+    if (!retryable || attempt >= 3) throw new Error(`Notion ${res.status}: ${(await res.text()).slice(0, 200)}`);
+    const wait = Number(res.headers.get("retry-after")) * 1000 || 400 * 2 ** attempt;
+    await new Promise((r) => setTimeout(r, Math.min(wait, 3000)));
+  }
+}
+
+async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) { const i = next++; out[i] = await fn(items[i] as T); }
+  }));
+  return out;
 }
 
 async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
@@ -41,18 +56,16 @@ async function allBlocks(pageId: string, key: string): Promise<NotionBlock[]> {
   return out;
 }
 
-async function editorialTree(pageId: string, key: string, depth = 0, budget = { remaining: 800 }): Promise<EditorialBlock[]> {
+async function editorialTree(pageId: string, key: string, depth = 0, budget = { remaining: 800 }, top?: NotionBlock[]): Promise<EditorialBlock[]> {
   if (depth > 8 || budget.remaining <= 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
-  const blocks = await allBlocks(pageId, key);
+  const blocks = top ?? await allBlocks(pageId, key);
   budget.remaining -= blocks.length;
   if (budget.remaining < 0) throw new Error("Notion editorial tree exceeds safe reading bounds");
-  const output: EditorialBlock[] = [];
-  for (const block of blocks) {
+  return mapLimit(blocks, 6, async (block) => {
     const children = block['has_children'] === true && typeof block['id'] === "string"
       ? await editorialTree(block['id'], key, depth + 1, budget) : [];
-    output.push(parseEditorialBlock(block, children));
-  }
-  return output;
+    return parseEditorialBlock(block, children);
+  });
 }
 
 async function editorialFragments(blocks: EditorialBlock[], props: Record<string, NotionProp>, key: string) {
