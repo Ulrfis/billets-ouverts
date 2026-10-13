@@ -1,65 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUp, Bookmark, Check, Dices, Square, TreePine, Volume2 } from "lucide-react";
+import { ArrowUp, Dices, PanelLeft, Square, TreePine, Volume2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { dreamSettingsQuery } from "@/lib/ai-settings-query";
 import { Button } from "@/components/ui/button";
-import { EXAMPLE_QUOTES, DREAM_LIMITS, type Quote } from "@/data/quotes";
-import { generateDream, speak, getDreamSettings } from "@/lib/api.functions";
-import { keepTrace, useStore } from "@/lib/store";
-import { hasTrace, selectedTraces } from "@/lib/traces";
+import { DREAM_LIMITS } from "@/data/quotes";
+import { generateDream, speak, getDreamSettings, getIceQuotes } from "@/lib/api.functions";
+import { useStore } from "@/lib/store";
+import { selectedTraces } from "@/lib/traces";
 import { useReader } from "./ReaderContext";
 import { cn } from "@/lib/utils";
 import { DREAM_DAY_KEY, dreamCount, dreamAllowance } from "@/lib/dream-counter";
 
-/**
- * Les mondes derrière les séparateurs. Version calme en HTML : aucune 3D,
- * génération OpenRouter après geste explicite la nuit. Le jour dérive entre des citations-glaçons
- * collectables ; la nuit parcourt les traces choisies avant le rêve.
- */
-
-function Iceberg({ quote, index }: { quote: Quote; index: number }) {
-  const kept = useStore((s) => hasTrace(s.traces, "citation", quote.id, quote.text));
-  const drift = (index % 5) - 2; // -2..2 : décalage horizontal doux
-  return (
-    <figure
-      className="iceberg"
-      style={{ "--drift": `${drift * 14}px`, "--delay": `${(index % 7) * -2.4}s` } as React.CSSProperties}
-    >
-      <blockquote className="iceberg-body">
-        <p className="font-display text-xl leading-snug md:text-2xl">« {quote.text} »</p>
-        <figcaption className="mt-3 text-xs text-muted-foreground">
-          Corpus d’exemple · {quote.keywords.join(" · ")}
-        </figcaption>
-      </blockquote>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="mt-2"
-        disabled={kept}
-        aria-pressed={kept}
-        onClick={() => keepTrace({ kind: "citation", passageId: quote.id, text: quote.text, excerpt: `Glaçon d’exemple · ${quote.keywords.join(", ")}` })}
-      >
-        {kept ? <Check aria-hidden /> : <Bookmark aria-hidden />}
-        {kept ? "Gardée" : "Garder cette citation"}
-      </Button>
-    </figure>
-  );
-}
+const IceWorld = lazy(() => import("./IceWorld"));
 
 function DayWorld() {
-  return (
-    <div className="world-day">
-      <p className="mx-auto max-w-xl text-center text-sm text-muted-foreground">
-        Quinze citations dérivent lentement. Ce sont des phrases d’exemple, sans attribution :
-        le corpus réel viendra de la base Notion « Citations » une fois validée.
-      </p>
-      <div className="iceberg-field mt-12">
-        {EXAMPLE_QUOTES.map((quote, index) => <Iceberg key={quote.id} quote={quote} index={index} />)}
-      </div>
-    </div>
-  );
+  const read = useServerFn(getIceQuotes);
+  const { data, isPending, refetch } = useQuery({ queryKey: ["resonances-ice"], queryFn: () => read(), staleTime: 60_000 });
+  if (isPending) return <p role="status" className="p-8 text-sm text-muted-foreground">Les résonances arrivent…</p>;
+  if (!data?.ok) return <div className="p-8"><p role="status" className="text-sm text-muted-foreground">Les citations Notion sont momentanément indisponibles.</p><Button variant="ghost" className="mt-4" onClick={() => void refetch()}>Réessayer</Button></div>;
+  return <Suspense fallback={<p role="status" className="p-8 text-sm text-muted-foreground">L’espace s’ouvre…</p>}><IceWorld quotes={data.quotes} /></Suspense>;
 }
 
 function dreamsToday(): number {
@@ -210,20 +171,28 @@ export function WorldOverlay({ open, onClose }: { open: boolean; onClose: () => 
     closeRef.current?.focus({ preventScroll: true });
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
+    const preventArticleScroll = (event: WheelEvent | TouchEvent) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest(".reader-content")) event.preventDefault();
+    };
+    document.addEventListener("wheel", preventArticleScroll, { passive: false });
+    document.addEventListener("touchmove", preventArticleScroll, { passive: false });
     return () => {
       window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.removeEventListener("wheel", preventArticleScroll);
+      document.removeEventListener("touchmove", preventArticleScroll);
     };
   }, [open, onClose]);
   if (!open || typeof document === "undefined") return null;
   return createPortal(
-    <div className={cn("world-overlay", day ? "world-overlay-day" : "world-overlay-night")} role="dialog" aria-modal="true" aria-label={day ? "Monde de jour : les glaçons" : "Monde de nuit : la branche et l’écran"}>
+    <div id="reading-world" className={cn("world-overlay", day ? "world-overlay-day" : "world-overlay-night")} role="dialog" aria-modal="false" aria-label={day ? "Monde de jour : les glaçons" : "Monde de nuit : la branche et l’écran"}>
+      <div className="world-jaw world-jaw-top" aria-hidden /><div className="world-jaw world-jaw-bottom" aria-hidden />
       <div className="world-bar">
+        <Button variant="ghost" size="icon" className="reader-drawer-trigger" aria-label="Ouvrir le fil de traces" onClick={() => document.querySelector<HTMLButtonElement>(".reader-header .reader-drawer-trigger")?.click()}><PanelLeft aria-hidden /></Button>
         <span className="font-label text-xs text-muted-foreground">{day ? "Une porte · jour" : "Une porte · nuit"}</span>
         <Button ref={closeRef} variant="ghost" size="sm" onClick={onClose}><ArrowUp aria-hidden />Revenir au texte</Button>
       </div>
-      <div className="world-scroll">
+      <div className={day ? "world-stage" : "world-scroll"}>
         {day ? <DayWorld /> : <NightWorld />}
       </div>
     </div>,

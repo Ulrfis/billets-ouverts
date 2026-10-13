@@ -40,7 +40,7 @@ export function PrototypeDoor({ number }: { number: number | string }) {
   };
   return <div className="prototype-door my-10" data-open={open}>
     <div className="door-jaw door-jaw-top" />
-    <Button ref={trigger} variant="ghost" className="door-trigger w-full text-muted-foreground" aria-expanded={open} aria-controls={`world-${number}`} aria-label={`Ouvrir la porte ${number} · ${day ? "jour" : "nuit"}`} onClick={() => {
+    <Button ref={trigger} variant="ghost" className="door-trigger w-full text-muted-foreground" aria-expanded={open} aria-controls="reading-world" aria-label={`Ouvrir la porte ${number} · ${day ? "jour" : "nuit"}`} onClick={() => {
       if (open) { close(); return; }
       position.current = window.scrollY;
       setOpen(true);
