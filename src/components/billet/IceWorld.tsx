@@ -23,7 +23,7 @@ function quoteTexture(quote: IceQuote, ink: string) {
   // Wrap and fit the complete quote, never truncate. Long texts also open at reading size.
   let fontSize = 66;
   let lines: string[] = [];
-  const paragraphs = (`« ${quote.text} »`).split("\n");
+  const paragraphs = quote.text.split("\n");
   do {
     context.font = `500 ${fontSize}px "Playfair Display", Georgia, serif`;
     lines = [];
@@ -79,7 +79,7 @@ function Glacier({ quote, index, palette, reduced, journey, onInspect }: {
     </RoundedBox>
     <mesh position={[0, .15, .35]} renderOrder={10} onClick={(event) => { event.stopPropagation(); onInspect(index); }}>
       <planeGeometry args={[6.7, 6.7]} />
-      <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
+      <meshBasicMaterial map={texture} transparent alphaTest={.05} depthWrite toneMapped={false} side={THREE.DoubleSide} />
     </mesh>
     {/* Inner seams establish real depth rather than a flat glass panel. */}
     <RoundedBox args={[7.8, 7.2, 4.05]} radius={.5} smoothness={2}>
@@ -127,7 +127,7 @@ function DriftCamera({ journey, count, reduced, onActive }: {
     const nearest = Math.min(count - 1, Math.max(0, Math.round(j.distance / SPACING)));
     if (nearest !== j.active) { j.active = nearest; onActive(nearest); }
     const narrow = size.width < 600;
-    const z = (narrow ? 28 : 20) - j.distance;
+    const z = (narrow ? 24 : 16) - j.distance;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, cubeX(nearest) * .4 + pointer.x * .65, 1.5, dt);
     camera.position.y = THREE.MathUtils.damp(camera.position.y, .3 + Math.sin(time.current * .2) * .3 + pointer.y * .35, 1.5, dt);
     camera.position.z = z;
@@ -169,6 +169,7 @@ export default function IceWorld({ quotes }: { quotes: IceQuote[] }) {
   };
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.target instanceof Element && event.target.closest("input, textarea, [contenteditable=true], .reader-sidebar, [data-slot=sheet-content]")) return;
       if (event.key === "ArrowRight" || event.key === "ArrowLeft") { event.preventDefault(); move(active + (event.key === "ArrowRight" ? 1 : -1)); }
     };
     window.addEventListener("keydown", onKey);
@@ -194,7 +195,7 @@ export default function IceWorld({ quotes }: { quotes: IceQuote[] }) {
     </div>}
     {inspected !== null && quote && <div className="ice-reading" role="region" aria-label="Citation entière">
       <Button variant="ghost" size="icon" className="ice-reading-close" aria-label="Revenir aux glaçons" title="Revenir aux glaçons" onClick={() => { setInspected(null); journey.current.inspected = false; }}><X aria-hidden /></Button>
-      <blockquote><p>« {quote.text} »</p>{quote.year !== null && <footer>{quote.year}</footer>}</blockquote>
+      <blockquote><p>{quote.text}</p>{quote.year !== null && <footer>{quote.year}</footer>}</blockquote>
       <Button variant="ghost" disabled={kept} onClick={() => keepTrace({ kind: "citation", passageId: quote.id, text: quote.text, excerpt: `Résonances${quote.year === null ? "" : ` · ${quote.year}`}` })}>{kept ? <Check aria-hidden /> : <Bookmark aria-hidden />}{kept ? "Gardée" : "Garder cette citation"}</Button>
     </div>}
   </div>;
