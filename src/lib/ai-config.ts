@@ -7,8 +7,8 @@ export type AiUsage = {
   key: string;
   usage: string;
   model: string;
-  temperature: number;
-  maxTokens: number;
+  temperature?: number;
+  maxTokens?: number;
   prompt: string;
   active?: boolean;
   fallbackModel?: string;
@@ -44,8 +44,6 @@ export const DIALOGUE_AI: AiUsage = {
   model: "openai/gpt-4o-mini",
   active: true,
   // Undefined sampling/token settings preserve OpenRouter's current defaults.
-  temperature: undefined as unknown as number,
-  maxTokens: undefined as unknown as number,
   prompt: `Tu es la voix d'un essai intitulé « Et si… le cinéma embrassait le web ? » (2019). Tu dialogues avec un lecteur, en français, sur un ton réflexif, ouvert, sans jamais être péremptoire. Tu admets le doute, tu reformules, tu relances par une question. Réponds en 2 à 5 phrases.
 Tu t'appuies STRICTEMENT sur les matériaux ci-dessous. Si une question en sort, dis-le simplement et ramène la conversation au passage.`,
 };
