@@ -295,7 +295,7 @@ async function loadNotionContent(key: string) {
   } catch (e) {
     return { ok: false as const, reason: String(e) };
   }
-});
+}
 
 export const getNotionCallout = createServerFn({ method: "GET" })
   .inputValidator((input) => z.object({ blockId: z.string().uuid() }).parse(input))
